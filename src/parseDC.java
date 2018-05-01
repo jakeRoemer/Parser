@@ -13,8 +13,9 @@ public class parseDC {
 //		String output_dir = "PIP_5trials";
 		String output_dir = "parallel_Vindicator_10trials_jython";
 		String [] benchmarks = {"jython"};//{"avrora", "batik", "htwo", "jython", "luindex", "lusearch", "pmd", "sunflow", "tomcat", "xalan"};
-		String [] configs = {"base", "empty", "hbwcp", "wdc_testconfig", "wdc"};//, "capo", "pip"};
-		String [] configNames = {"Base", "Empty", "HBWCP", "DCLite", "DC"};//, "CAPO", "PIP"};
+		String [] configs = {"base", "empty", "hbwcp", "wdc_testconfig", "wdc"};//, "capo", "pip"};//, "wdc_noG", "capo_noG", "pip_noG"};
+		String [] configNames = {"Base", "Empty", "HBWCP", "DCLite", "DC"};//, "CAPO", "PIP"};// ,"DCLite", "CAPOLite", "PIPLite"};
+		//configs -> wdc_testconfig | configNames = DCLite
 		int trials = 10; //Integer.parseInt(args[1]);
 		LinkedList<BenchmarkInfo> benchmarks_info = new LinkedList<BenchmarkInfo>();
 		BufferedReader input = null;
