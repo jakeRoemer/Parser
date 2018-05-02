@@ -8,15 +8,17 @@ import java.util.LinkedList;
 
 public class parseDC {
 	public static void main (String [] args) {
-//		String output_dir = "Vindicator_10trial_wCounts";
-//		String output_dir = "parallel_Vindicator_10trials"; //args[0];
-//		String output_dir = "PIP_5trials";
-		String output_dir = "parallel_Vindicator_10trials_jython";
-		String [] benchmarks = {"jython"};//{"avrora", "batik", "htwo", "jython", "luindex", "lusearch", "pmd", "sunflow", "tomcat", "xalan"};
-		String [] configs = {"base", "empty", "hbwcp", "wdc_testconfig", "wdc"};//, "capo", "pip"};//, "wdc_noG", "capo_noG", "pip_noG"};
-		String [] configNames = {"Base", "Empty", "HBWCP", "DCLite", "DC"};//, "CAPO", "PIP"};// ,"DCLite", "CAPOLite", "PIPLite"};
+//		String output_dir = args[0];
+//		String output_dir = "Vindicator_10trial_wCounts"; //wdc_testconfig used
+//		String output_dir = "parallel_Vindicator_10trials"; //wdc_testconfig used
+//		String output_dir = "PIP_5trials"; //wdc_testconfig used
+//		String output_dir = "parallel_Vindicator_10trials_jython"; //wdc_testconfig used
+		String output_dir = "singleRunTest";
+		String [] benchmarks = {"avrora", "batik", "htwo", "jython", "luindex", "lusearch", "pmd", "sunflow", "tomcat", "xalan"};
+		String [] configs = {"base", "empty", "hbwcp", "wdc_noG", "wdc", "capo", "pip"};//, "wdc_noG", "capo_noG", "pip_noG"};
+		String [] configNames = {"Base", "Empty", "HBWCP", "DCLite", "DC", "CAPO", "PIP"};// ,"DCLite", "CAPOLite", "PIPLite"};
 		//configs -> wdc_testconfig | configNames = DCLite
-		int trials = 10; //Integer.parseInt(args[1]);
+		int trials = 1; //Integer.parseInt(args[1]);
 		LinkedList<BenchmarkInfo> benchmarks_info = new LinkedList<BenchmarkInfo>();
 		BufferedReader input = null;
 		try {
@@ -239,94 +241,94 @@ public class parseDC {
 		output.write("\\newcommand{\\WCPDynamicTotal}{" + BenchmarkInfo.getParenthesis(String.valueOf(race_totals[3])) + "}\n");
 		output.write("\\newcommand{\\WDCTotal}{" + race_totals[4] + "}\n");
 		output.write("\\newcommand{\\WDCDynamicTotal}{" + BenchmarkInfo.getParenthesis(String.valueOf(race_totals[5])) + "}\n");
-//		// CAPO Races: Static/Dynamic Race Table
-//		System.out.println("Static CAPO races (dynamic races)");
-//		System.out.printf("%-9s| %-13s | %-15s | %-11s\n", "Program", "HB-races", "WCP-races", "DC-races");
-//		for (BenchmarkInfo bench : benchmarks) {
-//			String bench_name = bench.getBenchmark();
-//			Long [] raceFormat = new Long[6];
-//			raceFormat[0] = BenchmarkInfo.round(bench.capo_types.get("HB")/trials);
-//			raceFormat[1] = BenchmarkInfo.round(bench.capo_types.get("HBDynamic")/trials);
-//			raceFormat[2] = BenchmarkInfo.round(bench.capo_types.get("WCP")/trials);
-//			raceFormat[3] = BenchmarkInfo.round(bench.capo_types.get("WCPDynamic")/trials);
-//			raceFormat[4] = BenchmarkInfo.round(bench.capo_types.get("WDC")/trials);
-//			raceFormat[5] = BenchmarkInfo.round(bench.capo_types.get("WDCDynamic")/trials);
-//			System.out.printf("%-9s| %-5s (%-5s) | %-6s (%-6s) | %-4s (%-6s)\n", bench_name, raceFormat[0], raceFormat[1], raceFormat[2], raceFormat[3], raceFormat[4], raceFormat[5]);
-//			for (String type_key : bench.capo_types.keySet()) {
-//				if (type_key.equals("HB")) {
-//					capo_race_totals[0] += BenchmarkInfo.round(bench.capo_types.get(type_key)/trials);
-//				} else if (type_key.equals("WCP")) {
-//					capo_race_totals[2] += BenchmarkInfo.round(bench.capo_types.get(type_key)/trials);
-//				} else if (type_key.equals("WDC")) {
-//					capo_race_totals[4] += BenchmarkInfo.round(bench.capo_types.get(type_key)/trials);
-//				} else if (type_key.equals("HBDynamic")) {	
-//					capo_race_totals[1] += BenchmarkInfo.round(bench.capo_types.get(type_key)/trials);
-//				} else if (type_key.equals("WCPDynamic")) {
-//					capo_race_totals[3] += BenchmarkInfo.round(bench.capo_types.get(type_key)/trials);
-//				} else if (type_key.equals("WDCDynamic")) {
-//					capo_race_totals[5] += BenchmarkInfo.round(bench.capo_types.get(type_key)/trials);
-//				}
-//			}
-//		}
-//		raceFormatTotal = new String[6];
-//		raceFormatTotal[0] = ""+capo_race_totals[0];
-//		raceFormatTotal[1] = BenchmarkInfo.getParenthesis(String.valueOf(capo_race_totals[1]));
-//		raceFormatTotal[2] = ""+capo_race_totals[2];
-//		raceFormatTotal[3] = BenchmarkInfo.getParenthesis(String.valueOf(capo_race_totals[3]));
-//		raceFormatTotal[4] = ""+capo_race_totals[4];
-//		raceFormatTotal[5] = BenchmarkInfo.getParenthesis(String.valueOf(capo_race_totals[5]));
-//		System.out.printf("%-9s| %-5s (%-4s) | %-6s (%-5s) | %-4s (%-6s)\n", "Total", raceFormatTotal[0], raceFormatTotal[1], raceFormatTotal[2], raceFormatTotal[3], raceFormatTotal[4], raceFormatTotal[5]);
-//		output.write("\\newcommand{\\CAPOHBTotal}{" + capo_race_totals[0] + "}\n");
-//		output.write("\\newcommand{\\CAPOHBDynamicTotal}{" + BenchmarkInfo.getParenthesis(String.valueOf(capo_race_totals[1])) + "}\n");
-//		output.write("\\newcommand{\\CAPOWCPTotal}{" + capo_race_totals[2] + "}\n");
-//		output.write("\\newcommand{\\CAPOWCPDynamicTotal}{" + BenchmarkInfo.getParenthesis(String.valueOf(capo_race_totals[3])) + "}\n");
-//		output.write("\\newcommand{\\CAPOWDCTotal}{" + capo_race_totals[4] + "}\n");
-//		output.write("\\newcommand{\\CAPOWDCDynamicTotal}{" + BenchmarkInfo.getParenthesis(String.valueOf(capo_race_totals[5])) + "}\n");
-//		// PIP Races: Static/Dynamic Race Table
-//		System.out.println("Static PIP races (dynamic races)");
-//		System.out.printf("%-9s| %-13s | %-15s | %-11s\n", "Program", "HB-races", "WCP-races", "DC-races");
-//		for (BenchmarkInfo bench : benchmarks) {
-//			String bench_name = bench.getBenchmark();
-//			Long [] raceFormat = new Long[6];
-//			if (!bench.pip_types.isEmpty()) {
-//			raceFormat[0] = BenchmarkInfo.round(bench.pip_types.get("HB")/trials);
-//			raceFormat[1] = BenchmarkInfo.round(bench.pip_types.get("HBDynamic")/trials);
-//			raceFormat[2] = BenchmarkInfo.round(bench.pip_types.get("WCP")/trials);
-//			raceFormat[3] = BenchmarkInfo.round(bench.pip_types.get("WCPDynamic")/trials);
-//			raceFormat[4] = BenchmarkInfo.round(bench.pip_types.get("WDC")/trials);
-//			raceFormat[5] = BenchmarkInfo.round(bench.pip_types.get("WDCDynamic")/trials);
-//			System.out.printf("%-9s| %-5s (%-5s) | %-6s (%-6s) | %-4s (%-6s)\n", bench_name, raceFormat[0], raceFormat[1], raceFormat[2], raceFormat[3], raceFormat[4], raceFormat[5]);
-//			for (String type_key : bench.pip_types.keySet()) {
-//				if (type_key.equals("HB")) {
-//					pip_race_totals[0] += BenchmarkInfo.round(bench.pip_types.get(type_key)/trials);
-//				} else if (type_key.equals("WCP")) {
-//					pip_race_totals[2] += BenchmarkInfo.round(bench.pip_types.get(type_key)/trials);
-//				} else if (type_key.equals("WDC")) {
-//					pip_race_totals[4] += BenchmarkInfo.round(bench.pip_types.get(type_key)/trials);
-//				} else if (type_key.equals("HBDynamic")) {	
-//					pip_race_totals[1] += BenchmarkInfo.round(bench.pip_types.get(type_key)/trials);
-//				} else if (type_key.equals("WCPDynamic")) {
-//					pip_race_totals[3] += BenchmarkInfo.round(bench.pip_types.get(type_key)/trials);
-//				} else if (type_key.equals("WDCDynamic")) {
-//					pip_race_totals[5] += BenchmarkInfo.round(bench.pip_types.get(type_key)/trials);
-//				}
-//			}
-//			}
-//		}
-//		raceFormatTotal = new String[6];
-//		raceFormatTotal[0] = ""+pip_race_totals[0];
-//		raceFormatTotal[1] = BenchmarkInfo.getParenthesis(String.valueOf(pip_race_totals[1]));
-//		raceFormatTotal[2] = ""+pip_race_totals[2];
-//		raceFormatTotal[3] = BenchmarkInfo.getParenthesis(String.valueOf(pip_race_totals[3]));
-//		raceFormatTotal[4] = ""+pip_race_totals[4];
-//		raceFormatTotal[5] = BenchmarkInfo.getParenthesis(String.valueOf(pip_race_totals[5]));
-//		System.out.printf("%-9s| %-5s (%-4s) | %-6s (%-5s) | %-4s (%-6s)\n", "Total", raceFormatTotal[0], raceFormatTotal[1], raceFormatTotal[2], raceFormatTotal[3], raceFormatTotal[4], raceFormatTotal[5]);
-//		output.write("\\newcommand{\\PIPHBTotal}{" + pip_race_totals[0] + "}\n");
-//		output.write("\\newcommand{\\PIPHBDynamicTotal}{" + BenchmarkInfo.getParenthesis(String.valueOf(pip_race_totals[1])) + "}\n");
-//		output.write("\\newcommand{\\PIPWCPTotal}{" + pip_race_totals[2] + "}\n");
-//		output.write("\\newcommand{\\PIPWCPDynamicTotal}{" + BenchmarkInfo.getParenthesis(String.valueOf(pip_race_totals[3])) + "}\n");
-//		output.write("\\newcommand{\\PIPWDCTotal}{" + pip_race_totals[4] + "}\n");
-//		output.write("\\newcommand{\\PIPWDCDynamicTotal}{" + BenchmarkInfo.getParenthesis(String.valueOf(pip_race_totals[5])) + "}\n");
+		// CAPO Races: Static/Dynamic Race Table
+		System.out.println("Static CAPO races (dynamic races)");
+		System.out.printf("%-9s| %-13s | %-15s | %-11s\n", "Program", "HB-races", "WCP-races", "DC-races");
+		for (BenchmarkInfo bench : benchmarks) {
+			String bench_name = bench.getBenchmark();
+			Long [] raceFormat = new Long[6];
+			raceFormat[0] = BenchmarkInfo.round(bench.capo_types.get("HB")/trials);
+			raceFormat[1] = BenchmarkInfo.round(bench.capo_types.get("HBDynamic")/trials);
+			raceFormat[2] = BenchmarkInfo.round(bench.capo_types.get("WCP")/trials);
+			raceFormat[3] = BenchmarkInfo.round(bench.capo_types.get("WCPDynamic")/trials);
+			raceFormat[4] = BenchmarkInfo.round(bench.capo_types.get("WDC")/trials);
+			raceFormat[5] = BenchmarkInfo.round(bench.capo_types.get("WDCDynamic")/trials);
+			System.out.printf("%-9s| %-5s (%-5s) | %-6s (%-6s) | %-4s (%-6s)\n", bench_name, raceFormat[0], raceFormat[1], raceFormat[2], raceFormat[3], raceFormat[4], raceFormat[5]);
+			for (String type_key : bench.capo_types.keySet()) {
+				if (type_key.equals("HB")) {
+					capo_race_totals[0] += BenchmarkInfo.round(bench.capo_types.get(type_key)/trials);
+				} else if (type_key.equals("WCP")) {
+					capo_race_totals[2] += BenchmarkInfo.round(bench.capo_types.get(type_key)/trials);
+				} else if (type_key.equals("WDC")) {
+					capo_race_totals[4] += BenchmarkInfo.round(bench.capo_types.get(type_key)/trials);
+				} else if (type_key.equals("HBDynamic")) {	
+					capo_race_totals[1] += BenchmarkInfo.round(bench.capo_types.get(type_key)/trials);
+				} else if (type_key.equals("WCPDynamic")) {
+					capo_race_totals[3] += BenchmarkInfo.round(bench.capo_types.get(type_key)/trials);
+				} else if (type_key.equals("WDCDynamic")) {
+					capo_race_totals[5] += BenchmarkInfo.round(bench.capo_types.get(type_key)/trials);
+				}
+			}
+		}
+		raceFormatTotal = new String[6];
+		raceFormatTotal[0] = ""+capo_race_totals[0];
+		raceFormatTotal[1] = BenchmarkInfo.getParenthesis(String.valueOf(capo_race_totals[1]));
+		raceFormatTotal[2] = ""+capo_race_totals[2];
+		raceFormatTotal[3] = BenchmarkInfo.getParenthesis(String.valueOf(capo_race_totals[3]));
+		raceFormatTotal[4] = ""+capo_race_totals[4];
+		raceFormatTotal[5] = BenchmarkInfo.getParenthesis(String.valueOf(capo_race_totals[5]));
+		System.out.printf("%-9s| %-5s (%-4s) | %-6s (%-5s) | %-4s (%-6s)\n", "Total", raceFormatTotal[0], raceFormatTotal[1], raceFormatTotal[2], raceFormatTotal[3], raceFormatTotal[4], raceFormatTotal[5]);
+		output.write("\\newcommand{\\CAPOHBTotal}{" + capo_race_totals[0] + "}\n");
+		output.write("\\newcommand{\\CAPOHBDynamicTotal}{" + BenchmarkInfo.getParenthesis(String.valueOf(capo_race_totals[1])) + "}\n");
+		output.write("\\newcommand{\\CAPOWCPTotal}{" + capo_race_totals[2] + "}\n");
+		output.write("\\newcommand{\\CAPOWCPDynamicTotal}{" + BenchmarkInfo.getParenthesis(String.valueOf(capo_race_totals[3])) + "}\n");
+		output.write("\\newcommand{\\CAPOWDCTotal}{" + capo_race_totals[4] + "}\n");
+		output.write("\\newcommand{\\CAPOWDCDynamicTotal}{" + BenchmarkInfo.getParenthesis(String.valueOf(capo_race_totals[5])) + "}\n");
+		// PIP Races: Static/Dynamic Race Table
+		System.out.println("Static PIP races (dynamic races)");
+		System.out.printf("%-9s| %-13s | %-15s | %-11s\n", "Program", "HB-races", "WCP-races", "DC-races");
+		for (BenchmarkInfo bench : benchmarks) {
+			String bench_name = bench.getBenchmark();
+			Long [] raceFormat = new Long[6];
+			if (!bench.pip_types.isEmpty()) {
+			raceFormat[0] = BenchmarkInfo.round(bench.pip_types.get("HB")/trials);
+			raceFormat[1] = BenchmarkInfo.round(bench.pip_types.get("HBDynamic")/trials);
+			raceFormat[2] = BenchmarkInfo.round(bench.pip_types.get("WCP")/trials);
+			raceFormat[3] = BenchmarkInfo.round(bench.pip_types.get("WCPDynamic")/trials);
+			raceFormat[4] = BenchmarkInfo.round(bench.pip_types.get("WDC")/trials);
+			raceFormat[5] = BenchmarkInfo.round(bench.pip_types.get("WDCDynamic")/trials);
+			System.out.printf("%-9s| %-5s (%-5s) | %-6s (%-6s) | %-4s (%-6s)\n", bench_name, raceFormat[0], raceFormat[1], raceFormat[2], raceFormat[3], raceFormat[4], raceFormat[5]);
+			for (String type_key : bench.pip_types.keySet()) {
+				if (type_key.equals("HB")) {
+					pip_race_totals[0] += BenchmarkInfo.round(bench.pip_types.get(type_key)/trials);
+				} else if (type_key.equals("WCP")) {
+					pip_race_totals[2] += BenchmarkInfo.round(bench.pip_types.get(type_key)/trials);
+				} else if (type_key.equals("WDC")) {
+					pip_race_totals[4] += BenchmarkInfo.round(bench.pip_types.get(type_key)/trials);
+				} else if (type_key.equals("HBDynamic")) {	
+					pip_race_totals[1] += BenchmarkInfo.round(bench.pip_types.get(type_key)/trials);
+				} else if (type_key.equals("WCPDynamic")) {
+					pip_race_totals[3] += BenchmarkInfo.round(bench.pip_types.get(type_key)/trials);
+				} else if (type_key.equals("WDCDynamic")) {
+					pip_race_totals[5] += BenchmarkInfo.round(bench.pip_types.get(type_key)/trials);
+				}
+			}
+			}
+		}
+		raceFormatTotal = new String[6];
+		raceFormatTotal[0] = ""+pip_race_totals[0];
+		raceFormatTotal[1] = BenchmarkInfo.getParenthesis(String.valueOf(pip_race_totals[1]));
+		raceFormatTotal[2] = ""+pip_race_totals[2];
+		raceFormatTotal[3] = BenchmarkInfo.getParenthesis(String.valueOf(pip_race_totals[3]));
+		raceFormatTotal[4] = ""+pip_race_totals[4];
+		raceFormatTotal[5] = BenchmarkInfo.getParenthesis(String.valueOf(pip_race_totals[5]));
+		System.out.printf("%-9s| %-5s (%-4s) | %-6s (%-5s) | %-4s (%-6s)\n", "Total", raceFormatTotal[0], raceFormatTotal[1], raceFormatTotal[2], raceFormatTotal[3], raceFormatTotal[4], raceFormatTotal[5]);
+		output.write("\\newcommand{\\PIPHBTotal}{" + pip_race_totals[0] + "}\n");
+		output.write("\\newcommand{\\PIPHBDynamicTotal}{" + BenchmarkInfo.getParenthesis(String.valueOf(pip_race_totals[1])) + "}\n");
+		output.write("\\newcommand{\\PIPWCPTotal}{" + pip_race_totals[2] + "}\n");
+		output.write("\\newcommand{\\PIPWCPDynamicTotal}{" + BenchmarkInfo.getParenthesis(String.valueOf(pip_race_totals[3])) + "}\n");
+		output.write("\\newcommand{\\PIPWDCTotal}{" + pip_race_totals[4] + "}\n");
+		output.write("\\newcommand{\\PIPWDCDynamicTotal}{" + BenchmarkInfo.getParenthesis(String.valueOf(pip_race_totals[5])) + "}\n");
 		//Static DC-only Race Table
 		output.write("\\newcommand{\\racenum}[2]{#2}");
 		System.out.println("Static DC-only race");
