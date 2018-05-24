@@ -298,6 +298,12 @@ public class BenchmarkInfo {
 	}
 
 	public LinkedList<String> getRace_types() {
+		String[] types = {"HB", "HBDynamic", "WCP", "WCPDynamic", "WDC", "WDCDynamic", "CAPO", "CAPODynamic", "PIP", "PIPDynamic"};
+		for (String type : types) {
+		String type_races_string = String.valueOf(round(this.types.get(type)/this.total_trials));
+		this.race_types.add("\\newcommand{\\"+benchmark+type+"}{"+getParenthesis(type_races_string)+"}\n");
+		}
+		//For PIP tool above
 		return race_types;
 	}
 	
@@ -310,19 +316,20 @@ public class BenchmarkInfo {
 	}
 
 	public void setRace_types(String config, String type, String race_num, boolean final_trial) {
-		if (config.equals("wdc")) {
+		if (config.equals("wdc") || true/*PIPTool*/) {
 			double type_races = Double.parseDouble(race_num);
 			if (this.types.containsKey(type)) {
 				type_races += this.types.get(type);
 			}
 			this.types.put(type, type_races);
-			if (final_trial) {
+			if (final_trial && false) {
 //				String type_races_string = String.valueOf((long)(this.types.get(type)/this.total_trials));
 				String type_races_string = String.valueOf(round(this.types.get(type)/this.total_trials));
 				this.race_types.add("\\newcommand{\\"+benchmark+type+"}{"+getParenthesis(type_races_string)+"}\n");
 			}
 		}
-		if (config.equals("capo")) {
+		if (false) {
+		if (config.equals("capo") || config.equals("capo_only")) {
 			double type_races = Double.parseDouble(race_num);
 			if (this.capo_types.containsKey(type)) {
 				type_races += this.capo_types.get(type);
@@ -333,7 +340,7 @@ public class BenchmarkInfo {
 				this.capo_race_types.add("\\newcommand{\\"+benchmark+"CAPO"+type+"}{"+getParenthesis(type_races_string)+"}\n");
 			}
 		}
-		if (config.equals("pip")) {
+		if (config.equals("pip") || config.equals("pip_only")) {
 			double type_races = Double.parseDouble(race_num);
 			if (this.pip_types.containsKey(type)) {
 				type_races += this.pip_types.get(type);
@@ -343,6 +350,7 @@ public class BenchmarkInfo {
 				String type_races_string = String.valueOf(round(this.pip_types.get(type)/this.total_trials));
 				this.pip_race_types.add("\\newcommand{\\"+benchmark+"PIP"+type+"}{"+getParenthesis(type_races_string)+"}\n");
 			}
+		}
 		}
 	}
 
@@ -430,15 +438,27 @@ public class BenchmarkInfo {
 	public String getCount_Total(String config, String totalType) {
 		String event_total_string = "";
 		if (totalType.equals("Events")) {
-			event_total_string = String.valueOf(getTwoSigsRound(counts.get(config).getTotal() + counts.get(config).getFp_write() + counts.get(config).getFp_read()));
+			if (counts.get(config) == null) { //fail state
+				event_total_string = "0";
+			} else {
+				event_total_string = String.valueOf(getTwoSigsRound(counts.get(config).getTotal() + counts.get(config).getFp_write() + counts.get(config).getFp_read()));
+			}
 		} else if (totalType.equals("NoFPEvents")) {
+			if (counts.get(config) == null) { //fail state
+				event_total_string = "0";
+			} else {
+				event_total_string = String.valueOf(getTwoSigsRound(counts.get(config).getTotal()));
+			}
+		} else if (totalType.equals("Ops")) {
 			event_total_string = String.valueOf(getTwoSigsRound(counts.get(config).getTotal()));
 		}
 		if (event_total_string.isEmpty()) {
 			this.event_total = "\\newcommand{\\"+benchmark+totalType+"}{\\rna}\n";
 		} else {
-			event_total_string = event_total_string.substring(0, event_total_string.length()-3);
-			event_total_string = event_total_string.length() > 4 ? getParenthesis(event_total_string.substring(0, event_total_string.length()-3)) : getDecimals(event_total_string);
+			if (!event_total_string.equals("0")) {
+				event_total_string = event_total_string.substring(0, event_total_string.length()-3);
+				event_total_string = event_total_string.length() > 4 ? getParenthesis(event_total_string.substring(0, event_total_string.length()-3)) : getDecimals(event_total_string);
+			}
 			this.event_total = "\\newcommand{\\"+benchmark+totalType+"}{"+event_total_string+"}\n";
 		}
 		

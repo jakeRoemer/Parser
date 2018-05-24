@@ -17,6 +17,8 @@ public class EventCounts {
 	private long post_wait;
 	private long class_init;
 	private long class_access;
+	private long access_insideCS;
+	private long access_outsideCS;
 	private String config;
 	private String bench;
 	
@@ -60,28 +62,35 @@ public class EventCounts {
 			setClass_init(final_count ? ((getClass_init() + eventCount) / total_trials) : (getClass_init() + eventCount));
 		} else if (eventType.equals("Class Accessed")) {
 			setClass_access(final_count ? ((getClass_access() + eventCount) / total_trials) : (getClass_access() + eventCount));
+		} else if (eventType.equals("Accesses Inside Critical Sections")) {
+			setAccess_insideCS(final_count ? ((getAccess_insideCS() + eventCount) / total_trials) : (getAccess_insideCS() + eventCount));
+		} else if (eventType.equals("Accesses Outisde Critical Sections")) {
+			setAccess_outsideCS(final_count ? ((getAccess_outsideCS() + eventCount) / total_trials) : (getAccess_outsideCS() + eventCount));
+			
 		}
 	}
 	
 	public void printCounts() {
 		System.out.println(bench + " " + config);
-		System.out.println("total: " + getTotal());
-		System.out.println("exit: " + getExit());
-		System.out.println("fake fork: " + getFake_fork());
-		System.out.println("acquire: " + getAcquire());
-		System.out.println("release: " + getRelease());
-		System.out.println("write: " + getWrite());
-		System.out.println("read: " + getRead());
-		System.out.println("fastpath write: " + getFp_write());
-		System.out.println("fastpath read: " + getFp_read());
-		System.out.println("volatile write: " + getVol_write());
-		System.out.println("volatile read: " + getVol_read());
-		System.out.println("start: " + getStart());
-		System.out.println("join: " + getJoin());
-		System.out.println("pre wait: " + getPre_wait());
-		System.out.println("post wait: " + getPost_wait());
-		System.out.println("class init: " + getClass_init());
-		System.out.println("class accessed: " + getClass_access());
+//		System.out.println("total: " + getTotal());
+//		System.out.println("exit: " + getExit());
+//		System.out.println("fake fork: " + getFake_fork());
+//		System.out.println("acquire: " + getAcquire());
+//		System.out.println("release: " + getRelease());
+//		System.out.println("write: " + getWrite());
+//		System.out.println("read: " + getRead());
+//		System.out.println("fastpath write: " + getFp_write());
+//		System.out.println("fastpath read: " + getFp_read());
+//		System.out.println("volatile write: " + getVol_write());
+//		System.out.println("volatile read: " + getVol_read());
+//		System.out.println("start: " + getStart());
+//		System.out.println("join: " + getJoin());
+//		System.out.println("pre wait: " + getPre_wait());
+//		System.out.println("post wait: " + getPost_wait());
+//		System.out.println("class init: " + getClass_init());
+//		System.out.println("class accessed: " + getClass_access());
+		System.out.println("accesses inside cs: " + getAccess_insideCS());
+		System.out.println("accesses outside cs: " + getAccess_outsideCS());
 	}
 	
 	public long getTotal() {
@@ -185,5 +194,21 @@ public class EventCounts {
 	}
 	public void setClass_access(long class_access) {
 		this.class_access = class_access;
+	}
+
+	public long getAccess_insideCS() {
+		return access_insideCS;
+	}
+
+	public void setAccess_insideCS(long access_insideCS) {
+		this.access_insideCS = access_insideCS;
+	}
+
+	public long getAccess_outsideCS() {
+		return access_outsideCS;
+	}
+
+	public void setAccess_outsideCS(long access_outsideCS) {
+		this.access_outsideCS = access_outsideCS;
 	}
 }
