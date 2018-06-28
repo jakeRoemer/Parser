@@ -205,7 +205,7 @@ public class BenchmarkInfo {
 	}
 
 	public void setTotalThread_count(String config, String thread_count, boolean final_trial) {
-		if (config.equals("wdc")) {
+		if (config.equals("wdc_exc") || config.equals("pip_dc")) {
 			this.total_thread_count_trials += Integer.parseInt(thread_count);
 			if (final_trial) {
 				this.total_thread_count = "\\newcommand{\\"+benchmark+"TotalThreads}{"+(this.total_thread_count_trials/this.total_trials)+"}\n";
@@ -221,7 +221,7 @@ public class BenchmarkInfo {
 	}
 
 	public void setMaxLiveThread_count(String config, String thread_count, boolean final_trial) {
-		if (config.equals("wdc")) {
+		if (config.equals("wdc_exc") || config.equals("pip_dc")) {
 			this.max_live_thread_count_trials += Integer.parseInt(thread_count);
 			if (final_trial) {
 				this.max_live_thread_count = "\\newcommand{\\"+benchmark+"MaxLiveThreads}{"+(this.max_live_thread_count_trials/this.total_trials)+"}\n";
@@ -268,7 +268,7 @@ public class BenchmarkInfo {
 	}
 
 	public LinkedList<String> getConfig_mem() {
-		return config_mem;
+		return this.config_mem;
 	}
 
 	public void setConfig_mem(String configName, String memory, boolean final_trial) {
@@ -297,13 +297,30 @@ public class BenchmarkInfo {
 		this.config_bench_time.add("\\newcommand{\\"+benchmark+configName+"Bench}{"+bench_time+"}\n");
 	}
 
-	public LinkedList<String> getRace_types() {
-		String[] types = {"HB", "HBDynamic", "WCP", "WCPDynamic", "WDC", "WDCDynamic", "CAPO", "CAPODynamic", "PIP", "PIPDynamic"};
-		for (String type : types) {
-		String type_races_string = String.valueOf(round(this.types.get(type)/this.total_trials));
-		this.race_types.add("\\newcommand{\\"+benchmark+type+"}{"+getParenthesis(type_races_string)+"}\n");
+	public LinkedList<String> getRace_types(String tool) {
+		if (tool.equals("DC")) {
+			String[] types = {"HB", "HBDynamic", "PIPHB", "PIPHBDynamic", "FT", "FTDynamic", "WCP", "WCPDynamic", "PIPWCP", "PIPWCPDynamic", "WDC", "WDCDynamic", "PIPWDC", "PIPWDCDynamic", "CAPO", "CAPODynamic", "PIPCAPO", "PIPCAPODynamic", "PIP", "PIPDynamic", "PIPPIP", "PIPPIPDynamic"};
+			for (String type : types) {
+				if (this.types.get(type) == null) {
+					this.race_types.add("\\newcommand{\\"+benchmark+type+"}{\\rna}\n");
+				} else {
+					String type_races_string = String.valueOf(round(this.types.get(type)/this.total_trials));
+					this.race_types.add("\\newcommand{\\"+benchmark+type+"}{"+getParenthesis(type_races_string)+"}\n");
+				}
+			}
 		}
-		//For PIP tool above
+		if (tool.equals("PIP")) {
+			String[] types = {"HB", "HBDynamic", "FT", "FTDynamic", "WCP", "WCPDynamic", "WDC", "WDCDynamic", "CAPO", "CAPODynamic", "PIP", "PIPDynamic"};
+			for (String type : types) {
+				if (this.types.get(type) == null) {
+					this.race_types.add("\\newcommand{\\"+benchmark+type+"}{\\rna}\n");
+				} else {
+					String type_races_string = String.valueOf(round(this.types.get(type)/this.total_trials));
+					this.race_types.add("\\newcommand{\\"+benchmark+type+"}{"+getParenthesis(type_races_string)+"}\n");
+				}
+			}
+		}
+		// Above is for PIP tool
 		return race_types;
 	}
 	
@@ -315,8 +332,8 @@ public class BenchmarkInfo {
 		return pip_race_types;
 	}
 
-	public void setRace_types(String config, String type, String race_num, boolean final_trial) {
-		if (config.equals("wdc") || true/*PIPTool*/) {
+	public void setRace_types(String config, String type, String race_num, String tool, boolean final_trial) {
+		if (true) {//(tool.equals("DC") && config.equals("wdc_exc")) || tool.equals("PIP")) {
 			double type_races = Double.parseDouble(race_num);
 			if (this.types.containsKey(type)) {
 				type_races += this.types.get(type);
@@ -399,11 +416,11 @@ public class BenchmarkInfo {
 	}
 
 	public void setStatic_check_time(String config, String static_check_time, boolean final_trial) {
-		if (config.equals("wdc")) {
+		if (config.equals("wdc_exc")) {
 			this.static_check_time_trials += Double.parseDouble(static_check_time);
-			double config_time = this.config_total_time_trials.get("wdc");
+			double config_time = this.config_total_time_trials.get("wdc_exc");
 			config_time += Double.parseDouble(static_check_time);
-			this.config_total_time_trials.put("wdc", config_time);
+			this.config_total_time_trials.put("wdc_exc", config_time);
 		}
 	}
 
@@ -426,7 +443,7 @@ public class BenchmarkInfo {
 	}
 
 	public void setDynamic_check_time(String config, String dynamic_check_time, boolean final_trial) {
-		if (config.equals("wdc")) {
+		if (config.equals("wdc_exc")) {
 			this.dynamic_check_time_trials += Double.parseDouble(dynamic_check_time);
 		}
 	}
@@ -443,11 +460,17 @@ public class BenchmarkInfo {
 			} else {
 				event_total_string = String.valueOf(getTwoSigsRound(counts.get(config).getTotal() + counts.get(config).getFp_write() + counts.get(config).getFp_read()));
 			}
+			if (event_total_string.equals("0")) {
+				event_total_string = String.valueOf(getTwoSigsRound(counts.get(config).getTotal_ops()));
+			}
 		} else if (totalType.equals("NoFPEvents")) {
 			if (counts.get(config) == null) { //fail state
 				event_total_string = "0";
 			} else {
 				event_total_string = String.valueOf(getTwoSigsRound(counts.get(config).getTotal()));
+			}
+			if (event_total_string.equals("0")) {
+				event_total_string = String.valueOf(getTwoSigsRound(counts.get(config).getTotal_ops() - counts.get(config).getTotal_fast_path_taken()));
 			}
 		} else if (totalType.equals("Ops")) {
 			event_total_string = String.valueOf(getTwoSigsRound(counts.get(config).getTotal()));
@@ -466,6 +489,7 @@ public class BenchmarkInfo {
 	}
 
 	public void setCounts(String config, String eventType, long eventCount, boolean final_trial) {
+//		System.out.println("config: " + config + " | event type: " + eventType + " | event count: " + eventCount);
 		EventCounts configCounts = counts.get(config);
 		if (configCounts == null) {
 			configCounts = new EventCounts(config, benchmark);
