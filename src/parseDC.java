@@ -5,9 +5,11 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.Set;
 
-public class parseDC {
+public class parseDC {	
 	public static void main (String [] args) {
 //		String output_dir = args[0];
 //		String output_dir = "Vindicator_10trial_wCounts"; //wdc_testconfig used
@@ -15,7 +17,8 @@ public class parseDC {
 //		String output_dir = "PIP_5trials"; //wdc_testconfig used
 //		String output_dir = "parallel_Vindicator_10trials_jython"; //wdc_testconfig used
 //		String output_dir = "PIP_fastTool";
-		String output_dir = "PIP_slowTool";
+//		String output_dir = "PIP_slowTool";
+		String output_dir = "PIP_capoOpt";
 		String [] benchmarks = {"avrora", "batik", "htwo", "jython", "luindex", "lusearch", "pmd", "sunflow", "tomcat", "xalan"};
 		//Vindicator tool
 //		String [] configs = {"base", /*"empty", "hbwcp", "wdc_noG",*/ "wdc", "capo_only", "pip_only"};//, "wdc_noG", "capo_noG", "pip_noG"};
@@ -23,12 +26,15 @@ public class parseDC {
 		//PIP tool (fast tool)
 //		String [] configs = {"base", "empty", "ft", "pip_hb", "pip_wcp", "pip_dc", "pip_capo", "pip_pip"};
 //		String [] configNames = {"Base", "Empty", "FT", "HB", "WCP", "DC", "CAPO", "PIP"};
+		//CAPO OPT
+		String [] configs = {"base", "ft", "pip_capo", "pip_capoOpt"};
+		String [] configNames = {"Base", "FT", "CAPO", "CAPOOPT"};
 		//PIP tool (slow tool)
-		String [] configs = {"base", "empty", "ft", "hb", "hbwcp", "wdc_exc", "capo_exc", "pip_exc", "pip"};
-		String [] configNames = {"Base", "Empty", "FT", "HB", "HBWCP", "DCExc", "CAPOExc", "PIPExc", "PIP"};
+//		String [] configs = {"base", "empty", "ft", "hb", "hbwcp", "wdc_exc", "capo_exc", "pip_exc", "pip"};
+//		String [] configNames = {"Base", "Empty", "FT", "HB", "HBWCP", "DCExc", "CAPOExc", "PIPExc", "PIP"};
 		//configs -> wdc_testconfig | configNames = DCLite
 		int trials = 2; //Integer.parseInt(args[1]);
-		String tool = "DC"; //DC or PIP
+		String tool = "PIP"; //DC or PIP
 		LinkedList<BenchmarkInfo> benchmarks_info = new LinkedList<BenchmarkInfo>();
 		BufferedReader input = null;
 		try {
