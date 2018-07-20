@@ -123,6 +123,12 @@ public class BenchmarkInfo {
 		return bd.doubleValue();
 	}
 	
+	public static double getThreeSigsDouble(double value) {
+		BigDecimal bd = new BigDecimal(value);
+		bd = bd.round(new MathContext(3));
+		return bd.doubleValue();
+	}
+	
 	public String getTwoSigs(String value) {
 		String old_value = value; //if needed
 		if (value.length() <= 3) {
@@ -310,7 +316,7 @@ public class BenchmarkInfo {
 			}
 		}
 		if (tool.equals("PIP")) {
-			String[] types = {"HB", "HBDynamic", "FT", "FTDynamic", "WCP", "WCPDynamic", "WDC", "WDCDynamic", "CAPO", "CAPODynamic", "PIP", "PIPDynamic"};
+			String[] types = {"HB", "HBDynamic", "FT", "FTDynamic", "WCP", "WCPDynamic", "WDC", "WDCDynamic", "CAPO", "CAPODynamic", "CAPOOPT", "CAPOOPTDynamic"};//, "PIP", "PIPDynamic"};
 			for (String type : types) {
 				if (this.types.get(type) == null) {
 					this.race_types.add("\\newcommand{\\"+benchmark+type+"}{\\rna}\n");

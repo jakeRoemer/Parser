@@ -11,20 +11,20 @@ def SetRCParams():
 	plt.rcParams['font.family'] = 'libertine'
 
 #Initialize arrays for event counts
-AccessCount = [0,0,0,0,0,0] #total access ops, total fast path taken, total reads, read fast path taken, total writes, write fast path taken
-AccessLabels = ['Acc', 'Acc FP',  'Rd', 'Rd FP', 'Wr', 'Wr FP']
-AccessXaxis = [1,2,3,4,5,6]
-ReadCount = [0,0,0,0,0,0] #total reads - read fast path taken, read same epoch, read shared same epoch, read exclusive, read share, read shared
-ReadLabels = ['noFP Rd', 'Sa Ep', 'Shd Sa Ep', 'Excl', 'Sh', 'Shd']
-ReadXaxis = [1,2,3,4,5,6]
-WriteCount = [0,0,0,0] #total writes - write fast path taken, write same epoch, write exclusive, write shared
-WriteLabels = ['noFP Wr', 'Same Ep', 'Exc', 'Shd']
-WriteXaxis = [1,2,3,4]
+AccessCount = [0,0,0,0,0,0,0,0,0,0,0,0,0,0] #total access ops, total fast path taken, total reads, read fast path taken, read inside crit sec, read outside crit sec, total writes, write fast path taken, write inside crit sec, write outside crit sec
+AccessLabels = ['Acc        ', 'Acc FP     ',  'Rd         ', 'Rd FP      ', 'Rd InCS    ', 'Rd InCS FP ', 'Rd OutCS   ', 'Rd OutCS FP', 'Wr         ', 'Wr FP      ', 'Wr InCS    ', 'Wr InCS FP ', 'Wr OutCS   ', 'Wr OutCS FP']
+AccessXaxis = [1,2,3,4,5,6,7,8,9,10,11,12,13,14]
+ReadCount = [0,0,0,0,0,0,0,0] #total reads - read fast path taken, read inside crit sec - read inside crit sec FP, read outside crit sec - read outside crit sec FP, read same epoch, read shared same epoch, read exclusive, read share, read shared
+ReadLabels = ['noFP Rd      ', 'noFP Rd InCS ', 'noFP Rd OutCS', 'Sa Ep        ', 'Shd Sa Ep    ', 'Excl         ', 'Sh           ', 'Shd          ']
+ReadXaxis = [1,2,3,4,5,6,7,8]
+WriteCount = [0,0,0,0,0,0] #total writes - write fast path taken, write inside crit sec - write inside crit sec Fp, write outside crit sec - write outside crit sec FP, write same epoch, write exclusive, write shared
+WriteLabels = ['noFP Wr      ', 'noFP Wr InCS ', 'noFP Wr OutCS', 'Same Ep      ', 'Exc          ', 'Shd          ']
+WriteXaxis = [1,2,3,4,5,6]
 OtherCount = [0,0,0,0,0,0,0,0,0,0,0,0] #total ops - total fast path taken, total reads - read fast path taken, total writes - write fast path taken, acquire, release, fork, join, pre wait, post wait, volatile, class init, class accessed
-OtherLabels = ['noFP Op', 'noFP Rd', 'noFP Wr', 'Acq', 'Rel', 'Fork', 'Join', 'Pre-Wait', 'Post-Wait', 'Volatile', 'Class Init', 'Class Acc']
+OtherLabels = ['noFP Op   ', 'noFP Rd   ', 'noFP Wr   ', 'Acq       ', 'Rel       ', 'Fork      ', 'Join      ', 'Pre-Wait  ', 'Post-Wait ', 'Volatile  ', 'Class Init', 'Class Acc ']
 OtherXaxis = [1,2,3,4,5,6,7,8,9,10,11,12]
 RaceTypeCount = [0,0,0,0] #write-read race, write-write race, read-write race, read(shared)-write race
-RaceTypeLabels = ['Wr-Rd Race', 'Wr-Wr Race', 'Rd-Wr Race', 'Rd(Sh)-Wr Race']
+RaceTypeLabels = ['Wr-Rd Race    ', 'Wr-Wr Race    ', 'Rd-Wr Race    ', 'Rd(Sh)-Wr Race']
 RaceTypeXaxis = [1,2,3,4]
 
 #Collect event counts
@@ -33,7 +33,11 @@ def gatherEvents(file_name, AccessCount, ReadCount, WriteCount, OtherCount, Race
 		#Reset cumulative counters
 		OtherCount[0] = 0
 		ReadCount[0] = 0
+		ReadCount[1] = 0
+		ReadCount[2] = 0
 		WriteCount[0] = 0
+		WriteCount[1] = 0
+		WriteCount[2] = 0
 		lines = input.readlines()
 		for line in lines:
 			if 'total ops: ' in line:
@@ -59,6 +63,62 @@ def gatherEvents(file_name, AccessCount, ReadCount, WriteCount, OtherCount, Race
 				else:
 					ReadCount[0] = num - ReadCount[0]
 					OtherCount[1] = ReadCount[0]
+			if 'read inside crit sec: ' in line:
+				num = [int(s.strip()) for s in line.split('read inside crit sec: ') if s.strip().isdigit()][0]
+				if ReadCount[1] == 0:
+					ReadCount[1] = num
+				else:
+					ReadCount[1] = num - ReadCount[1]
+				AccessCount[4] = num
+			if 'read inside crit sec FP: ' in line:
+				num = [int(s.strip()) for s in line.split('read inside crit sec FP: ') if s.strip().isdigit()][0]
+				if ReadCount[1] == 0:
+					ReadCount[1] = num
+				else:
+					ReadCount[1] = ReadCount[1] - num
+				AccessCount[5]  = num
+			if 'read outside crit sec: ' in line:
+				num = [int(s.strip()) for s in line.split('read outside crit sec: ') if s.strip().isdigit()][0]
+				if ReadCount[2] == 0:
+					ReadCount[2] = num
+				else:
+					ReadCount[2] = num - ReadCount[2]
+				AccessCount[6] = num
+			if 'read outside crit sec FP: ' in line:
+				num = [int(s.strip()) for s in line.split('read outside crit sec FP: ') if s.strip().isdigit()][0]
+				if ReadCount[2] == 0:
+					ReadCount[2] = num
+				else:
+					ReadCount[2] = ReadCount[2] - num
+				AccessCount[7] = num
+			if 'write inside crit sec: ' in line:
+				num = [int(s.strip()) for s in line.split('write inside crit sec: ') if s.strip().isdigit()][0]
+				if WriteCount[1] == 0:
+					WriteCount[1] = num
+				else:
+					WriteCount[1] = num - WriteCount[1]
+				AccessCount[10] = num
+			if 'write inside crit sec FP: ' in line:
+				num = [int(s.strip()) for s in line.split('write inside crit sec FP: ') if s.strip().isdigit()][0]
+				if WriteCount[1] == 0:
+					WriteCount[1] = num
+				else:
+					WriteCount[1] = WriteCount[1] - num
+				AccessCount[11] = num
+			if 'write outside crit sec: ' in line:
+				num = [int(s.strip()) for s in line.split('write outside crit sec: ') if s.strip().isdigit()][0]
+				if WriteCount[2] == 0:
+					WriteCount[2] = num
+				else:
+					WriteCount[2] = num - WriteCount[2]
+				AccessCount[12] = num
+			if 'write outside crit sec FP: ' in line:
+				num = [int(s.strip()) for s in line.split('write outside crit sec FP: ') if s.strip().isdigit()][0]
+				if WriteCount[2] == 0:
+					WriteCount[2] = num
+				else:
+					WriteCount[2] = WriteCount[2] - num
+				AccessCount[13] = num
 			if 'read fast path taken: ' in line:
 				num = [int(s.strip()) for s in line.split('read fast path taken: ') if s.strip().isdigit()][0]
 				AccessCount[3] = num
@@ -69,7 +129,7 @@ def gatherEvents(file_name, AccessCount, ReadCount, WriteCount, OtherCount, Race
 					OtherCount[1] = ReadCount[0]
 			if 'total writes: ' in line:
 				num = [int(s.strip()) for s in line.split('total writes: ') if s.strip().isdigit()][0]
-				AccessCount[4] = num
+				AccessCount[8] = num
 				if WriteCount[0] == 0:
 					WriteCount[0] = num
 				else:
@@ -77,28 +137,33 @@ def gatherEvents(file_name, AccessCount, ReadCount, WriteCount, OtherCount, Race
 					OtherCount[2] = WriteCount[0]
 			if 'write fast path taken: ' in line:
 				num = [int(s.strip()) for s in line.split('write fast path taken: ') if s.strip().isdigit()][0]
-				AccessCount[5] = num
+				AccessCount[9] = num
 				if WriteCount[0] == 0:
 					WriteCount[0] = num
 				else:
 					WriteCount[0] = WriteCount[0] - num
 					OtherCount[2] = WriteCount[0]
 			if 'read same epoch: ' in line:
-				ReadCount[1] = [int(s.strip()) for s in line.split('read same epoch: ') if s.strip().isdigit()][0]
+				ReadCount[3] = [int(s.strip()) for s in line.split('read same epoch: ') if s.strip().isdigit()][0]
+				ReadCount[3] = 0 #testing setting to 0
 			if 'read shared same epoch: ' in line:
-				ReadCount[2] = [int(s.strip()) for s in line.split('read shared same epoch: ') if s.strip().isdigit()][0]
+				ReadCount[4] = [int(s.strip()) for s in line.split('read shared same epoch: ') if s.strip().isdigit()][0]
+				ReadCount[4] = 0
 			if 'read exclusive: ' in line:
-				ReadCount[3] = [int(s.strip()) for s in line.split('read exclusive: ') if s.strip().isdigit()][0]
+				ReadCount[5] = [int(s.strip()) for s in line.split('read exclusive: ') if s.strip().isdigit()][0]
+				ReadCount[5] = 0
 			if 'read share: ' in line:
-				ReadCount[4] = [int(s.strip()) for s in line.split('read share: ') if s.strip().isdigit()][0]
+				ReadCount[6] = [int(s.strip()) for s in line.split('read share: ') if s.strip().isdigit()][0]
 			if 'read shared: ' in line:
-				ReadCount[5] = [int(s.strip()) for s in line.split('read shared: ') if s.strip().isdigit()][0]
+				ReadCount[7] = [int(s.strip()) for s in line.split('read shared: ') if s.strip().isdigit()][0]
 			if 'write same epoch: ' in line:
-				WriteCount[1] = [int(s.strip()) for s in line.split('write same epoch: ') if s.strip().isdigit()][0]
+				WriteCount[3] = [int(s.strip()) for s in line.split('write same epoch: ') if s.strip().isdigit()][0]
+				WriteCount[3] = 0 #testing setting to 0
 			if 'write exclusive: ' in line:
-				WriteCount[2] = [int(s.strip()) for s in line.split('write exclusive: ') if s.strip().isdigit()][0]
+				WriteCount[4] = [int(s.strip()) for s in line.split('write exclusive: ') if s.strip().isdigit()][0]
+				WriteCount[4] = 0
 			if 'write shared: ' in line:
-				WriteCount[3] = [int(s.strip()) for s in line.split('write shared: ') if s.strip().isdigit()][0]
+				WriteCount[5] = [int(s.strip()) for s in line.split('write shared: ') if s.strip().isdigit()][0]
 			if 'acquire: ' in line:
 				OtherCount[3] = [int(s.strip()) for s in line.split('acquire: ') if s.strip().isdigit()][0]
 			if 'release: ' in line:
@@ -128,12 +193,29 @@ def gatherEvents(file_name, AccessCount, ReadCount, WriteCount, OtherCount, Race
 
 #Specify Data Set, Trials, Benchmarks, etc.
 HomeDir = os.path.expanduser('~')
-Benchmarks = ['avrora', 'batik', 'htwo', 'jython', 'luindex', 'lusearch', 'pmd', 'sunflow', 'tomcat', 'xalan']
-Configurations = ['pip_capo', 'pip_pip']
+Benchmarks = ['avrora']#, 'batik', 'jython', 'luindex', 'lusearch', 'pmd', 'sunflow', 'xalan']
+Configurations = ['pip_capo']#, 'pip_capoOpt']
 
 for bench in Benchmarks:
 	for config in Configurations:
 		gatherEvents(HomeDir+"/git/Parser/event-output/"+bench+"/"+config+"/fast_event_counts.txt", AccessCount, ReadCount, WriteCount, OtherCount, RaceTypeCount)
+
+#Print data as table
+		print('Access Count')
+		for index in range(len(AccessCount)):
+			print(str(AccessLabels[index]) + ": " + str(AccessCount[index]))
+		print('Read Count')
+		for index in range(len(ReadCount)):
+			print(str(ReadLabels[index]) + ": " + str(ReadCount[index]))
+		print('Write Count')
+		for index in range(len(WriteCount)):
+			print(str(WriteLabels[index]) + ": " + str(WriteCount[index]))
+		print('Other Count')
+		for index in range(len(OtherCount)):
+			print(str(OtherLabels[index]) + ": " + str(OtherCount[index]))
+		print('Race Type Count')
+		for index in range(len(RaceTypeCount)):
+			print(str(RaceTypeLabels[index]) + ": " + str(RaceTypeCount[index]))
 
 #Set Labels for Plot
 		Xlabel = 'Event Types'

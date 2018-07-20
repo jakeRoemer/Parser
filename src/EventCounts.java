@@ -1,5 +1,8 @@
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.PrintWriter;
 
 public class EventCounts {
@@ -23,19 +26,31 @@ public class EventCounts {
 	private long access_insideCS;
 	private long access_outsideCS;
 	private long write_insideCS;
+	private long write_insideCSFP;
 	private long write_outsideCS;
+	private long write_outsideCSFP;
 	private long read_insideCS;
+	private long read_insideCSFP;
 	private long read_outsideCS;
+	private long read_outsideCSFP;
 	
 	private long read_same_epoch;
+	private long read_same_epochFP;
 	private long read_shared_same_epoch;
+	private long read_shared_same_epochFP;
 	private long read_exclusive;
+	private long read_exclusiveFP;
 	private long read_share;
+	private long read_shareFP;
 	private long read_shared;
+	private long read_sharedFP;
 	private long write_read_race;
 	private long write_same_epoch;
+	private long write_same_epochFP;
 	private long write_exclusive;
+	private long write_exclusiveFP;
 	private long write_shared;
+	private long write_sharedFP;
 	private long write_write_race;
 	private long read_write_race;
 	private long shared_write_race;
@@ -88,6 +103,12 @@ public class EventCounts {
 			setWrite_exclusive(final_count ? ((getWrite_exclusive() + eventCount) / total_trials) : (getWrite_exclusive() + eventCount));
 		} else if (eventType.equals("Write Same Epoch")) {
 			setWrite_same_epoch(final_count ? ((getWrite_same_epoch() + eventCount) / total_trials) : (getWrite_same_epoch() + eventCount));
+		} else if (eventType.equals("Write Shared FP")) {
+			setWrite_sharedFP(final_count ? ((getWrite_sharedFP() + eventCount) / total_trials) : (getWrite_sharedFP() + eventCount));
+		} else if (eventType.equals("Write Exclusive FP")) {
+			setWrite_exclusiveFP(final_count ? ((getWrite_exclusiveFP() + eventCount) / total_trials) : (getWrite_exclusiveFP() + eventCount));
+		} else if (eventType.equals("Write Same Epoch FP")) {
+			setWrite_same_epochFP(final_count ? ((getWrite_same_epochFP() + eventCount) / total_trials) : (getWrite_same_epochFP() + eventCount));
 		} else if (eventType.equals("Write-Read Error")) {
 			setWrite_read_race(final_count ? ((getWrite_read_race() + eventCount) / total_trials) : (getWrite_read_race() + eventCount));
 		} else if (eventType.equals("Read Shared")) {
@@ -100,6 +121,16 @@ public class EventCounts {
 			setRead_shared_same_epoch(final_count ? ((getRead_shared_same_epoch() + eventCount) / total_trials) : (getRead_shared_same_epoch() + eventCount));
 		} else if (eventType.equals("Read Same Epoch")) {
 			setRead_same_epoch(final_count ? ((getRead_same_epoch() + eventCount) / total_trials) : (getRead_same_epoch() + eventCount));
+		} else if (eventType.equals("Read Shared FP")) {
+			setRead_sharedFP(final_count ? ((getRead_sharedFP() + eventCount) / total_trials) : (getRead_sharedFP() + eventCount));
+		} else if (eventType.equals("Read Share FP")) {
+			setRead_shareFP(final_count ? ((getRead_shareFP() + eventCount) / total_trials) : (getRead_shareFP() + eventCount));
+		} else if (eventType.equals("Read Exclusive FP")) {
+			setRead_exclusiveFP(final_count ? ((getRead_exclusiveFP() + eventCount) / total_trials) : (getRead_exclusiveFP() + eventCount));
+		} else if (eventType.equals("Read Shared Same Epoch FP")) {
+			setRead_shared_same_epochFP(final_count ? ((getRead_shared_same_epochFP() + eventCount) / total_trials) : (getRead_shared_same_epochFP() + eventCount));
+		} else if (eventType.equals("Read Same Epoch FP")) {
+			setRead_same_epochFP(final_count ? ((getRead_same_epochFP() + eventCount) / total_trials) : (getRead_same_epochFP() + eventCount));
 		} else if (eventType.equals("Exit")) {
 			setExit(final_count ? ((getExit() + eventCount) / total_trials) : (getExit() + eventCount));
 		} else if (eventType.equals("Fake Fork")) {
@@ -140,12 +171,20 @@ public class EventCounts {
 			setAccess_outsideCS(final_count ? ((getAccess_outsideCS() + eventCount) / total_trials) : (getAccess_outsideCS() + eventCount));
 		} else if (eventType.equals("Write accesses Inside Critical Sections")) {
 			setWrite_insideCS(final_count ? ((getWrite_insideCS() + eventCount) / total_trials) : (getWrite_insideCS() + eventCount));
+		} else if (eventType.equals("Write accesses Inside Critical Sections succeeding Fast Path")) {
+			setWrite_insideCSFP(final_count ? ((getWrite_insideCSFP() + eventCount) / total_trials) : (getWrite_insideCSFP() + eventCount));
 		} else if (eventType.equals("Write accesses Outside Critical Sections")) {
 			setWrite_outsideCS(final_count ? ((getWrite_outsideCS() + eventCount) / total_trials) : (getWrite_outsideCS() + eventCount));
+		} else if (eventType.equals("Write accesses Outside Critical Sections succeeding Fast Path")) {
+			setWrite_outsideCSFP(final_count ? ((getWrite_outsideCSFP() + eventCount) / total_trials) : (getWrite_outsideCSFP() + eventCount));
 		} else if (eventType.equals("Read accesses Inside Critical Sections")) {
 			setRead_insideCS(final_count ? ((getRead_insideCS() + eventCount) / total_trials) : (getRead_insideCS() + eventCount));
+		} else if (eventType.equals("Read accesses Inside Critical Sections succeeding Fast Path")) {
+			setRead_insideCSFP(final_count ? ((getRead_insideCSFP() + eventCount) / total_trials) : (getRead_insideCSFP() + eventCount));
 		} else if (eventType.equals("Read accesses Outside Critical Sections")) {
 			setRead_outsideCS(final_count ? ((getRead_outsideCS() + eventCount) / total_trials) : (getRead_outsideCS() + eventCount));
+		} else if (eventType.equals("Read accesses Outside Critical Sections succeeding Fast Path")) {
+			setRead_outsideCSFP(final_count ? ((getRead_outsideCSFP() + eventCount) / total_trials) : (getRead_outsideCSFP() + eventCount));
 		}
 	}
 	
@@ -200,6 +239,14 @@ public class EventCounts {
 				input.println("write-write race: " + getWrite_write_race());
 				input.println("read-write race: " + getRead_write_race());
 				input.println("shared write race: " + getShared_write_race());
+				input.println("read same epoch FP: " + getRead_same_epochFP());
+				input.println("read shared same epoch FP: " + getRead_shared_same_epochFP());
+				input.println("read exclusive FP: " + getRead_exclusiveFP());
+				input.println("read share FP: " + getRead_shareFP());
+				input.println("read shared FP: " + getRead_sharedFP());
+				input.println("write same epoch FP: " + getWrite_same_epochFP());
+				input.println("write exclusive FP: " + getWrite_exclusiveFP());
+				input.println("write shared FP: " + getWrite_sharedFP());
 				input.println("acquire: " + getAcquire());
 				input.println("release: " + getRelease());
 				input.println("fork: " + getFork());
@@ -211,6 +258,14 @@ public class EventCounts {
 				input.println("volatile: " + getVolatile_acc());
 				input.println("read fast path taken: " + getRead_fast_path_taken());
 				input.println("write fast path taken: " + getWrite_fast_path_taken());
+				input.println("read inside crit sec: " + getRead_insideCS());
+				input.println("read inside crit sec FP: " + getRead_insideCSFP());
+				input.println("read outside crit sec: " + getRead_outsideCS());
+				input.println("read outside crit sec FP: " + getRead_outsideCSFP());
+				input.println("write inside crit sec: " + getWrite_insideCS());
+				input.println("write inside crit sec FP: " + getWrite_insideCSFP());
+				input.println("write outside crit sec: " + getWrite_outsideCS());
+				input.println("write outside crit sec FP: " + getWrite_outsideCSFP());
 				input.println("total reads: " + getTotal_reads());
 				input.println("total writes: " + getTotal_writes());
 				input.println("total access ops: " + getTotal_access_ops());
@@ -219,6 +274,80 @@ public class EventCounts {
 				input.close();
 			}
 		} catch (FileNotFoundException e) {e.printStackTrace();}
+	}
+	
+	public void recordCounts(BufferedWriter output) throws IOException {
+		getAccessCounts(output);
+		getReadCounts(output);
+		getWriteCounts(output);
+		getOtherCounts(output);
+		getRaceTypeCounts(output);
+	}
+	
+	public double getPercent(long val, long total) {
+		return BenchmarkInfo.getThreeSigsDouble(((val/(double)total)*100));
+	}
+	
+	public void getAccessCounts(BufferedWriter output) throws IOException {
+		long totalEvents = getTotal_ops() + getTotal_fast_path_taken();
+		//Note: total events/reads/writes include race counts. total reads + total writes add up to total access ops
+		System.out.println("count bench: " + bench + " | config: " + config);
+		output.write("\\newcommand{\\" + bench + "Events}{" + totalEvents + "}\n");
+		output.write("\\newcommand{\\" + bench + "NoFPEvents}{" + getTotal_ops() +"}\n");
+		output.write("\\newcommand{\\" + bench + "ReadTotal}{" + getPercent(getTotal_reads(), getTotal_ops()) + "}\n");
+		output.write("\\newcommand{\\" + bench + "WriteTotal}{" + getPercent(getTotal_writes(), getTotal_ops()) + "}\n");
+		long otherEvents = getTotal_ops() - getTotal_access_ops();
+		output.write("\\newcommand{\\" + bench + "OtherTotal}{" + getPercent(otherEvents, getTotal_ops()) + "}\n");
+	}
+	
+	public void getReadCounts(BufferedWriter output) throws IOException {
+		//Note: noFPReadTotal should be the same as readTotal, just want to distinguish getReadCounts' total from AccessCounts' read total
+		output.write("\\newcommand{\\" + bench + "NoFPReadTotal}{" + getTotal_reads() + "}\n");
+		long noFPRdInCS = getRead_insideCS() - getRead_insideCSFP();
+		output.write("\\newcommand{\\" + bench + "ReadInCS}{" + getPercent(noFPRdInCS, getTotal_reads()) + "}\n");
+		long noFPRdOutCS = getRead_outsideCS() - getRead_outsideCSFP();
+		output.write("\\newcommand{\\" + bench + "ReadOutCS}{" + getPercent(noFPRdOutCS, getTotal_reads()) + "}\n");
+		output.write("\\newcommand{\\" + bench + "ReadSameEp}{" + getPercent(getRead_same_epoch(), getTotal_reads()) + "}\n");
+		output.write("\\newcommand{\\" + bench + "ReadSharedSameEp}{" + getPercent(getRead_shared_same_epoch(), getTotal_reads()) + "}\n");
+		output.write("\\newcommand{\\" + bench + "ReadExclusive}{" + getPercent(getRead_exclusive(), getTotal_reads()) + "}\n");
+		output.write("\\newcommand{\\" + bench + "ReadShare}{" + getPercent(getRead_share(), getTotal_reads()) + "}\n");
+		output.write("\\newcommand{\\" + bench + "ReadShared}{" + getPercent(getRead_shared(), getTotal_reads()) + "}\n");
+	}
+	
+	public void getWriteCounts(BufferedWriter output) throws IOException {
+		//Note: noFPWriteTotal should be the same as writeTotal, just want to distinguish getWriteCounts' total from AccessCounts' write total
+		output.write("\\newcommand{\\" + bench + "NoFPWriteTotal}{" + getTotal_writes() + "}\n");
+		long noFPWrInCS = getWrite_insideCS() - getWrite_insideCSFP();
+		output.write("\\newcommand{\\" + bench + "WriteInCS}{" + getPercent(noFPWrInCS, getTotal_writes()) + "}\n");
+		long noFPWrOutCS = getWrite_outsideCS() - getWrite_outsideCSFP();
+		output.write("\\newcommand{\\" + bench + "WriteOutCS}{" + getPercent(noFPWrOutCS ,getTotal_writes()) + "}\n");
+		output.write("\\newcommand{\\" + bench + "WriteSameEp}{" + getPercent(getWrite_same_epoch(), getTotal_writes()) + "}\n");
+		output.write("\\newcommand{\\" + bench + "WriteExclusive}{" + getPercent(getWrite_exclusive(), getTotal_writes()) + "}\n");
+		output.write("\\newcommand{\\" + bench + "WriteShared}{" + getPercent(getWrite_shared(), getTotal_writes()) + "}\n");
+	}
+	
+	public void getOtherCounts(BufferedWriter output) throws IOException {
+		//Note: noFPOtherTotal should be the same as otherTotal, just want to distinguish getOtherCounts' total from AccessCounts' other total
+		long otherEvents = getTotal_ops() - getTotal_access_ops();
+		output.write("\\newcommand{\\" + bench + "NoFPOtherTotal}{" + otherEvents + "}\n");
+		output.write("\\newcommand{\\" + bench + "Acquire}{" + getPercent(getAcquire()/(double)otherEvents)*100) + "}\n");
+		output.write("\\newcommand{\\" + bench + "Release}{" + getPercent(getRelease()/(double)otherEvents)*100) + "}\n");
+		output.write("\\newcommand{\\" + bench + "Fork}{" + getPercent(getFork()/(double)otherEvents)*100) + "}\n");
+		output.write("\\newcommand{\\" + bench + "Join}{" + getPercent(getJoin()/(double)otherEvents)*100) + "}\n");
+		output.write("\\newcommand{\\" + bench + "PreWait}{" + ((getPre_wait()/(double)otherEvents)*100) + "}\n");
+		output.write("\\newcommand{\\" + bench + "PostWait}{" + ((getPost_wait()/(double)otherEvents)*100) + "}\n");
+		output.write("\\newcommand{\\" + bench + "VolatileTotal}{" + ((getVolatile_acc()/(double)otherEvents)*100) + "}\n");
+		output.write("\\newcommand{\\" + bench + "ClassInit}{" + ((getClass_init()/(double)otherEvents)*100) + "}\n");
+		output.write("\\newcommand{\\" + bench + "ClassAccess}{" + ((getClass_access()/(double)otherEvents)*100) + "}\n");
+	}
+	
+	public void getRaceTypeCounts(BufferedWriter output) throws IOException {
+		long raceTotal = getWrite_read_race() + getWrite_write_race() + getRead_write_race() + getShared_write_race();
+		output.write("\\newcommand{\\" + bench + "RaceTotal}{" + raceTotal + "}\n");
+		output.write("\\newcommand{\\" + bench + "WrRdRace}{" + (raceTotal==0 ? raceTotal : ((getWrite_read_race()/(double)raceTotal)*100)) + "}\n");
+		output.write("\\newcommand{\\" + bench + "WrWrRace}{" + (raceTotal==0 ? raceTotal : ((getWrite_write_race()/(double)raceTotal)*100)) + "}\n");
+		output.write("\\newcommand{\\" + bench + "RdWrRace}{" + (raceTotal==0 ? raceTotal : ((getRead_write_race()/(double)raceTotal)*100)) + "}\n");
+		output.write("\\newcommand{\\" + bench + "RdShWrRace}{" + (raceTotal==0 ? raceTotal : ((getShared_write_race()/(double)raceTotal)*100)) + "}\n");
 	}
 	
 	public long getTotal() {
@@ -507,6 +636,14 @@ public class EventCounts {
 	public void setWrite_insideCS(long write_insideCS) {
 		this.write_insideCS = write_insideCS;
 	}
+	
+	public long getWrite_insideCSFP() {
+		return write_insideCSFP;
+	}
+	
+	public void setWrite_insideCSFP(long write_insideCSFP) {
+		this.write_insideCSFP = write_insideCSFP;
+	}
 
 	public long getWrite_outsideCS() {
 		return write_outsideCS;
@@ -515,6 +652,14 @@ public class EventCounts {
 	public void setWrite_outsideCS(long write_outsideCS) {
 		this.write_outsideCS = write_outsideCS;
 	}
+	
+	public long getWrite_outsideCSFP() {
+		return write_outsideCSFP;
+	}
+
+	public void setWrite_outsideCSFP(long write_outsideCSFP) {
+		this.write_outsideCSFP = write_outsideCSFP;
+	}	
 
 	public long getRead_insideCS() {
 		return read_insideCS;
@@ -522,6 +667,14 @@ public class EventCounts {
 
 	public void setRead_insideCS(long read_insideCS) {
 		this.read_insideCS = read_insideCS;
+	}
+	
+	public long getRead_insideCSFP() {
+		return read_insideCSFP;
+	}
+
+	public void setRead_insideCSFP(long read_insideCSFP) {
+		this.read_insideCSFP = read_insideCSFP;
 	}
 
 	public long getRead_outsideCS() {
@@ -531,6 +684,14 @@ public class EventCounts {
 	public void setRead_outsideCS(long read_outsideCS) {
 		this.read_outsideCS = read_outsideCS;
 	}
+	
+	public long getRead_outsideCSFP() {
+		return read_outsideCSFP;
+	}
+
+	public void setRead_outsideCSFP(long read_outsideCSFP) {
+		this.read_outsideCSFP = read_outsideCSFP;
+	}
 
 	public long getVolatile_acc() {
 		return volatile_acc;
@@ -538,5 +699,69 @@ public class EventCounts {
 
 	public void setVolatile_acc(long volatile_acc) {
 		this.volatile_acc = volatile_acc;
+	}
+
+	public long getRead_same_epochFP() {
+		return read_same_epochFP;
+	}
+
+	public void setRead_same_epochFP(long read_same_epochFP) {
+		this.read_same_epochFP = read_same_epochFP;
+	}
+
+	public long getRead_shared_same_epochFP() {
+		return read_shared_same_epochFP;
+	}
+
+	public void setRead_shared_same_epochFP(long read_shared_same_epochFP) {
+		this.read_shared_same_epochFP = read_shared_same_epochFP;
+	}
+
+	public long getRead_exclusiveFP() {
+		return read_exclusiveFP;
+	}
+
+	public void setRead_exclusiveFP(long read_exclusiveFP) {
+		this.read_exclusiveFP = read_exclusiveFP;
+	}
+
+	public long getRead_shareFP() {
+		return read_shareFP;
+	}
+
+	public void setRead_shareFP(long read_shareFP) {
+		this.read_shareFP = read_shareFP;
+	}
+
+	public long getRead_sharedFP() {
+		return read_sharedFP;
+	}
+
+	public void setRead_sharedFP(long read_sharedFP) {
+		this.read_sharedFP = read_sharedFP;
+	}
+
+	public long getWrite_same_epochFP() {
+		return write_same_epochFP;
+	}
+
+	public void setWrite_same_epochFP(long write_same_epochFP) {
+		this.write_same_epochFP = write_same_epochFP;
+	}
+
+	public long getWrite_exclusiveFP() {
+		return write_exclusiveFP;
+	}
+
+	public void setWrite_exclusiveFP(long write_exclusiveFP) {
+		this.write_exclusiveFP = write_exclusiveFP;
+	}
+
+	public long getWrite_sharedFP() {
+		return write_sharedFP;
+	}
+
+	public void setWrite_sharedFP(long write_sharedFP) {
+		this.write_sharedFP = write_sharedFP;
 	}
 }

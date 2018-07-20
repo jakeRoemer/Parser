@@ -19,16 +19,17 @@ public class parseDC {
 //		String output_dir = "PIP_fastTool";
 //		String output_dir = "PIP_slowTool";
 		String output_dir = "PIP_capoOpt";
+//		String output_dir = "Vindicator_volatileTest";
 		String [] benchmarks = {"avrora", "batik", "htwo", "jython", "luindex", "lusearch", "pmd", "sunflow", "tomcat", "xalan"};
 		//Vindicator tool
-//		String [] configs = {"base", /*"empty", "hbwcp", "wdc_noG",*/ "wdc", "capo_only", "pip_only"};//, "wdc_noG", "capo_noG", "pip_noG"};
-//		String [] configNames = {"Base", /*"Empty", "HBWCP", "DCLite",*/ "DC", "CAPO", "PIP"};// ,"DCLite", "CAPOLite", "PIPLite"};
+//		String [] configs = {"base", "empty", "hbwcp", "wdc_noG", "wdc"};//, "capo_only", "pip_only"};//, "wdc_noG", "capo_noG", "pip_noG"};
+//		String [] configNames = {"Base", "Empty", "HBWCP", "DCLite", "WDC"};//, "CAPO", "PIP"};// ,"DCLite", "CAPOLite", "PIPLite"};
 		//PIP tool (fast tool)
 //		String [] configs = {"base", "empty", "ft", "pip_hb", "pip_wcp", "pip_dc", "pip_capo", "pip_pip"};
 //		String [] configNames = {"Base", "Empty", "FT", "HB", "WCP", "DC", "CAPO", "PIP"};
 		//CAPO OPT
-		String [] configs = {"base", "ft", "pip_capo", "pip_capoOpt"};
-		String [] configNames = {"Base", "FT", "CAPO", "CAPOOPT"};
+		String [] configs = {"base", "empty", "ft", "pip_hb", "pip_wcp", "pip_dc", "pip_capo", "pip_capoOpt"};
+		String [] configNames = {"Base", "Empty", "FT", "HB", "WCP", "DC", "CAPO", "CAPOOPT"};
 		//PIP tool (slow tool)
 //		String [] configs = {"base", "empty", "ft", "hb", "hbwcp", "wdc_exc", "capo_exc", "pip_exc", "pip"};
 //		String [] configNames = {"Base", "Empty", "FT", "HB", "HBWCP", "DCExc", "CAPOExc", "PIPExc", "PIP"};
@@ -39,6 +40,7 @@ public class parseDC {
 		BufferedReader input = null;
 		try {
 			BufferedWriter output = new BufferedWriter(new FileWriter("result-macros.txt"));
+			BufferedWriter event_count_output = new BufferedWriter(new FileWriter("event-count-macros.txt"));
 			String line;
 			String memory = "";
 			String bench_time = "";
@@ -53,8 +55,10 @@ public class parseDC {
 			if (tool.equals("DC")) CAPOSet.addAll(Arrays.asList("CAPOExc", "PIP"));
 			LinkedList<String> PIPSet = new LinkedList<String>(Arrays.asList("PIP"));
 			if (tool.equals("DC")) PIPSet.addAll(Arrays.asList("PIPExc", "PIP"));
-			LinkedList<String> raceIdentifier = (tool.equals("DC") ? new LinkedList<String>(Arrays.asList("HB", "WCP", "WDC", "CAPO", "PIP")) : new LinkedList<String>(Arrays.asList("PIP", "FastTrack")));
-			LinkedList<String> raceTypeTotal = new LinkedList<String>(Arrays.asList("HB", "WCP", "DC", "CAPO", "PIP"));
+//			LinkedList<String> raceIdentifier = (tool.equals("DC") ? new LinkedList<String>(Arrays.asList("HB", "WCP", "WDC", "CAPO", "PIP")) : new LinkedList<String>(Arrays.asList("PIP", "FastTrack")));
+			LinkedList<String> raceIdentifier = (tool.equals("DC") ? new LinkedList<String>(Arrays.asList("HB", "WCP", "WDC", "CAPO", "CAPOOPT")) : new LinkedList<String>(Arrays.asList("PIP", "FastTrack")));
+//			LinkedList<String> raceTypeTotal = new LinkedList<String>(Arrays.asList("HB", "WCP", "DC", "CAPO", "PIP"));
+			LinkedList<String> raceTypeTotal = new LinkedList<String>(Arrays.asList("HB", "WCP", "DC", "CAPO", "CAPOOPT"));
 			for (String benchmark : benchmarks) {
 				BenchmarkInfo bench = new BenchmarkInfo(benchmark, trials);
 				for (int trial = 1; trial <= trials; trial++) {
@@ -63,9 +67,12 @@ public class parseDC {
 						boolean static_race_checked = false;
 						boolean benchmark_started = false;
 						try {
-							input = new BufferedReader(new FileReader(System.getProperty("user.home")+"/exp-output/"+output_dir+"/"
-									+(benchmark.equals("htwo") ? "h2" : benchmark)+"9"+(benchmark.equals("lusearch") ? "-fixed" : "")+"/adapt/gc_default/"+(configs[config].equals("base")?"base_rrharness":"rr_"+configs[config])+"/var/"+trial+"/output.txt"));
+							String file = System.getProperty("user.home")+"/exp-output/"+output_dir+"/"
+									+(benchmark.equals("htwo") ? "h2" : benchmark)+"9"+(benchmark.equals("lusearch") ? "-fixed" : "")+"/adapt/gc_default/"+(configs[config].equals("base")?"base_rrharness":"rr_"+configs[config])+"/var/"+trial+"/output.txt";
+							System.out.println("attempted input: " + file);
+							input = new BufferedReader(new FileReader(file));
 						} catch (FileNotFoundException e) {
+							System.out.println("failed input");
 							continue;
 						}
 						long raceTotalDynamic = 0;
@@ -203,8 +210,9 @@ public class parseDC {
 				benchmarks_info.add(bench);
 			}
 			input.close();
-			outputBenchInfo(benchmarks_info, output, trials, configs, configNames, tool);
+			outputBenchInfo(benchmarks_info, output, event_count_output, trials, configs, configNames, tool);
 			output.close();
+			event_count_output.close();
 			System.out.println("Finished closing output file");
 		} catch (IOException e) { e.printStackTrace(); }
 	}
@@ -278,7 +286,7 @@ public class parseDC {
 		return false;
 	}
 	
-	public static void outputBenchInfo(LinkedList<BenchmarkInfo> benchmarks, BufferedWriter output, int trials, String [] configs, String [] configNames, String tool) throws IOException {
+	public static void outputBenchInfo(LinkedList<BenchmarkInfo> benchmarks, BufferedWriter output, BufferedWriter event_count_output, int trials, String [] configs, String [] configNames, String tool) throws IOException {
 		String race_summary = "";
 		long race_index = 0;
 		String[] race_types = {"HB","FT","WCP","WDC","HBDynamic","FTDynamic","WCPDynamic","WDCDynamic"};
@@ -291,8 +299,11 @@ public class parseDC {
 			String bench_name = bench.getBenchmark();
 			output.write(bench.getCount_Total(tool.equals("DC") ? "wdc_exc" : "pip_dc", "Events"));
 			output.write(bench.getCount_Total(tool.equals("DC") ? "wdc_exc" : "pip_dc", "NoFPEvents"));
-			for (String config : bench.getCounts().keySet()) {
-				bench.getCounts().get(config).printCounts(tool);
+//			for (String config : bench.getCounts().keySet()) {
+//				bench.getCounts().get(config).printCounts(tool);
+//			}
+			if (bench.getCounts().get("pip_capoOpt") != null) {
+				bench.getCounts().get("pip_capoOpt").recordCounts(event_count_output);
 			}
 			output.write(bench.getMaxLiveThread_count());
 			output.write(bench.getTotalThread_count());			
@@ -317,7 +328,7 @@ public class parseDC {
 			}
 		}
 		// DC Races: Static/Dynamic Race Table
-		if (true) {//tool.equals("PIP")) {
+		if (false) {//true) {//tool.equals("PIP")) {
 		System.out.println("Static DC races (dynamic races)");
 		System.out.printf("%-9s| %-13s | %-15s | %-11s\n", "Program", "HB-races", "WCP-races", "DC-races");
 		for (BenchmarkInfo bench : benchmarks) {
