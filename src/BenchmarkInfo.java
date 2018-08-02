@@ -458,32 +458,65 @@ public class BenchmarkInfo {
 		return counts;
 	}
 	
-	public String getCount_Total(String config, String totalType) {
+	//TODO: clean this up
+	public String getCount_Total(String tool, String totalType) {
+		String config = "";
+		if (tool.equals("DC")) {
+			config = "wdc_exc";
+		} else { //PIP tool
+			config = "pip_dc";
+		}
 		String event_total_string = "";
-		if (totalType.equals("Events")) {
-			if (counts.get(config) == null) { //fail state
-				event_total_string = "0";
-			} else {
-				event_total_string = String.valueOf(getTwoSigsRound(counts.get(config).getTotal() + counts.get(config).getFp_write() + counts.get(config).getFp_read()));
-			}
-			if (event_total_string.equals("0")) {
-				if (counts.get(config) != null) {
-					event_total_string = String.valueOf(getTwoSigsRound(counts.get(config).getTotal_ops()));
+		if (config.equals("pip_dc")) {
+			if (totalType.equals("Events")) {
+				if (counts.get(config) == null) { //fail state
+					event_total_string = "0";
+				} else {
+					event_total_string = String.valueOf(getTwoSigsRound(counts.get(config).getTotal()));
+				}
+				if (event_total_string.equals("0")) {
+					if (counts.get(config) != null) {
+						event_total_string = String.valueOf(getTwoSigsRound(counts.get(config).getTotal_ops() + counts.get(config).getTotal_fast_path_taken()));
+					}
+				}
+			} else if (totalType.equals("NoFPEvents")) {
+				if (counts.get(config) == null) { //fail state
+					event_total_string = "0";
+				} else {
+					event_total_string = String.valueOf(getTwoSigsRound(counts.get(config).getTotal() + counts.get(config).getFp_write() + counts.get(config).getFp_read()));
+				}
+				if (event_total_string.equals("0")) {
+					if (counts.get(config) != null) {
+						event_total_string = String.valueOf(getTwoSigsRound(counts.get(config).getTotal_ops()));
+					}
 				}
 			}
-		} else if (totalType.equals("NoFPEvents")) {
-			if (counts.get(config) == null) { //fail state
-				event_total_string = "0";
-			} else {
+		} else { //For wdc_exc
+			if (totalType.equals("Events")) {
+				if (counts.get(config) == null) { //fail state
+					event_total_string = "0";
+				} else {
+					event_total_string = String.valueOf(getTwoSigsRound(counts.get(config).getTotal() + counts.get(config).getFp_write() + counts.get(config).getFp_read()));
+				}
+				if (event_total_string.equals("0")) {
+					if (counts.get(config) != null) {
+						event_total_string = String.valueOf(getTwoSigsRound(counts.get(config).getTotal_ops()));
+					}
+				}
+			} else if (totalType.equals("NoFPEvents")) {
+				if (counts.get(config) == null) { //fail state
+					event_total_string = "0";
+				} else {
+					event_total_string = String.valueOf(getTwoSigsRound(counts.get(config).getTotal()));
+				}
+				if (event_total_string.equals("0")) {
+					if (counts.get(config) != null) {
+						event_total_string = String.valueOf(getTwoSigsRound(counts.get(config).getTotal_ops() - counts.get(config).getTotal_fast_path_taken()));
+					}
+				}
+			} else if (totalType.equals("Ops")) {
 				event_total_string = String.valueOf(getTwoSigsRound(counts.get(config).getTotal()));
 			}
-			if (event_total_string.equals("0")) {
-				if (counts.get(config) != null) {
-					event_total_string = String.valueOf(getTwoSigsRound(counts.get(config).getTotal_ops() - counts.get(config).getTotal_fast_path_taken()));
-				}
-			}
-		} else if (totalType.equals("Ops")) {
-			event_total_string = String.valueOf(getTwoSigsRound(counts.get(config).getTotal()));
 		}
 		if (event_total_string.isEmpty()) {
 			this.event_total = "\\newcommand{\\"+benchmark+totalType+"}{\\rna}\n";

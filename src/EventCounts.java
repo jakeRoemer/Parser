@@ -288,21 +288,29 @@ public class EventCounts {
 		return BenchmarkInfo.getThreeSigsDouble(((val/(double)total)*100));
 	}
 	
+	public String roundTwoSigs(long val) {
+		double rounded = BenchmarkInfo.getTwoSigsDouble(val/(double)1000000);
+		String roundedString = Double.toString(rounded);
+		return roundedString.length() > 3 ? BenchmarkInfo.getParenthesis(roundedString.substring(0, roundedString.length()-2)) : roundedString;
+	}
+	
 	public void getAccessCounts(BufferedWriter output) throws IOException {
 		long totalEvents = getTotal_ops() + getTotal_fast_path_taken();
 		//Note: total events/reads/writes include race counts. total reads + total writes add up to total access ops
 		System.out.println("count bench: " + bench + " | config: " + config);
-		output.write("\\newcommand{\\" + bench + "Events}{" + totalEvents + "}\n");
-		output.write("\\newcommand{\\" + bench + "NoFPEvents}{" + getTotal_ops() +"}\n");
+		output.write("\\newcommand{\\" + bench + "Events}{" + roundTwoSigs(totalEvents) + "}\n");
+		output.write("\\newcommand{\\" + bench + "NoFPEvents}{" + roundTwoSigs(getTotal_ops()) +"}\n");
 		output.write("\\newcommand{\\" + bench + "ReadTotal}{" + getPercent(getTotal_reads(), getTotal_ops()) + "}\n");
 		output.write("\\newcommand{\\" + bench + "WriteTotal}{" + getPercent(getTotal_writes(), getTotal_ops()) + "}\n");
-		long otherEvents = getTotal_ops() - getTotal_access_ops();
+		long acqRelEvents = getAcquire() + getRelease();
+		output.write("\\newcommand{\\" + bench + "AcqRelTotal}{" + getPercent(acqRelEvents, getTotal_ops()) + "}\n");		
+		long otherEvents = getTotal_ops() - getTotal_access_ops() - acqRelEvents;
 		output.write("\\newcommand{\\" + bench + "OtherTotal}{" + getPercent(otherEvents, getTotal_ops()) + "}\n");
 	}
 	
 	public void getReadCounts(BufferedWriter output) throws IOException {
 		//Note: noFPReadTotal should be the same as readTotal, just want to distinguish getReadCounts' total from AccessCounts' read total
-		output.write("\\newcommand{\\" + bench + "NoFPReadTotal}{" + getTotal_reads() + "}\n");
+		output.write("\\newcommand{\\" + bench + "NoFPReadTotal}{" + roundTwoSigs(getTotal_reads()) + "}\n");
 		long noFPRdInCS = getRead_insideCS() - getRead_insideCSFP();
 		output.write("\\newcommand{\\" + bench + "ReadInCS}{" + getPercent(noFPRdInCS, getTotal_reads()) + "}\n");
 		long noFPRdOutCS = getRead_outsideCS() - getRead_outsideCSFP();
@@ -315,12 +323,14 @@ public class EventCounts {
 	}
 	
 	public void getWriteCounts(BufferedWriter output) throws IOException {
-		//Note: noFPWriteTotal should be the same as writeTotal, just want to distinguish getWriteCounts' total from AccessCounts' write total
-		output.write("\\newcommand{\\" + bench + "NoFPWriteTotal}{" + getTotal_writes() + "}\n");
+		long honestTotalWrites = getTotal_writes() - getWrite_write_race();
+		output.write("\\newcommand{\\" + bench + "NoFPHonestWriteTotal}{" + roundTwoSigs(honestTotalWrites) + "}\n");
 		long noFPWrInCS = getWrite_insideCS() - getWrite_insideCSFP();
-		output.write("\\newcommand{\\" + bench + "WriteInCS}{" + getPercent(noFPWrInCS, getTotal_writes()) + "}\n");
+		output.write("\\newcommand{\\" + bench + "WriteInCS}{" + getPercent(noFPWrInCS, honestTotalWrites) + "}\n");
 		long noFPWrOutCS = getWrite_outsideCS() - getWrite_outsideCSFP();
-		output.write("\\newcommand{\\" + bench + "WriteOutCS}{" + getPercent(noFPWrOutCS ,getTotal_writes()) + "}\n");
+		//Note: noFPWriteTotal should be the same as writeTotal, just want to distinguish getWriteCounts' total from AccessCounts' write total
+		output.write("\\newcommand{\\" + bench + "NoFPWriteTotal}{" + roundTwoSigs(getTotal_writes()) + "}\n");
+		output.write("\\newcommand{\\" + bench + "WriteOutCS}{" + getPercent(noFPWrOutCS, honestTotalWrites) + "}\n");
 		output.write("\\newcommand{\\" + bench + "WriteSameEp}{" + getPercent(getWrite_same_epoch(), getTotal_writes()) + "}\n");
 		output.write("\\newcommand{\\" + bench + "WriteExclusive}{" + getPercent(getWrite_exclusive(), getTotal_writes()) + "}\n");
 		output.write("\\newcommand{\\" + bench + "WriteShared}{" + getPercent(getWrite_shared(), getTotal_writes()) + "}\n");
@@ -330,24 +340,26 @@ public class EventCounts {
 		//Note: noFPOtherTotal should be the same as otherTotal, just want to distinguish getOtherCounts' total from AccessCounts' other total
 		long otherEvents = getTotal_ops() - getTotal_access_ops();
 		output.write("\\newcommand{\\" + bench + "NoFPOtherTotal}{" + otherEvents + "}\n");
-		output.write("\\newcommand{\\" + bench + "Acquire}{" + getPercent(getAcquire()/(double)otherEvents)*100) + "}\n");
-		output.write("\\newcommand{\\" + bench + "Release}{" + getPercent(getRelease()/(double)otherEvents)*100) + "}\n");
-		output.write("\\newcommand{\\" + bench + "Fork}{" + getPercent(getFork()/(double)otherEvents)*100) + "}\n");
-		output.write("\\newcommand{\\" + bench + "Join}{" + getPercent(getJoin()/(double)otherEvents)*100) + "}\n");
-		output.write("\\newcommand{\\" + bench + "PreWait}{" + ((getPre_wait()/(double)otherEvents)*100) + "}\n");
-		output.write("\\newcommand{\\" + bench + "PostWait}{" + ((getPost_wait()/(double)otherEvents)*100) + "}\n");
-		output.write("\\newcommand{\\" + bench + "VolatileTotal}{" + ((getVolatile_acc()/(double)otherEvents)*100) + "}\n");
-		output.write("\\newcommand{\\" + bench + "ClassInit}{" + ((getClass_init()/(double)otherEvents)*100) + "}\n");
-		output.write("\\newcommand{\\" + bench + "ClassAccess}{" + ((getClass_access()/(double)otherEvents)*100) + "}\n");
+		long acqRelEvents = getAcquire() + getRelease();
+		output.write("\\newcommand{\\" + bench + "AcqRelOtherTotal}{" + getPercent(acqRelEvents, otherEvents) + "}\n");
+		otherEvents = otherEvents - acqRelEvents;
+		output.write("\\newcommand{\\" + bench + "NoAcqRelOtherTotal}{" + otherEvents + "}\n");
+		output.write("\\newcommand{\\" + bench + "Fork}{" + getPercent(getFork(), otherEvents) + "}\n");
+		output.write("\\newcommand{\\" + bench + "Join}{" + getPercent(getJoin(), otherEvents) + "}\n");
+		output.write("\\newcommand{\\" + bench + "PreWait}{" + getPercent(getPre_wait(), otherEvents) + "}\n");
+		output.write("\\newcommand{\\" + bench + "PostWait}{" + getPercent(getPost_wait(), otherEvents) + "}\n");
+		output.write("\\newcommand{\\" + bench + "VolatileTotal}{" + getPercent(getVolatile_acc(), otherEvents) + "}\n");
+		output.write("\\newcommand{\\" + bench + "ClassInit}{" + getPercent(getClass_init(), otherEvents) + "}\n");
+		output.write("\\newcommand{\\" + bench + "ClassAccess}{" + getPercent(getClass_access(), otherEvents) + "}\n");
 	}
 	
 	public void getRaceTypeCounts(BufferedWriter output) throws IOException {
 		long raceTotal = getWrite_read_race() + getWrite_write_race() + getRead_write_race() + getShared_write_race();
 		output.write("\\newcommand{\\" + bench + "RaceTotal}{" + raceTotal + "}\n");
-		output.write("\\newcommand{\\" + bench + "WrRdRace}{" + (raceTotal==0 ? raceTotal : ((getWrite_read_race()/(double)raceTotal)*100)) + "}\n");
-		output.write("\\newcommand{\\" + bench + "WrWrRace}{" + (raceTotal==0 ? raceTotal : ((getWrite_write_race()/(double)raceTotal)*100)) + "}\n");
-		output.write("\\newcommand{\\" + bench + "RdWrRace}{" + (raceTotal==0 ? raceTotal : ((getRead_write_race()/(double)raceTotal)*100)) + "}\n");
-		output.write("\\newcommand{\\" + bench + "RdShWrRace}{" + (raceTotal==0 ? raceTotal : ((getShared_write_race()/(double)raceTotal)*100)) + "}\n");
+		output.write("\\newcommand{\\" + bench + "WrRdRace}{" + (raceTotal==0 ? raceTotal : getPercent(getWrite_read_race(), raceTotal)) + "}\n");
+		output.write("\\newcommand{\\" + bench + "WrWrRace}{" + (raceTotal==0 ? raceTotal : getPercent(getWrite_write_race(), raceTotal)) + "}\n");
+		output.write("\\newcommand{\\" + bench + "RdWrRace}{" + (raceTotal==0 ? raceTotal : getPercent(getRead_write_race(), raceTotal)) + "}\n");
+		output.write("\\newcommand{\\" + bench + "RdShWrRace}{" + (raceTotal==0 ? raceTotal : getPercent(getShared_write_race(), raceTotal)) + "}\n");
 	}
 	
 	public long getTotal() {
