@@ -290,6 +290,9 @@ public class EventCounts {
 	
 	public String roundTwoSigs(long val) {
 		double rounded = BenchmarkInfo.getTwoSigsDouble(val/(double)1000000);
+		if (rounded < 1) {
+			return Double.toString(rounded);
+		}
 		String roundedString = Double.toString(rounded);
 		return roundedString.length() > 3 ? BenchmarkInfo.getParenthesis(roundedString.substring(0, roundedString.length()-2)) : roundedString;
 	}
@@ -302,6 +305,16 @@ public class EventCounts {
 		output.write("\\newcommand{\\" + bench + "NoFPEvents}{" + roundTwoSigs(getTotal_ops()) +"}\n");
 		output.write("\\newcommand{\\" + bench + "ReadTotal}{" + getPercent(getTotal_reads(), getTotal_ops()) + "}\n");
 		output.write("\\newcommand{\\" + bench + "WriteTotal}{" + getPercent(getTotal_writes(), getTotal_ops()) + "}\n");
+		long noFPRdInCS = getRead_insideCS() - getRead_insideCSFP();
+		long noFPWrInCS = getWrite_insideCS() - getWrite_insideCSFP();
+		long noFPAccessInCS = noFPRdInCS + noFPWrInCS;
+		long noFPRdOutCS = getRead_outsideCS() - getRead_outsideCSFP();
+		long noFPWrOutCS = getWrite_outsideCS() - getWrite_outsideCSFP();
+		long noFPAccessOutCS = noFPRdOutCS + noFPWrOutCS;
+		long honestTotalWrites = getTotal_writes() - getWrite_write_race();
+		long honestTotalAccesses = getTotal_reads() + honestTotalWrites;
+		output.write("\\newcommand{\\" + bench + "NoFPAccessInCS}{" + getPercent(noFPAccessInCS, honestTotalAccesses) + "}\n");
+		output.write("\\newcommand{\\" + bench + "NoFPAccessOutCS}{" + getPercent(noFPAccessOutCS, honestTotalAccesses) + "}\n");
 		long acqRelEvents = getAcquire() + getRelease();
 		output.write("\\newcommand{\\" + bench + "AcqRelTotal}{" + getPercent(acqRelEvents, getTotal_ops()) + "}\n");		
 		long otherEvents = getTotal_ops() - getTotal_access_ops() - acqRelEvents;
@@ -328,9 +341,9 @@ public class EventCounts {
 		long noFPWrInCS = getWrite_insideCS() - getWrite_insideCSFP();
 		output.write("\\newcommand{\\" + bench + "WriteInCS}{" + getPercent(noFPWrInCS, honestTotalWrites) + "}\n");
 		long noFPWrOutCS = getWrite_outsideCS() - getWrite_outsideCSFP();
+		output.write("\\newcommand{\\" + bench + "WriteOutCS}{" + getPercent(noFPWrOutCS, honestTotalWrites) + "}\n");
 		//Note: noFPWriteTotal should be the same as writeTotal, just want to distinguish getWriteCounts' total from AccessCounts' write total
 		output.write("\\newcommand{\\" + bench + "NoFPWriteTotal}{" + roundTwoSigs(getTotal_writes()) + "}\n");
-		output.write("\\newcommand{\\" + bench + "WriteOutCS}{" + getPercent(noFPWrOutCS, honestTotalWrites) + "}\n");
 		output.write("\\newcommand{\\" + bench + "WriteSameEp}{" + getPercent(getWrite_same_epoch(), getTotal_writes()) + "}\n");
 		output.write("\\newcommand{\\" + bench + "WriteExclusive}{" + getPercent(getWrite_exclusive(), getTotal_writes()) + "}\n");
 		output.write("\\newcommand{\\" + bench + "WriteShared}{" + getPercent(getWrite_shared(), getTotal_writes()) + "}\n");

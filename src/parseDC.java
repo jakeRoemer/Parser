@@ -27,8 +27,8 @@ public class parseDC {
 //		String output_dir = "PIP_eventCountCheck";
 //		String output_dir = "PIP_slowTool_FastPathCheck_noMerge";
 //		String output_dir = "Vindicator_volatileTest";
-		String output_dir = "PIP_slowTool_volatileCheckUpdate_assertions";
-//		String output_dir = "PIP_fastTool_volatileCheckUpdate_orderedPairs";
+//		String output_dir = "PIP_slowTool_volatileCheckUpdate_assertions";
+		String output_dir = "PIP_fastTool_volatileCheckUpdate_orderedPairs";
 //		String output_dir = "Vindicator_volatileCheckUpdate";
 		String [] benchmarks = {"avrora", "batik", "htwo", "jython", "luindex", "lusearch", "pmd", "sunflow", "tomcat", "xalan"};
 		//Vindicator tool
@@ -38,14 +38,14 @@ public class parseDC {
 //		String [] configs = {"base", "empty", "ft", "pip_hb", "pip_wcp", "pip_dc", "pip_capo", "pip_pip"};
 //		String [] configNames = {"Base", "Empty", "FT", "HB", "WCP", "DC", "CAPO", "PIP"};
 		//CAPO OPT
-//		String [] configs = {"base", "empty", "ft", "pip_hb", "pip_wcp", "pip_dc", "pip_capo", "pip_capoOpt"};
-//		String [] configNames = {"Base", "Empty", "FT", "HB", "WCP", "DC", "CAPO", "CAPOOPT"};
+		String [] configs = {"base", "empty", "ft", "pip_hb", "pip_wcp", "pip_dc", "pip_capo", "pip_capoOpt"};
+		String [] configNames = {"Base", "Empty", "FT", "HB", "WCP", "DC", "CAPO", "CAPOOPT"};
 		//PIP tool (slow tool)
-		String [] configs = {"base", "empty", "ft", "hb", "hbwcp", "wdc"};//, "wdc_exc", "capo_exc", "pip_exc", "pip"};
-		String [] configNames = {"Base", "Empty", "FT", "HB", "HBWCP", "WDC"};//, "DCExc", "CAPOExc", "PIPExc", "PIP"};
+//		String [] configs = {"base", "empty", "ft", "hb", "hbwcp", "wdc"};//, "wdc_exc", "capo_exc", "pip_exc", "pip"};
+//		String [] configNames = {"Base", "Empty", "FT", "HB", "HBWCP", "WDC"};//, "DCExc", "CAPOExc", "PIPExc", "PIP"};
 		//configs -> wdc_testconfig | configNames = DCLite
-		int trials = 2; //Integer.parseInt(args[1]);
-		String tool = "DC"; //DC or PIP
+		int trials = 1; //Integer.parseInt(args[1]);
+		String tool = "PIP"; //DC or PIP
 		LinkedList<BenchmarkInfo> benchmarks_info = new LinkedList<BenchmarkInfo>();
 		BufferedReader input = null;
 		try {
