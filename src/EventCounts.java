@@ -64,6 +64,33 @@ public class EventCounts {
 	private long total_ops;
 	private long total_fast_path_taken;
 	
+	private long read_rule_A_succeed;
+	private long read_rule_A_total_attempts;
+	private long write_write_rule_A_succeed;
+	private long write_write_rule_A_total_attempts;
+	private long write_read_rule_A_succeed;
+	private long write_read_rule_A_total_attempts;
+	
+	private long clears_by_capo;
+	private long read_set_size_0;
+	private long read_set_size_1;
+	private long read_set_size_gt_1;
+	private long write_set_size_0;
+	private long write_set_size_1;
+	private long write_set_size_gt_1;
+	private long read_map_size_0;
+	private long read_map_size_1;
+	private long read_map_size_10;
+	private long read_map_size_100;
+	private long read_map_size_1000;
+	private long read_map_size_gt_1000;
+	private long write_map_size_0;
+	private long write_map_size_1;
+	private long write_map_size_10;
+	private long write_map_size_100;
+	private long write_map_size_1000;
+	private long write_map_size_gt_1000;
+	
 	private String config;
 	private String bench;
 	
@@ -72,119 +99,173 @@ public class EventCounts {
 		this.bench = bench;
 	}
 	
+	public long getVal(long val, long eventCount, boolean final_count, int total_trials) {
+		return final_count ? ((val + eventCount) / total_trials) : (val + eventCount);
+	}
+	
 	public void setEventCounts(String eventType, long eventCount, boolean final_count, int total_trials) {
 		if (eventType.equals("Total Events")) {
-			setTotal(final_count ? ((getTotal() + eventCount) / total_trials) : (getTotal() + eventCount));
+			setTotal(getVal(getTotal(), eventCount, final_count, total_trials));
 		} else if (eventType.equals("Total Fast Path Taken")) {
-			setTotal_fast_path_taken(final_count ? ((getTotal_fast_path_taken() + eventCount) / total_trials) : (getTotal_fast_path_taken() + eventCount));
+			setTotal_fast_path_taken(getVal(getTotal_fast_path_taken(), eventCount, final_count, total_trials));
 		} else if (eventType.equals("Total Ops")) {
-			setTotal_ops(final_count ? ((getTotal_ops() + eventCount) / total_trials) : (getTotal_ops() + eventCount));
+			setTotal_ops(getVal(getTotal_ops(), eventCount, final_count, total_trials));
 		} else if (eventType.equals("Total Access Ops")) {
-			setTotal_access_ops(final_count ? ((getTotal_access_ops() + eventCount) / total_trials) : (getTotal_access_ops() + eventCount));
+			setTotal_access_ops(getVal(getTotal_access_ops(), eventCount, final_count, total_trials));
 		} else if (eventType.equals("Total Writes")) {
-			setTotal_writes(final_count ? ((getTotal_writes() + eventCount) / total_trials) : (getTotal_writes() + eventCount));
+			setTotal_writes(getVal(getTotal_writes(), eventCount, final_count, total_trials));
 		} else if (eventType.equals("Total Reads")) {
-			setTotal_reads(final_count ? ((getTotal_reads() + eventCount) / total_trials) : (getTotal_reads() + eventCount));
+			setTotal_reads(getVal(getTotal_reads(), eventCount, final_count, total_trials));
 		} else if (eventType.equals("Write Fast Path Taken")) {
-			setWrite_fast_path_taken(final_count ? ((getWrite_fast_path_taken() + eventCount) / total_trials) : (getWrite_fast_path_taken() + eventCount));
+			setWrite_fast_path_taken(getVal(getWrite_fast_path_taken(), eventCount, final_count, total_trials));
 		} else if (eventType.equals("Read Fast Path Taken")) {
-			setRead_fast_path_taken(final_count ? ((getRead_fast_path_taken() + eventCount) / total_trials) : (getRead_fast_path_taken() + eventCount));
+			setRead_fast_path_taken(getVal(getRead_fast_path_taken(), eventCount, final_count, total_trials));
 		} else if (eventType.equals("Fork")) {
-			setFork(final_count ? ((getFork() + eventCount) / total_trials) : (getFork() + eventCount));
+			setFork(getVal(getFork(), eventCount, final_count, total_trials));
 		} else if (eventType.equals("Shared-Write Error")) {
-			setShared_write_race(final_count ? ((getShared_write_race() + eventCount) / total_trials) : (getShared_write_race() + eventCount));
+			setShared_write_race(getVal(getShared_write_race(), eventCount, final_count, total_trials));
 		} else if (eventType.equals("Read-Write Error")) {
-			setRead_write_race(final_count ? ((getRead_write_race() + eventCount) / total_trials) : (getRead_write_race() + eventCount));
+			setRead_write_race(getVal(getRead_write_race(), eventCount, final_count, total_trials));
 		} else if (eventType.equals("Write-Write Error")) {
-			setWrite_write_race(final_count ? ((getWrite_write_race() + eventCount) / total_trials) : (getWrite_write_race() + eventCount));
+			setWrite_write_race(getVal(getWrite_write_race(), eventCount, final_count, total_trials));
 		} else if (eventType.equals("Write Shared")) {
-			setWrite_shared(final_count ? ((getWrite_shared() + eventCount) / total_trials) : (getWrite_shared() + eventCount));
+			setWrite_shared(getVal(getWrite_shared(), eventCount, final_count, total_trials));
 		} else if (eventType.equals("Write Exclusive")) {
-			setWrite_exclusive(final_count ? ((getWrite_exclusive() + eventCount) / total_trials) : (getWrite_exclusive() + eventCount));
+			setWrite_exclusive(getVal(getWrite_exclusive(), eventCount, final_count, total_trials));
 		} else if (eventType.equals("Write Same Epoch")) {
-			setWrite_same_epoch(final_count ? ((getWrite_same_epoch() + eventCount) / total_trials) : (getWrite_same_epoch() + eventCount));
+			setWrite_same_epoch(getVal(getWrite_same_epoch(), eventCount, final_count, total_trials));
 		} else if (eventType.equals("Write Shared FP")) {
-			setWrite_sharedFP(final_count ? ((getWrite_sharedFP() + eventCount) / total_trials) : (getWrite_sharedFP() + eventCount));
+			setWrite_sharedFP(getVal(getWrite_sharedFP(), eventCount, final_count, total_trials));
 		} else if (eventType.equals("Write Exclusive FP")) {
-			setWrite_exclusiveFP(final_count ? ((getWrite_exclusiveFP() + eventCount) / total_trials) : (getWrite_exclusiveFP() + eventCount));
+			setWrite_exclusiveFP(getVal(getWrite_exclusiveFP(), eventCount, final_count, total_trials));
 		} else if (eventType.equals("Write Same Epoch FP")) {
-			setWrite_same_epochFP(final_count ? ((getWrite_same_epochFP() + eventCount) / total_trials) : (getWrite_same_epochFP() + eventCount));
+			setWrite_same_epochFP(getVal(getWrite_same_epochFP(), eventCount, final_count, total_trials));
 		} else if (eventType.equals("Write-Read Error")) {
-			setWrite_read_race(final_count ? ((getWrite_read_race() + eventCount) / total_trials) : (getWrite_read_race() + eventCount));
+			setWrite_read_race(getVal(getWrite_read_race(), eventCount, final_count, total_trials));
 		} else if (eventType.equals("Read Shared")) {
-			setRead_shared(final_count ? ((getRead_shared() + eventCount) / total_trials) : (getRead_shared() + eventCount));
+			setRead_shared(getVal(getRead_shared(), eventCount, final_count, total_trials));
 		} else if (eventType.equals("Read Share")) {
-			setRead_share(final_count ? ((getRead_share() + eventCount) / total_trials) : (getRead_share() + eventCount));
+			setRead_share(getVal(getRead_share(), eventCount, final_count, total_trials));
 		} else if (eventType.equals("Read Exclusive")) {
-			setRead_exclusive(final_count ? ((getRead_exclusive() + eventCount) / total_trials) : (getRead_exclusive() + eventCount));
+			setRead_exclusive(getVal(getRead_exclusive(), eventCount, final_count, total_trials));
 		} else if (eventType.equals("Read Shared Same Epoch")) {
-			setRead_shared_same_epoch(final_count ? ((getRead_shared_same_epoch() + eventCount) / total_trials) : (getRead_shared_same_epoch() + eventCount));
+			setRead_shared_same_epoch(getVal(getRead_shared_same_epoch(), eventCount, final_count, total_trials));
 		} else if (eventType.equals("Read Same Epoch")) {
-			setRead_same_epoch(final_count ? ((getRead_same_epoch() + eventCount) / total_trials) : (getRead_same_epoch() + eventCount));
+			setRead_same_epoch(getVal(getRead_same_epoch(), eventCount, final_count, total_trials));
 		} else if (eventType.equals("Read Shared FP")) {
-			setRead_sharedFP(final_count ? ((getRead_sharedFP() + eventCount) / total_trials) : (getRead_sharedFP() + eventCount));
+			setRead_sharedFP(getVal(getRead_sharedFP(), eventCount, final_count, total_trials));
 		} else if (eventType.equals("Read Share FP")) {
-			setRead_shareFP(final_count ? ((getRead_shareFP() + eventCount) / total_trials) : (getRead_shareFP() + eventCount));
+			setRead_shareFP(getVal(getRead_shareFP(), eventCount, final_count, total_trials));
 		} else if (eventType.equals("Read Exclusive FP")) {
-			setRead_exclusiveFP(final_count ? ((getRead_exclusiveFP() + eventCount) / total_trials) : (getRead_exclusiveFP() + eventCount));
+			setRead_exclusiveFP(getVal(getRead_exclusiveFP(), eventCount, final_count, total_trials));
 		} else if (eventType.equals("Read Shared Same Epoch FP")) {
-			setRead_shared_same_epochFP(final_count ? ((getRead_shared_same_epochFP() + eventCount) / total_trials) : (getRead_shared_same_epochFP() + eventCount));
+			setRead_shared_same_epochFP(getVal(getRead_shared_same_epochFP(), eventCount, final_count, total_trials));
 		} else if (eventType.equals("Read Same Epoch FP")) {
-			setRead_same_epochFP(final_count ? ((getRead_same_epochFP() + eventCount) / total_trials) : (getRead_same_epochFP() + eventCount));
+			setRead_same_epochFP(getVal(getRead_same_epochFP(), eventCount, final_count, total_trials));
 		} else if (eventType.equals("Exit")) {
-			setExit(final_count ? ((getExit() + eventCount) / total_trials) : (getExit() + eventCount));
+			setExit(getVal(getExit(), eventCount, final_count, total_trials));
 		} else if (eventType.equals("Fake Fork")) {
-			setFake_fork(final_count ? ((getFake_fork() + eventCount) / total_trials) : (getFake_fork() + eventCount));
+			setFake_fork(getVal(getFake_fork(), eventCount, final_count, total_trials));
 		} else if (eventType.equals("Acquire")) {
-			setAcquire(final_count ? ((getAcquire() + eventCount) / total_trials) : (getAcquire() + eventCount));
+			setAcquire(getVal(getAcquire(), eventCount, final_count, total_trials));
 		} else if (eventType.equals("Release")) {
-			setRelease(final_count ? ((getRelease() + eventCount) / total_trials) : (getRelease() + eventCount));
+			setRelease(getVal(getRelease(), eventCount, final_count, total_trials));
 		} else if (eventType.equals("Write")) {
-			setWrite(final_count ? ((getWrite() + eventCount) / total_trials) : (getWrite() + eventCount));
+			setWrite(getVal(getWrite(), eventCount, final_count, total_trials));
 		} else if (eventType.equals("Read")) {
-			setRead(final_count ? ((getRead() + eventCount) / total_trials) : (getRead() + eventCount));
+			setRead(getVal(getRead(), eventCount, final_count, total_trials));
 		} else if (eventType.equals("WriteFastPath")) {
-			setFp_write(final_count ? ((getFp_write() + eventCount) / total_trials) : (getFp_write() + eventCount));
+			setFp_write(getVal(getFp_write(), eventCount, final_count, total_trials));
 		} else if (eventType.equals("ReadFastPath")) {
-			setFp_read(final_count ? ((getFp_read() + eventCount) / total_trials) : (getFp_read() + eventCount));
+			setFp_read(getVal(getFp_read(), eventCount, final_count, total_trials));
 		} else if (eventType.equals("Volatile Write")) {
-			setVol_write(final_count ? ((getVol_write() + eventCount) / total_trials) : (getVol_write() + eventCount));
+			setVol_write(getVal(getVol_write(), eventCount, final_count, total_trials));
 		} else if (eventType.equals("Volatile Read")) {
-			setVol_read(final_count ? ((getVol_read() + eventCount) / total_trials) : (getVol_read() + eventCount));
+			setVol_read(getVal(getVol_read(), eventCount, final_count, total_trials));
 		} else if (eventType.equals("Start")) {
-			setStart(final_count ? ((getStart() + eventCount) / total_trials) : (getStart() + eventCount));
+			setStart(getVal(getStart(), eventCount, final_count, total_trials));
 		} else if (eventType.equals("Join")) {
-			setJoin(final_count ? ((getJoin() + eventCount) / total_trials) : (getJoin() + eventCount));
+			setJoin(getVal(getJoin(), eventCount, final_count, total_trials));
 		} else if (eventType.equals("Pre Wait")) {
-			setPre_wait(final_count ? ((getPre_wait() + eventCount) / total_trials) : (getPre_wait() + eventCount));
+			setPre_wait(getVal(getPre_wait(), eventCount, final_count, total_trials));
 		} else if (eventType.equals("Post Wait")) {
-			setPost_wait(final_count ? ((getPost_wait() + eventCount) / total_trials) : (getPost_wait() + eventCount));
+			setPost_wait(getVal(getPost_wait(), eventCount, final_count, total_trials));
 		} else if (eventType.equals("Class Initialized")) {
-			setClass_init(final_count ? ((getClass_init() + eventCount) / total_trials) : (getClass_init() + eventCount));
+			setClass_init(getVal(getClass_init(), eventCount, final_count, total_trials));
 		} else if (eventType.equals("Class Accessed")) {
-			setClass_access(final_count ? ((getClass_access() + eventCount) / total_trials) : (getClass_access() + eventCount));
+			setClass_access(getVal(getClass_access(), eventCount, final_count, total_trials));
 		} else if (eventType.equals("Volatile")) {
-			setVolatile_acc(final_count ? ((getVolatile_acc() + eventCount) / total_trials) : (getVolatile_acc() + eventCount));
+			setVolatile_acc(getVal(getVolatile_acc(), eventCount, final_count, total_trials));
 		} else if (eventType.equals("Accesses Inside Critical Sections")) {
-			setAccess_insideCS(final_count ? ((getAccess_insideCS() + eventCount) / total_trials) : (getAccess_insideCS() + eventCount));
+			setAccess_insideCS(getVal(getAccess_insideCS(), eventCount, final_count, total_trials));
 		} else if (eventType.equals("Accesses Outisde Critical Sections")) {
-			setAccess_outsideCS(final_count ? ((getAccess_outsideCS() + eventCount) / total_trials) : (getAccess_outsideCS() + eventCount));
+			setAccess_outsideCS(getVal(getAccess_outsideCS(), eventCount, final_count, total_trials));
 		} else if (eventType.equals("Write accesses Inside Critical Sections")) {
-			setWrite_insideCS(final_count ? ((getWrite_insideCS() + eventCount) / total_trials) : (getWrite_insideCS() + eventCount));
+			setWrite_insideCS(getVal(getWrite_insideCS(), eventCount, final_count, total_trials));
 		} else if (eventType.equals("Write accesses Inside Critical Sections succeeding Fast Path")) {
-			setWrite_insideCSFP(final_count ? ((getWrite_insideCSFP() + eventCount) / total_trials) : (getWrite_insideCSFP() + eventCount));
+			setWrite_insideCSFP(getVal(getWrite_insideCSFP(), eventCount, final_count, total_trials));
 		} else if (eventType.equals("Write accesses Outside Critical Sections")) {
-			setWrite_outsideCS(final_count ? ((getWrite_outsideCS() + eventCount) / total_trials) : (getWrite_outsideCS() + eventCount));
+			setWrite_outsideCS(getVal(getWrite_outsideCS(), eventCount, final_count, total_trials));
 		} else if (eventType.equals("Write accesses Outside Critical Sections succeeding Fast Path")) {
-			setWrite_outsideCSFP(final_count ? ((getWrite_outsideCSFP() + eventCount) / total_trials) : (getWrite_outsideCSFP() + eventCount));
+			setWrite_outsideCSFP(getVal(getWrite_outsideCSFP(), eventCount, final_count, total_trials));
 		} else if (eventType.equals("Read accesses Inside Critical Sections")) {
-			setRead_insideCS(final_count ? ((getRead_insideCS() + eventCount) / total_trials) : (getRead_insideCS() + eventCount));
+			setRead_insideCS(getVal(getRead_insideCS(), eventCount, final_count, total_trials));
 		} else if (eventType.equals("Read accesses Inside Critical Sections succeeding Fast Path")) {
-			setRead_insideCSFP(final_count ? ((getRead_insideCSFP() + eventCount) / total_trials) : (getRead_insideCSFP() + eventCount));
+			setRead_insideCSFP(getVal(getRead_insideCSFP(), eventCount, final_count, total_trials));
 		} else if (eventType.equals("Read accesses Outside Critical Sections")) {
-			setRead_outsideCS(final_count ? ((getRead_outsideCS() + eventCount) / total_trials) : (getRead_outsideCS() + eventCount));
+			setRead_outsideCS(getVal(getRead_outsideCS(), eventCount, final_count, total_trials));
 		} else if (eventType.equals("Read accesses Outside Critical Sections succeeding Fast Path")) {
-			setRead_outsideCSFP(final_count ? ((getRead_outsideCSFP() + eventCount) / total_trials) : (getRead_outsideCSFP() + eventCount));
+			setRead_outsideCSFP(getVal(getRead_outsideCSFP(), eventCount, final_count, total_trials));
+		} else if (eventType.equals("Read Rule A Succeed")) {
+			setRead_rule_A_succeed(getVal(getRead_rule_A_succeed(), eventCount, final_count, total_trials));
+		} else if (eventType.equals("Read Rule A Total Attempts")) {
+			setRead_rule_A_total_attempts(getVal(getRead_rule_A_total_attempts(), eventCount, final_count, total_trials));
+		} else if (eventType.equals("Write Write Rule A Succeed")) {
+			setWrite_write_rule_A_succeed(getVal(getWrite_write_rule_A_succeed(), eventCount, final_count, total_trials));
+		} else if (eventType.equals("Write Write Rule A Total Attempts")) {
+			setWrite_write_rule_A_total_attempts(getVal(getWrite_write_rule_A_total_attempts(), eventCount, final_count, total_trials));
+		} else if (eventType.equals("Write Read Rule A Succeed")) {
+			setWrite_read_rule_A_succeed(getVal(getWrite_read_rule_A_succeed(), eventCount, final_count, total_trials));
+		} else if (eventType.equals("Write Read Rule A Total Attempts")) {
+			setWrite_read_rule_A_total_attempts(getVal(getWrite_read_rule_A_total_attempts(), eventCount, final_count, total_trials));
+		} else if (eventType.equals("Clears by CAPO")) {
+			setClears_by_capo(getVal(getClears_by_capo(), eventCount, final_count, total_trials));
+		} else if (eventType.equals("Read Set Size 0")) {
+			setRead_set_size_0(getVal(getRead_set_size_0(), eventCount, final_count, total_trials));
+		} else if (eventType.equals("Read Set Size 1")) {
+			setRead_set_size_1(getVal(getRead_set_size_1(), eventCount, final_count, total_trials));
+		} else if (eventType.equals("Read Set Size Gt 1")) {
+			setRead_set_size_gt_1(getVal(getRead_set_size_gt_1(), eventCount, final_count, total_trials));
+		} else if (eventType.equals("Write Set Size 0")) {
+			setWrite_set_size_0(getVal(getWrite_set_size_0(), eventCount, final_count, total_trials));
+		} else if (eventType.equals("Write Set Size 1")) {
+			setWrite_set_size_1(getVal(getWrite_set_size_1(), eventCount, final_count, total_trials));
+		} else if (eventType.equals("Write Set Size Gt 1")) {
+			setWrite_set_size_gt_1(getVal(getWrite_set_size_gt_1(), eventCount, final_count, total_trials));
+		} else if (eventType.equals("Read Map Size 0")) {
+			setRead_map_size_0(getVal(getRead_map_size_0(), eventCount, final_count, total_trials));
+		} else if (eventType.equals("Read Map Size 1")) {
+			setRead_map_size_1(getVal(getRead_map_size_1(), eventCount, final_count, total_trials));
+		} else if (eventType.equals("Read Map Size 10")) {
+			setRead_map_size_10(getVal(getRead_map_size_10(), eventCount, final_count, total_trials));
+		} else if (eventType.equals("Read Map Size 100")) {
+			setRead_map_size_100(getVal(getRead_map_size_100(), eventCount, final_count, total_trials));
+		} else if (eventType.equals("Read Map Size 1000")) {
+			setRead_map_size_1000(getVal(getRead_map_size_1000(), eventCount, final_count, total_trials));
+		} else if (eventType.equals("Read Map Size Gt 1000")) {
+			setRead_map_size_gt_1000(getVal(getRead_map_size_gt_1000(), eventCount, final_count, total_trials));
+		} else if (eventType.equals("Write Map Size 0")) {
+			setWrite_map_size_0(getVal(getWrite_map_size_0(), eventCount, final_count, total_trials));
+		} else if (eventType.equals("Write Map Size 1")) {
+			setWrite_map_size_1(getVal(getWrite_map_size_1(), eventCount, final_count, total_trials));
+		} else if (eventType.equals("Write Map Size 10")) {
+			setWrite_map_size_10(getVal(getWrite_map_size_10(), eventCount, final_count, total_trials));
+		} else if (eventType.equals("Write Map Size 100")) {
+			setWrite_map_size_100(getVal(getWrite_map_size_100(), eventCount, final_count, total_trials));
+		} else if (eventType.equals("Write Map Size 1000")) {
+			setWrite_map_size_1000(getVal(getWrite_map_size_1000(), eventCount, final_count, total_trials));
+		} else if (eventType.equals("Write Map Size Gt 1000")) {
+			setWrite_map_size_gt_1000(getVal(getWrite_map_size_gt_1000(), eventCount, final_count, total_trials));
 		}
 	}
 	
@@ -271,9 +352,42 @@ public class EventCounts {
 				input.println("total access ops: " + getTotal_access_ops());
 				input.println("total ops: " + getTotal_ops());
 				input.println("total fast path taken: " + getTotal_fast_path_taken());
+				
+				input.println("read rule A succeed: " + getRead_rule_A_succeed());
+				input.println("read rule A total attempts: " + getRead_rule_A_total_attempts());
+				input.println("write write rule A succeed: " + getWrite_write_rule_A_succeed());
+				input.println("write write rule A total attempts: " + getWrite_write_rule_A_total_attempts());
+				input.println("write read rule A succeed: " + getWrite_read_rule_A_succeed());
+				input.println("write read rule A total attempts: " + getWrite_read_rule_A_total_attempts());
+				
+				input.println("clears by CAPO: " + getClears_by_capo());
+				input.println("read set size 0: " + getRead_set_size_0());
+				input.println("read set size 1: " + getRead_set_size_1());
+				input.println("read set size gt 1: " + getRead_set_size_gt_1());
+				input.println("write set size 0: " + getWrite_set_size_0());
+				input.println("write set size 1: " + getWrite_set_size_1());
+				input.println("write set size gt 1: " + getWrite_set_size_gt_1());
+				input.println("read map size 0: "+ getRead_map_size_0());
+				input.println("read map size 1: "+ getRead_map_size_1());
+				input.println("read map size 10: "+ getRead_map_size_10());
+				input.println("read map size 100: "+ getRead_map_size_100());
+				input.println("read map size 1000: "+ getRead_map_size_1000());
+				input.println("read map size gt 1000: "+ getRead_map_size_gt_1000());
+				input.println("write map size 0: " + getWrite_map_size_0());
+				input.println("write map size 1: " + getWrite_map_size_1());
+				input.println("write map size 10: " + getWrite_map_size_10());
+				input.println("write map size 100: " + getWrite_map_size_100());
+				input.println("write map size 1000: " + getWrite_map_size_1000());
+				input.println("write map size gt 1000: " + getWrite_map_size_gt_1000());
 				input.close();
 			}
 		} catch (FileNotFoundException e) {e.printStackTrace();}
+	}
+	
+	public void recordExtraCounts(BufferedWriter output) throws IOException {
+		getRuleACounts(output);
+		getCAPOSetCounts(output);
+		getCAPOMapCounts(output);
 	}
 	
 	public void recordCounts(BufferedWriter output) throws IOException {
@@ -282,6 +396,9 @@ public class EventCounts {
 		getWriteCounts(output);
 		getOtherCounts(output);
 		getRaceTypeCounts(output);
+		
+		//Enable if extra stats are collected
+		if (parseDC.extraStats) recordExtraCounts(output);
 	}
 	
 	public double getPercent(long val, long total) {
@@ -295,6 +412,53 @@ public class EventCounts {
 		}
 		String roundedString = Double.toString(rounded);
 		return roundedString.length() > 3 ? BenchmarkInfo.getParenthesis(roundedString.substring(0, roundedString.length()-2)) : roundedString;
+	}
+	
+	public void getRuleACounts(BufferedWriter output) throws IOException {
+		if (getRead_rule_A_total_attempts() != 0) {
+			output.write("\\newcommand{\\" + bench + "ReadRuleASuc}{" + getPercent(getRead_rule_A_succeed(), getRead_rule_A_total_attempts()) + "}\n");
+			output.write("\\newcommand{\\" + bench + "ReadRuleATot}{" + roundTwoSigs(getRead_rule_A_total_attempts()) + "}\n");
+		}
+		if (getWrite_write_rule_A_total_attempts() != 0) {
+			output.write("\\newcommand{\\" + bench + "WriteWriteRuleASuc}{" + getPercent(getWrite_write_rule_A_succeed(), getWrite_write_rule_A_total_attempts()) + "}\n");
+			output.write("\\newcommand{\\" + bench + "WriteWriteRuleATot}{" + roundTwoSigs(getWrite_write_rule_A_total_attempts()) + "}\n");
+		}
+		if (getWrite_read_rule_A_total_attempts() != 0) {
+			output.write("\\newcommand{\\" + bench + "WriteReadRuleASuc}{" + getPercent(getWrite_read_rule_A_succeed(), getWrite_read_rule_A_total_attempts()) + "}\n");
+			output.write("\\newcommand{\\" + bench + "WriteReadRuleATot}{" + roundTwoSigs(getWrite_read_rule_A_total_attempts()) + "}\n");
+		}
+	}
+	
+	public void getCAPOSetCounts(BufferedWriter output) throws IOException {
+		long totalClears = getClears_by_capo();
+		if (totalClears != 0) {
+			output.write("\\newcommand{\\" + bench + "TotalSetClears}{" + roundTwoSigs(totalClears) + "}\n");
+			output.write("\\newcommand{\\" + bench + "ReadSetZero}{" + getPercent(getRead_set_size_0(), totalClears) + "}\n");
+			output.write("\\newcommand{\\" + bench + "ReadSetOne}{" + getPercent(getRead_set_size_1(), totalClears) + "}\n");
+			output.write("\\newcommand{\\" + bench + "ReadSetGtOne}{" + getPercent(getRead_set_size_gt_1(), totalClears) + "}\n");
+			output.write("\\newcommand{\\" + bench + "WriteSetZero}{" + getPercent(getWrite_set_size_0(), totalClears) + "}\n");
+			output.write("\\newcommand{\\" + bench + "WriteSetOne}{" + getPercent(getWrite_set_size_1(), totalClears) + "}\n");
+			output.write("\\newcommand{\\" + bench + "WriteSetGtOne}{" + getPercent(getWrite_set_size_gt_1(), totalClears) + "}\n");
+		}
+	}
+	//Note: TotalSetClears and TotalMapClears will be equal since the clear count acts as a counter for both set and map stats.
+	public void getCAPOMapCounts(BufferedWriter output) throws IOException {
+		long totalClears = getClears_by_capo();
+		if (totalClears != 0) {
+			output.write("\\newcommand{\\" + bench + "TotalMapClears}{" + roundTwoSigs(totalClears) + "}\n");
+			output.write("\\newcommand{\\" + bench + "ReadMapZero}{" + getPercent(getRead_map_size_0(), totalClears) + "}\n");
+			output.write("\\newcommand{\\" + bench + "ReadMapOne}{" + getPercent(getRead_map_size_1(), totalClears) + "}\n");
+			output.write("\\newcommand{\\" + bench + "ReadMapTen}{" + getPercent(getRead_map_size_10(), totalClears) + "}\n");
+			output.write("\\newcommand{\\" + bench + "ReadMapHund}{" + getPercent(getRead_map_size_100(), totalClears) + "}\n");
+			output.write("\\newcommand{\\" + bench + "ReadMapThou}{" + getPercent(getRead_map_size_1000(), totalClears) + "}\n");
+			output.write("\\newcommand{\\" + bench + "ReadMapGtThou}{" + getPercent(getRead_map_size_gt_1000(), totalClears) + "}\n");
+			output.write("\\newcommand{\\" + bench + "WriteMapZero}{" + getPercent(getWrite_map_size_0(), totalClears) + "}\n");
+			output.write("\\newcommand{\\" + bench + "WriteMapOne}{" + getPercent(getWrite_map_size_1(), totalClears) + "}\n");
+			output.write("\\newcommand{\\" + bench + "WriteMapTen}{" + getPercent(getWrite_map_size_10(), totalClears) + "}\n");
+			output.write("\\newcommand{\\" + bench + "WriteMapHund}{" + getPercent(getWrite_map_size_100(), totalClears) + "}\n");
+			output.write("\\newcommand{\\" + bench + "WriteMapThou}{" + getPercent(getWrite_map_size_1000(), totalClears) + "}\n");
+			output.write("\\newcommand{\\" + bench + "WriteMapGtThou}{" + getPercent(getWrite_map_size_gt_1000(), totalClears) + "}\n");
+		}
 	}
 	
 	public void getAccessCounts(BufferedWriter output) throws IOException {
@@ -788,5 +952,205 @@ public class EventCounts {
 
 	public void setWrite_sharedFP(long write_sharedFP) {
 		this.write_sharedFP = write_sharedFP;
+	}
+
+	public long getRead_rule_A_succeed() {
+		return read_rule_A_succeed;
+	}
+
+	public void setRead_rule_A_succeed(long read_rule_A_succeed) {
+		this.read_rule_A_succeed = read_rule_A_succeed;
+	}
+
+	public long getRead_rule_A_total_attempts() {
+		return read_rule_A_total_attempts;
+	}
+
+	public void setRead_rule_A_total_attempts(long read_rule_A_total_attempts) {
+		this.read_rule_A_total_attempts = read_rule_A_total_attempts;
+	}
+
+	public long getWrite_write_rule_A_succeed() {
+		return write_write_rule_A_succeed;
+	}
+
+	public void setWrite_write_rule_A_succeed(long write_write_rule_A_succeed) {
+		this.write_write_rule_A_succeed = write_write_rule_A_succeed;
+	}
+
+	public long getWrite_write_rule_A_total_attempts() {
+		return write_write_rule_A_total_attempts;
+	}
+
+	public void setWrite_write_rule_A_total_attempts(long write_write_rule_A_total_attempts) {
+		this.write_write_rule_A_total_attempts = write_write_rule_A_total_attempts;
+	}
+
+	public long getWrite_read_rule_A_succeed() {
+		return write_read_rule_A_succeed;
+	}
+
+	public void setWrite_read_rule_A_succeed(long write_read_rule_A_succeed) {
+		this.write_read_rule_A_succeed = write_read_rule_A_succeed;
+	}
+
+	public long getWrite_read_rule_A_total_attempts() {
+		return write_read_rule_A_total_attempts;
+	}
+
+	public void setWrite_read_rule_A_total_attempts(long write_read_rule_A_total_attempts) {
+		this.write_read_rule_A_total_attempts = write_read_rule_A_total_attempts;
+	}
+
+	public long getClears_by_capo() {
+		return clears_by_capo;
+	}
+
+	public void setClears_by_capo(long clears_by_capo) {
+		this.clears_by_capo = clears_by_capo;
+	}
+
+	public long getRead_set_size_0() {
+		return read_set_size_0;
+	}
+
+	public void setRead_set_size_0(long read_set_size_0) {
+		this.read_set_size_0 = read_set_size_0;
+	}
+
+	public long getRead_set_size_1() {
+		return read_set_size_1;
+	}
+
+	public void setRead_set_size_1(long read_set_size_1) {
+		this.read_set_size_1 = read_set_size_1;
+	}
+
+	public long getRead_set_size_gt_1() {
+		return read_set_size_gt_1;
+	}
+
+	public void setRead_set_size_gt_1(long read_set_size_gt_1) {
+		this.read_set_size_gt_1 = read_set_size_gt_1;
+	}
+
+	public long getWrite_set_size_0() {
+		return write_set_size_0;
+	}
+
+	public void setWrite_set_size_0(long write_set_size_0) {
+		this.write_set_size_0 = write_set_size_0;
+	}
+
+	public long getWrite_set_size_1() {
+		return write_set_size_1;
+	}
+
+	public void setWrite_set_size_1(long write_set_size_1) {
+		this.write_set_size_1 = write_set_size_1;
+	}
+
+	public long getWrite_set_size_gt_1() {
+		return write_set_size_gt_1;
+	}
+
+	public void setWrite_set_size_gt_1(long write_set_size_gt_1) {
+		this.write_set_size_gt_1 = write_set_size_gt_1;
+	}
+
+	public long getRead_map_size_0() {
+		return read_map_size_0;
+	}
+
+	public void setRead_map_size_0(long read_map_size_0) {
+		this.read_map_size_0 = read_map_size_0;
+	}
+
+	public long getRead_map_size_1() {
+		return read_map_size_1;
+	}
+
+	public void setRead_map_size_1(long read_map_size_1) {
+		this.read_map_size_1 = read_map_size_1;
+	}
+
+	public long getRead_map_size_10() {
+		return read_map_size_10;
+	}
+
+	public void setRead_map_size_10(long read_map_size_10) {
+		this.read_map_size_10 = read_map_size_10;
+	}
+
+	public long getRead_map_size_100() {
+		return read_map_size_100;
+	}
+
+	public void setRead_map_size_100(long read_map_size_100) {
+		this.read_map_size_100 = read_map_size_100;
+	}
+
+	public long getRead_map_size_1000() {
+		return read_map_size_1000;
+	}
+
+	public void setRead_map_size_1000(long read_map_size_1000) {
+		this.read_map_size_1000 = read_map_size_1000;
+	}
+
+	public long getRead_map_size_gt_1000() {
+		return read_map_size_gt_1000;
+	}
+
+	public void setRead_map_size_gt_1000(long read_map_size_gt_1000) {
+		this.read_map_size_gt_1000 = read_map_size_gt_1000;
+	}
+
+	public long getWrite_map_size_0() {
+		return write_map_size_0;
+	}
+
+	public void setWrite_map_size_0(long write_map_size_0) {
+		this.write_map_size_0 = write_map_size_0;
+	}
+
+	public long getWrite_map_size_1() {
+		return write_map_size_1;
+	}
+
+	public void setWrite_map_size_1(long write_map_size_1) {
+		this.write_map_size_1 = write_map_size_1;
+	}
+
+	public long getWrite_map_size_10() {
+		return write_map_size_10;
+	}
+
+	public void setWrite_map_size_10(long write_map_size_10) {
+		this.write_map_size_10 = write_map_size_10;
+	}
+
+	public long getWrite_map_size_100() {
+		return write_map_size_100;
+	}
+
+	public void setWrite_map_size_100(long write_map_size_100) {
+		this.write_map_size_100 = write_map_size_100;
+	}
+
+	public long getWrite_map_size_1000() {
+		return write_map_size_1000;
+	}
+
+	public void setWrite_map_size_1000(long write_map_size_1000) {
+		this.write_map_size_1000 = write_map_size_1000;
+	}
+
+	public long getWrite_map_size_gt_1000() {
+		return write_map_size_gt_1000;
+	}
+
+	public void setWrite_map_size_gt_1000(long write_map_size_gt_1000) {
+		this.write_map_size_gt_1000 = write_map_size_gt_1000;
 	}
 }

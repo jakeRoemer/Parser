@@ -211,6 +211,7 @@ public class BenchmarkInfo {
 	}
 
 	public void setTotalThread_count(String config, String thread_count, boolean final_trial) {
+		if (config.equals("pipQ_dc")) config = "pip_dc";
 		if (config.equals("wdc_exc") || config.equals("pip_dc")) {
 			this.total_thread_count_trials += Integer.parseInt(thread_count);
 			if (final_trial) {
@@ -227,6 +228,7 @@ public class BenchmarkInfo {
 	}
 
 	public void setMaxLiveThread_count(String config, String thread_count, boolean final_trial) {
+		if (config.equals("pipQ_dc")) config = "pip_dc";
 		if (config.equals("wdc_exc") || config.equals("pip_dc")) {
 			this.max_live_thread_count_trials += Integer.parseInt(thread_count);
 			if (final_trial) {
@@ -316,7 +318,7 @@ public class BenchmarkInfo {
 			}
 		}
 		if (tool.equals("PIP")) {
-			String[] types = {"HB", "HBDynamic", "FT", "FTDynamic", "WCP", "WCPDynamic", "WDC", "WDCDynamic", "CAPO", "CAPODynamic", "CAPOOPT", "CAPOOPTDynamic"};//, "PIP", "PIPDynamic"};
+			String[] types = {"HB", "HBDynamic", "FT", "FTDynamic", "WCP", "WCPDynamic", "WDC", "WDCDynamic", "CAPO", "CAPODynamic", "CAPOOPT", "CAPOOPTDynamic", "CAPOOPTALT", "CAPOOPTALTDynamic"};//, "PIP", "PIPDynamic"};
 			for (String type : types) {
 				if (this.types.get(type) == null) {
 					this.race_types.add("\\newcommand{\\"+benchmark+type+"}{\\rna}\n");
