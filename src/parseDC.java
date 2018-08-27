@@ -4,14 +4,8 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.lang.ref.WeakReference;
 import java.util.Arrays;
-import java.util.Enumeration;
-import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.Set;
-import java.util.Vector;
-import java.util.WeakHashMap;
 
 public class parseDC {
 	static final boolean extraStats = false;
@@ -33,9 +27,10 @@ public class parseDC {
 //		String output_dir = "PIP_fastTool_volatileCheckUpdate_orderedPairs";
 //		String output_dir = "Vindicator_volatileCheckUpdate";
 //		String output_dir = "PIP_fastTool_performanceRuns";
-		String output_dir = "PIP_fastTool_correctnessRuns";
-//		String output_dir = "PIP_slowTool_correctnessRuns";
+//		String output_dir = "PIP_fastTool_correctnessRuns";
+		String output_dir = "PIP_slowTool_correctnessRuns";
 //		String output_dir = "PIP_fastTool_CAPOOpt_fixes";
+//		String output_dir = "PIP_fastTool_noRaceLimit";
 		String [] benchmarks = {"avrora", "batik", "htwo", "jython", "luindex", "lusearch", "pmd", "sunflow", "tomcat", "xalan"};
 		//Vindicator tool
 //		String [] configs = {"base", "empty", "hbwcp", "wdc_noG", "wdc"};//, "capo_only", "pip_only"};//, "wdc_noG", "capo_noG", "pip_noG"};
@@ -44,17 +39,17 @@ public class parseDC {
 //		String [] configs = {"base", "empty", "ft", "pip_hb", "pip_wcp", "pip_dc", "pip_capo", "pip_pip"};
 //		String [] configNames = {"Base", "Empty", "FT", "HB", "WCP", "DC", "CAPO", "PIP"};
 		//CAPO OPT
-		String [] configs = {"base", "empty", "ft", "pip_hb", "pip_wcp", "pip_dc", "pip_capo", "pip_capoOpt", "pip_capoOptAlt"};
-		String [] configNames = {"Base", "Empty", "FT", "HB", "WCP", "DC", "CAPO", "CAPOOPT", "CAPOOPTALT"};
+//		String [] configs = {"base", "empty", "ft", "pip_hb", "pip_wcp", "pip_dc", "pip_capo", "pip_capoOpt", "pip_capoOptAlt"};
+//		String [] configNames = {"Base", "Empty", "FT", "HB", "WCP", "DC", "CAPO", "CAPOOPT", "CAPOOPTALT"};
 		//Quiet CAPO OPT (fast tool)
 //		String [] configs = {"base", "empty", "ft", "pipQ_hb", "pipQ_wcp", "pipQ_dc", "pipQ_capo", "pipQ_capoOpt", "pipQ_capoOptAlt"};
 //		String [] configNames = {"Base", "Empty", "FT", "HB", "WCP", "DC", "CAPO", "CAPOOPT", "CAPOOPTALT"};
 		//PIP tool (slow tool)
-//		String [] configs = {"base", "empty", "ft", "hb", "hbwcp", "wdc"};//, "wdc_noG", "wdc_exc", "capo"};//, "wdc_exc", "capo_exc", "pip_exc", "pip"};
-//		String [] configNames = {"Base", "Empty", "FT", "HB", "HBWCP", "WDC"};//, "WDCLite", "WDCExc", "CAPOFull"};//, "DCExc", "CAPOExc", "PIPExc", "PIP"};
+		String [] configs = {"base", "empty", "ft", "hb", "hbwcp", "wdc_noG", "wdc"};//, "wdc_noG", "wdc_exc", "capo"};//, "wdc_exc", "capo_exc", "pip_exc", "pip"};
+		String [] configNames = {"Base", "Empty", "FT", "HB", "HBWCP", "WDCLite", "WDC"};//, "WDCLite", "WDCExc", "CAPOFull"};//, "DCExc", "CAPOExc", "PIPExc", "PIP"};
 		//configs -> wdc_testconfig | configNames = DCLite
-		int trials = 10; //Integer.parseInt(args[1]);
-		String tool = "PIP"; //DC or PIP
+		int trials = 8; //Integer.parseInt(args[1]);
+		String tool = "DC"; //DC or PIP
 		boolean fieldRace = false; //true = field, false = single second site
 		LinkedList<BenchmarkInfo> benchmarks_info = new LinkedList<BenchmarkInfo>();
 		BufferedReader input = null;
