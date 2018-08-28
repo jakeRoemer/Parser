@@ -23,7 +23,7 @@ public class BenchmarkInfo {
 	LinkedList<String> config_bench_time;
 	
 	LinkedList<String> race_types;
-	HashMap<String, Double> types;
+	HashMap<String, double[]> types;
 	HashMap<String, RaceInfo> races;
 	RaceInfo latest_race;
 	
@@ -49,7 +49,7 @@ public class BenchmarkInfo {
 		this.config_mem = new LinkedList<String>();
 		this.config_bench_time = new LinkedList<String>();
 		this.race_types = new LinkedList<String>();
-		this.types = new HashMap<String, Double>();
+		this.types = new HashMap<String, double[]>();
 		this.races = new HashMap<String, RaceInfo>();
 		
 		this.capo_race_types = new LinkedList<String>();
@@ -118,7 +118,10 @@ public class BenchmarkInfo {
 	}
 	
 	public static long getTwoSigsRound(long[] val) {
-		double value = EventCounts.getAvg(val);
+		double value = 0;
+		if (!EventCounts.isZero(val)) {
+			value = EventCounts.getAvg(val);
+		}
 		BigDecimal bd = new BigDecimal(value);
 		bd = bd.round(new MathContext(2));
 		return bd.longValue();
@@ -318,9 +321,22 @@ public class BenchmarkInfo {
 			for (String type : types) {
 				if (this.types.get(type) == null) {
 					this.race_types.add("\\newcommand{\\"+benchmark+type+"}{\\rna}\n");
+					this.race_types.add("\\newcommand{\\"+benchmark+type+"CI}{\\rna}\n");
+					this.race_types.add("\\newcommand{\\"+benchmark+type+"CIMIN}{\\rna}\n");
+					this.race_types.add("\\newcommand{\\"+benchmark+type+"CIMAX}{\\rna}\n");
 				} else {
-					String type_races_string = String.valueOf(round(this.types.get(type)/this.total_trials));
+					long avgRaces = round(EventCounts.getAvg(this.types.get(type)));
+					String type_races_string = String.valueOf(avgRaces);
 					this.race_types.add("\\newcommand{\\"+benchmark+type+"}{"+getParenthesis(type_races_string)+"}\n");
+					//Add confidence intervals
+					long ci = round(EventCounts.calcCI(this.types.get(type)));
+					String ciString = String.valueOf(ci);
+					this.race_types.add("\\newcommand{\\"+benchmark+type+"CI}{"+getParenthesis(ciString)+"}\n");
+					//Applying confidence intervals to data set
+					String minRaces = String.valueOf(avgRaces - ci);
+					String maxRaces = String.valueOf(avgRaces + ci);
+					this.race_types.add("\\newcommand{\\"+benchmark+type+"CIMIN}{"+getParenthesis(minRaces)+"}\n");
+					this.race_types.add("\\newcommand{\\"+benchmark+type+"CIMAX}{"+getParenthesis(maxRaces)+"}\n");
 				}
 			}
 		}
@@ -329,13 +345,25 @@ public class BenchmarkInfo {
 			for (String type : types) {
 				if (this.types.get(type) == null) {
 					this.race_types.add("\\newcommand{\\"+benchmark+type+"}{\\rna}\n");
+					this.race_types.add("\\newcommand{\\"+benchmark+type+"CI}{\\rna}\n");
+					this.race_types.add("\\newcommand{\\"+benchmark+type+"CIMIN}{\\rna}\n");
+					this.race_types.add("\\newcommand{\\"+benchmark+type+"CIMAX}{\\rna}\n");
 				} else {
-					String type_races_string = String.valueOf(round(this.types.get(type)/this.total_trials));
+					long avgRaces = round(EventCounts.getAvg(this.types.get(type)));
+					String type_races_string = String.valueOf(avgRaces);
 					this.race_types.add("\\newcommand{\\"+benchmark+type+"}{"+getParenthesis(type_races_string)+"}\n");
+					//Add confidence intervals
+					long ci = round(EventCounts.calcCI(this.types.get(type)));
+					String ciString = String.valueOf(ci);
+					this.race_types.add("\\newcommand{\\"+benchmark+type+"CI}{"+getParenthesis(ciString)+"}\n");
+					//Applying confidence intervals to data set
+					String minRaces = String.valueOf(avgRaces - ci);
+					String maxRaces = String.valueOf(avgRaces + ci);
+					this.race_types.add("\\newcommand{\\"+benchmark+type+"CIMIN}{"+getParenthesis(minRaces)+"}\n");
+					this.race_types.add("\\newcommand{\\"+benchmark+type+"CIMAX}{"+getParenthesis(maxRaces)+"}\n");
 				}
 			}
 		}
-		// Above is for PIP tool
 		return race_types;
 	}
 	
@@ -347,10 +375,23 @@ public class BenchmarkInfo {
 		return pip_race_types;
 	}
 
-	public void setRace_types(String config, String type, String race_num, String tool, boolean final_trial) {
-		double type_races = Double.parseDouble(race_num);
-		if (this.types.containsKey(type)) {
-			type_races += this.types.get(type);
+	public void setRace_types(String config, String type, String race_num, String tool, int curr_trial, int total_trials) {
+		double[] type_races = this.types.get(type);
+		if (type_races == null) {
+			type_races = new double[total_trials];
+			for (int i = 0; i < type_races.length; i++) type_races[i] = -1; //failed trial identifier
+		}
+		if (type_races[curr_trial-1] != -1) {
+			type_races[curr_trial-1] += Double.parseDouble(race_num);
+		} else {
+			type_races[curr_trial-1] = Double.parseDouble(race_num);
+		}
+//		System.out.println(String.format("setting config, type: %s, %s | race_num: %s", config, type, race_num));
+		//If this is the last trial and there were failed trials, resize the data set with only successful trials
+		if (curr_trial == total_trials) {
+			int failures = EventCounts.failedTrials(type_races);
+			System.out.println(String.format("config: %s bench: %s trial: %d failures %d", config, benchmark, curr_trial, failures));
+			if (failures > 0) type_races = EventCounts.resize(type_races, type_races.length-failures);
 		}
 		this.types.put(type, type_races);
 	}

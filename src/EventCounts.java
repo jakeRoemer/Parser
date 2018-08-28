@@ -3,6 +3,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.lang.reflect.Array;
 
 import org.apache.commons.math3.distribution.TDistribution;
 import org.apache.commons.math3.exception.MathIllegalArgumentException;
@@ -102,11 +103,57 @@ public class EventCounts {
 		this.bench = bench;
 	}
 	
+	public int failedTrials(long[] array) {
+		int failures = 0;
+		for (int i = 0; i < array.length; i++) {
+			if (array[i] == -1) failures++;
+		}
+		return failures;
+	}
+	
+	public static int failedTrials(double[] array) {
+		int failures = 0;
+		for (int i = 0; i < array.length; i++) {
+			if (array[i] == -1) failures++;
+		}
+		return failures;
+	}
+	
+	public long[] resize(long[] array, int newSize) {
+		long[] resized = new long[newSize];
+		int index = 0;
+		for (int i = 0; i < array.length; i++) {
+			if (array[i] != -1) {
+				resized[index] = array[i];
+				index++;
+			}
+		}
+		return resized;
+	}
+	
+	public static double[] resize(double[] array, int newSize) {
+		double[] resized = new double[newSize];
+		int index = 0;
+		for (int i = 0; i < array.length; i++) {
+			if (array[i] != -1) {
+				resized[index] = array[i];
+				index++;
+			}
+		}
+		return resized;
+	}
+	
 	public long[] getVal(long[] val, long eventCount, int curr_trial, int total_trials) {
 		if (val == null) {
 			val = new long[total_trials];
+			for (int i = 0; i < val.length; i++) val[i] = -1; //failed trial identifier
 		}
 		val[curr_trial-1] = eventCount; //trial counts start at 1
+		//If this is the last trial and there were failed trials, resize the data set with only successful trials
+		if (curr_trial == total_trials) {
+			int failures = failedTrials(val);
+			if (failures > 0) return resize(val, val.length-failures);
+		}
 		return val;
 	}
 	
@@ -408,59 +455,6 @@ public class EventCounts {
 		if (parseDC.extraStats) recordExtraCounts(output);
 	}
 	
-	public double calcCI(double[] data) {
-		SummaryStatistics stats = new SummaryStatistics();
-        for (double val : data) {
-            stats.addValue(val);
-        }
-
-        // Calculate 95% confidence interval
-        double ci = calcMeanCI(stats, 0.95);
-        System.out.println(String.format("N: %d", stats.getN()));
-        System.out.println(String.format("Mean: %f", stats.getMean()));
-        System.out.println(String.format("CI: +/-%f", ci));
-        System.out.println(String.format("Avg: %f", stats.getSum()/stats.getN()));
-        double lower = stats.getMean() - ci;
-        double upper = stats.getMean() + ci;
-        System.out.println(String.format("Confidence Interval 95%%: %f, %f", lower, upper));
-        return ci;
-	}
-	
-	private static double calcMeanCI(SummaryStatistics stats, double level) {
-        try {
-            // Create T Distribution with N-1 degrees of freedom
-            TDistribution tDist = new TDistribution(stats.getN() - 1);
-            // Calculate critical value
-            double critVal = 1.95996;//95% confidence intervals//tDist.inverseCumulativeProbability(1.0 - (1 - level) / 2);
-            // Calculate confidence interval
-            return critVal * stats.getStandardDeviation() / Math.sqrt(stats.getN());
-        } catch (MathIllegalArgumentException e) {
-            return Double.NaN;
-        }
-    }
-	
-	public static long getAvg(long[] array) {
-		long avg = 0;
-		for (int i = 0; i < array.length; i++) {
-			avg += array[i];
-		}
-		avg /= array.length;
-		return avg;
-	}
-	
-	public double getPercent(long[] val, long[]total) {
-		return BenchmarkInfo.getThreeSigsDouble(((getAvg(val)/(double)getAvg(total))*100));
-	}
-	
-	public String roundTwoSigs(long[] val) {
-		double rounded = BenchmarkInfo.getTwoSigsDouble(getAvg(val)/(double)1000000);
-		if (rounded < 1) {
-			return Double.toString(rounded);
-		}
-		String roundedString = Double.toString(rounded);
-		return roundedString.length() > 3 ? BenchmarkInfo.getParenthesis(roundedString.substring(0, roundedString.length()-2)) : roundedString;
-	}
-	
 	public void getRuleACounts(BufferedWriter output) throws IOException {
 		if (!isZero(getRead_rule_A_total_attempts())) {
 			output.write("\\newcommand{\\" + bench + "ReadRuleASuc}{" + getPercent(getRead_rule_A_succeed(), getRead_rule_A_total_attempts()) + "}\n");
@@ -506,22 +500,6 @@ public class EventCounts {
 			output.write("\\newcommand{\\" + bench + "WriteMapThou}{" + getPercent(getWrite_map_size_1000(), totalClears) + "}\n");
 			output.write("\\newcommand{\\" + bench + "WriteMapGtThou}{" + getPercent(getWrite_map_size_gt_1000(), totalClears) + "}\n");
 		}
-	}
-	
-	public static long[] add(long[] array1, long[] array2) {
-		long[] arrayAdd = new long[array1.length];
-		for(int i = 0; i < array1.length; i++) {
-			arrayAdd[i] = array1[i] + array2[i];
-		}
-		return arrayAdd;
-	}
-	
-	public static long[] sub(long[] array1, long[] array2) {
-		long[] arraySub = new long[array1.length];
-		for(int i = 0; i < array1.length; i++) {
-			arraySub[i] = array1[i] - array2[i];
-		}
-		return arraySub;
 	}
 	
 	public void getAccessCounts(BufferedWriter output) throws IOException {
@@ -603,7 +581,92 @@ public class EventCounts {
 		output.write("\\newcommand{\\" + bench + "RdShWrRace}{" + (isZero(raceTotal) ? raceTotal : getPercent(getShared_write_race(), raceTotal)) + "}\n");
 	}
 	
-	public boolean isZero(long[] array) {
+	public static double calcCI(double[] data) {
+		if (data == null || isZero(data) || data.length == 1) return 0;
+		
+		SummaryStatistics stats = new SummaryStatistics();
+        for (double val : data) {
+            stats.addValue(val);
+        }
+
+        // Calculate 95% confidence interval
+        return calcMeanCI(stats, 0.95);
+	}
+	
+	private static double calcMeanCI(SummaryStatistics stats, double level) {
+        try {
+            // Create T Distribution with N-1 degrees of freedom
+            TDistribution tDist = new TDistribution(stats.getN() - 1);
+            // Calculate critical value
+            double critVal = 1.95996;//95% confidence intervals//tDist.inverseCumulativeProbability(1.0 - (1 - level) / 2);
+            // Calculate confidence interval
+            return critVal * stats.getStandardDeviation() / Math.sqrt(stats.getN());
+        } catch (MathIllegalArgumentException e) {
+            return Double.NaN;
+        }
+    }
+	
+	public static long getAvg(long[] array) {
+		long avg = 0;
+		for (int i = 0; i < array.length; i++) {
+			avg += array[i];
+		}
+		avg /= array.length;
+		return avg;
+	}
+	
+	public static double getAvg(double[] array) {
+		double avg = 0;
+		for (int i = 0; i < array.length; i++) {
+			avg += array[i];
+		}
+		avg /= array.length;
+		return avg;
+	}
+	
+	public double getPercent(long[] val, long[]total) {
+		return BenchmarkInfo.getThreeSigsDouble(((getAvg(val)/(double)getAvg(total))*100));
+	}
+	
+	public String roundTwoSigs(long[] val) {
+		double rounded = BenchmarkInfo.getTwoSigsDouble(getAvg(val)/(double)1000000);
+		if (rounded < 1) {
+			return Double.toString(rounded);
+		}
+		String roundedString = Double.toString(rounded);
+		return roundedString.length() > 3 ? BenchmarkInfo.getParenthesis(roundedString.substring(0, roundedString.length()-2)) : roundedString;
+	}
+	
+	public static long[] add(long[] array1, long[] array2) {
+		if (isZero(array1)) return array2;
+		if (isZero(array2)) return array1;
+		long[] arrayAdd = new long[array1.length];
+		for(int i = 0; i < array1.length; i++) {
+			arrayAdd[i] = array1[i] + array2[i];
+		}
+		return arrayAdd;
+	}
+	
+	public static long[] sub(long[] array1, long[] array2) {
+		long[] arraySub = new long[array1.length];
+		for(int i = 0; i < array1.length; i++) {
+			arraySub[i] = array1[i] - array2[i];
+		}
+		return arraySub;
+	}
+	
+	public static boolean isZero(long[] array) {
+		if (array == null) return true;
+		for (int i = 0; i < array.length; i++) {
+			if (array[i] != 0) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	public static boolean isZero(double[] array) {
+		if (array == null) return true;
 		for (int i = 0; i < array.length; i++) {
 			if (array[i] != 0) {
 				return false;
