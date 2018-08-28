@@ -117,6 +117,13 @@ public class BenchmarkInfo {
 		return bd.longValue();
 	}
 	
+	public static long getTwoSigsRound(long[] val) {
+		double value = EventCounts.getAvg(val);
+		BigDecimal bd = new BigDecimal(value);
+		bd = bd.round(new MathContext(2));
+		return bd.longValue();
+	}
+	
 	public static double getTwoSigsDouble(double value) {
 		BigDecimal bd = new BigDecimal(value);
 		bd = bd.round(new MathContext(2));
@@ -341,42 +348,11 @@ public class BenchmarkInfo {
 	}
 
 	public void setRace_types(String config, String type, String race_num, String tool, boolean final_trial) {
-		if (true) {//(tool.equals("DC") && config.equals("wdc_exc")) || tool.equals("PIP")) {
-			double type_races = Double.parseDouble(race_num);
-			if (this.types.containsKey(type)) {
-				type_races += this.types.get(type);
-			}
-			this.types.put(type, type_races);
-			if (final_trial && false) {
-//				String type_races_string = String.valueOf((long)(this.types.get(type)/this.total_trials));
-				String type_races_string = String.valueOf(round(this.types.get(type)/this.total_trials));
-				this.race_types.add("\\newcommand{\\"+benchmark+type+"}{"+getParenthesis(type_races_string)+"}\n");
-			}
+		double type_races = Double.parseDouble(race_num);
+		if (this.types.containsKey(type)) {
+			type_races += this.types.get(type);
 		}
-		if (false) {
-		if (config.equals("capo") || config.equals("capo_only")) {
-			double type_races = Double.parseDouble(race_num);
-			if (this.capo_types.containsKey(type)) {
-				type_races += this.capo_types.get(type);
-			}
-			this.capo_types.put(type, type_races);
-			if (final_trial) {
-				String type_races_string = String.valueOf(round(this.capo_types.get(type)/this.total_trials));
-				this.capo_race_types.add("\\newcommand{\\"+benchmark+"CAPO"+type+"}{"+getParenthesis(type_races_string)+"}\n");
-			}
-		}
-		if (config.equals("pip") || config.equals("pip_only")) {
-			double type_races = Double.parseDouble(race_num);
-			if (this.pip_types.containsKey(type)) {
-				type_races += this.pip_types.get(type);
-			}
-			this.pip_types.put(type, type_races);
-			if (final_trial) {
-				String type_races_string = String.valueOf(round(this.pip_types.get(type)/this.total_trials));
-				this.pip_race_types.add("\\newcommand{\\"+benchmark+"PIP"+type+"}{"+getParenthesis(type_races_string)+"}\n");
-			}
-		}
-		}
+		this.types.put(type, type_races);
 	}
 
 	public HashMap<String, RaceInfo> getRaces() {
@@ -409,8 +385,6 @@ public class BenchmarkInfo {
 		} else {
 			Double normalized_time = this.static_check_time_trials/this.total_trials;
 			normalized_time = normalized_time / 1000;
-//			normalized_time = normalized_time / (this.config_total_time_trials.get("base")/this.total_trials);
-			
 			
 			String static_check_time_string = String.valueOf(getTwoSigsRound(normalized_time));
 			if (static_check_time_string.length() <= 1) {
@@ -478,14 +452,14 @@ public class BenchmarkInfo {
 				}
 				if (event_total_string.equals("0")) {
 					if (counts.get(config) != null) {
-						event_total_string = String.valueOf(getTwoSigsRound(counts.get(config).getTotal_ops() + counts.get(config).getTotal_fast_path_taken()));
+						event_total_string = String.valueOf(getTwoSigsRound(EventCounts.add(counts.get(config).getTotal_ops(), counts.get(config).getTotal_fast_path_taken())));//counts.get(config).getTotal_ops() + counts.get(config).getTotal_fast_path_taken()));
 					}
 				}
 			} else if (totalType.equals("NoFPEvents")) {
 				if (counts.get(config) == null) { //fail state
 					event_total_string = "0";
 				} else {
-					event_total_string = String.valueOf(getTwoSigsRound(counts.get(config).getTotal() + counts.get(config).getFp_write() + counts.get(config).getFp_read()));
+					event_total_string = String.valueOf(getTwoSigsRound(EventCounts.add(EventCounts.add(counts.get(config).getTotal(), counts.get(config).getFp_write()), counts.get(config).getFp_read())));//counts.get(config).getTotal() + counts.get(config).getFp_write() + counts.get(config).getFp_read()));
 				}
 				if (event_total_string.equals("0")) {
 					if (counts.get(config) != null) {
@@ -498,7 +472,7 @@ public class BenchmarkInfo {
 				if (counts.get(config) == null) { //fail state
 					event_total_string = "0";
 				} else {
-					event_total_string = String.valueOf(getTwoSigsRound(counts.get(config).getTotal() + counts.get(config).getFp_write() + counts.get(config).getFp_read()));
+					event_total_string = String.valueOf(getTwoSigsRound(EventCounts.add(EventCounts.add(counts.get(config).getTotal(), counts.get(config).getFp_write()), counts.get(config).getFp_read())));//counts.get(config).getTotal() + counts.get(config).getFp_write() + counts.get(config).getFp_read()));
 				}
 				if (event_total_string.equals("0")) {
 					if (counts.get(config) != null) {
@@ -513,7 +487,7 @@ public class BenchmarkInfo {
 				}
 				if (event_total_string.equals("0")) {
 					if (counts.get(config) != null) {
-						event_total_string = String.valueOf(getTwoSigsRound(counts.get(config).getTotal_ops() - counts.get(config).getTotal_fast_path_taken()));
+						event_total_string = String.valueOf(getTwoSigsRound(EventCounts.sub(counts.get(config).getTotal_ops(), counts.get(config).getTotal_fast_path_taken())));//counts.get(config).getTotal_ops() - counts.get(config).getTotal_fast_path_taken()));
 					}
 				}
 			} else if (totalType.equals("Ops")) {
@@ -533,13 +507,13 @@ public class BenchmarkInfo {
 		return event_total;
 	}
 
-	public void setCounts(String config, String eventType, long eventCount, boolean final_trial) {
+	public void setCounts(String config, String eventType, long eventCount, int curr_trial) {
 //		System.out.println("config: " + config + " | event type: " + eventType + " | event count: " + eventCount);
 		EventCounts configCounts = counts.get(config);
 		if (configCounts == null) {
 			configCounts = new EventCounts(config, benchmark);
 		}
-		configCounts.setEventCounts(eventType, eventCount, final_trial, this.total_trials);
+		configCounts.setEventCounts(eventType, eventCount, curr_trial, this.total_trials);
 		counts.put(config, configCounts);
 	}
 }

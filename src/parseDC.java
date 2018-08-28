@@ -97,7 +97,7 @@ public class parseDC {
 								benchmark_started = true;
 							}
 							if (benchmark_started && line.contains("    <counter><name> \"" + tool + ": Total Events")) { //slow tool (DC)
-								bench.setCounts(configs[config], line.split(": ")[1].split("\"")[0], Long.parseLong(line.split("> ")[3].split(" </")[0].trim().replaceAll(",","")), trial == trials);
+								bench.setCounts(configs[config], line.split(": ")[1].split("\"")[0], Long.parseLong(line.split("> ")[3].split(" </")[0].trim().replaceAll(",","")), trial);// == trials);
 //							} else if (benchmark_started && line.contains("    <counter><name> \"" + tool + ": Total Ops")) { //fast tool (PIP)
 //								//Need to subtract total fast path taken from total ops 
 //								bench.setCounts(configs[config], line.split(": ")[1].split("\"")[0], Long.parseLong(line.split("> ")[3].split(" </")[0].trim().replaceAll(",","")), trial == trials);
@@ -105,7 +105,7 @@ public class parseDC {
 //								//Need to subtract total fast path taken from total ops
 //								bench.setCounts(configs[config], line.split(": ")[1].split("\"")[0], Long.parseLong(line.split("> ")[3].split(" </")[0].trim().replaceAll(",","")), trial == trials);
 							} else if (benchmark_started && line.contains("[main: event total: ")) {
-								bench.setCounts(configs[config], "Total Events", Long.parseLong(line.split(": ")[2].split("]")[0]), trial == trials);
+								bench.setCounts(configs[config], "Total Events", Long.parseLong(line.split(": ")[2].split("]")[0]), trial);// == trials);
 							}
 							if (benchmark_started && line.contains("<threadCount>")) {
 								bench.setMaxLiveThread_count(configs[config], line.split("> ")[1].split(" <")[0], trial == trials);
@@ -130,7 +130,7 @@ public class parseDC {
 								}
 							}
 							if (benchmark_started && line.contains("    <counter><name> \"" + tool + ":")) { //xml counts
-								bench.setCounts(configs[config], line.split(": ")[1].split("\"")[0], Long.parseLong(line.split("> ")[3].split(" </")[0].trim().replaceAll(",","")), trial == trials);
+								bench.setCounts(configs[config], line.split(": ")[1].split("\"")[0], Long.parseLong(line.split("> ")[3].split(" </")[0].trim().replaceAll(",","")), trial);// == trials);
 							}
 							
 							//Initialize

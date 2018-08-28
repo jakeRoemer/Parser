@@ -16,7 +16,6 @@ public class RaceInfo {
 		this.name = name;
 		if (name.contains("class ")) {
 			String [] name_parts = name.split(":");
-//			this.name = name_parts[0].split(" ")[1] + ":" + name_parts[1] + /*":" + name_parts[2] +*/ ":" + name_parts[3] + (split_name ? " ->&&&\\\\\n& " : " -> ") + name_parts[4].split("> ")[1].split(" ")[1] + ":" + name_parts[5] + /*":" + name_parts[6] +*/ ":" + name_parts[7];
 			this.name = name_parts[0].split(" ")[1] + ":" + name_parts[1] + ":" + name_parts[2] + ":" + name_parts[3] + (split_name ? " ->&&&\\\\\n& " : " -> ") + name_parts[4].split("> ")[1].split(" ")[1] + ":" + name_parts[5] + ":" + name_parts[6] + ":" + name_parts[7];
 		} else {
 			if (split_name) {

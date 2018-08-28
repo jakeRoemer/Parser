@@ -9,90 +9,90 @@ import org.apache.commons.math3.exception.MathIllegalArgumentException;
 import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
 
 public class EventCounts {
-	private long total;
-	private long exit;
-	private long fake_fork;
-	private long acquire;
-	private long release;
-	private long write;
-	private long read;
-	private long fp_write;
-	private long fp_read;
-	private long vol_write;
-	private long vol_read;
-	private long start;
-	private long join;
-	private long pre_wait;
-	private long post_wait;
-	private long class_init;
-	private long class_access;
-	private long access_insideCS;
-	private long access_outsideCS;
-	private long write_insideCS;
-	private long write_insideCSFP;
-	private long write_outsideCS;
-	private long write_outsideCSFP;
-	private long read_insideCS;
-	private long read_insideCSFP;
-	private long read_outsideCS;
-	private long read_outsideCSFP;
+	private long[] total;
+	private long[] exit;
+	private long[] fake_fork;
+	private long[] acquire;
+	private long[] release;
+	private long[] write;
+	private long[] read;
+	private long[] fp_write;
+	private long[] fp_read;
+	private long[] vol_write;
+	private long[] vol_read;
+	private long[] start;
+	private long[] join;
+	private long[] pre_wait;
+	private long[] post_wait;
+	private long[] class_init;
+	private long[] class_access;
+	private long[] access_insideCS;
+	private long[] access_outsideCS;
+	private long[] write_insideCS;
+	private long[] write_insideCSFP;
+	private long[] write_outsideCS;
+	private long[] write_outsideCSFP;
+	private long[] read_insideCS;
+	private long[] read_insideCSFP;
+	private long[] read_outsideCS;
+	private long[] read_outsideCSFP;
 	
-	private long read_same_epoch;
-	private long read_same_epochFP;
-	private long read_shared_same_epoch;
-	private long read_shared_same_epochFP;
-	private long read_exclusive;
-	private long read_exclusiveFP;
-	private long read_share;
-	private long read_shareFP;
-	private long read_shared;
-	private long read_sharedFP;
-	private long write_read_race;
-	private long write_same_epoch;
-	private long write_same_epochFP;
-	private long write_exclusive;
-	private long write_exclusiveFP;
-	private long write_shared;
-	private long write_sharedFP;
-	private long write_write_race;
-	private long read_write_race;
-	private long shared_write_race;
-	private long fork;
-	private long volatile_acc;
-	private long read_fast_path_taken;
-	private long write_fast_path_taken;
-	private long total_reads;
-	private long total_writes;
-	private long total_access_ops;
-	private long total_ops;
-	private long total_fast_path_taken;
+	private long[] read_same_epoch;
+	private long[] read_same_epochFP;
+	private long[] read_shared_same_epoch;
+	private long[] read_shared_same_epochFP;
+	private long[] read_exclusive;
+	private long[] read_exclusiveFP;
+	private long[] read_share;
+	private long[] read_shareFP;
+	private long[] read_shared;
+	private long[] read_sharedFP;
+	private long[] write_read_race;
+	private long[] write_same_epoch;
+	private long[] write_same_epochFP;
+	private long[] write_exclusive;
+	private long[] write_exclusiveFP;
+	private long[] write_shared;
+	private long[] write_sharedFP;
+	private long[] write_write_race;
+	private long[] read_write_race;
+	private long[] shared_write_race;
+	private long[] fork;
+	private long[] volatile_acc;
+	private long[] read_fast_path_taken;
+	private long[] write_fast_path_taken;
+	private long[] total_reads;
+	private long[] total_writes;
+	private long[] total_access_ops;
+	private long[] total_ops;
+	private long[] total_fast_path_taken;
 	
-	private long read_rule_A_succeed;
-	private long read_rule_A_total_attempts;
-	private long write_write_rule_A_succeed;
-	private long write_write_rule_A_total_attempts;
-	private long write_read_rule_A_succeed;
-	private long write_read_rule_A_total_attempts;
+	private long[] read_rule_A_succeed;
+	private long[] read_rule_A_total_attempts;
+	private long[] write_write_rule_A_succeed;
+	private long[] write_write_rule_A_total_attempts;
+	private long[] write_read_rule_A_succeed;
+	private long[] write_read_rule_A_total_attempts;
 	
-	private long clears_by_capo;
-	private long read_set_size_0;
-	private long read_set_size_1;
-	private long read_set_size_gt_1;
-	private long write_set_size_0;
-	private long write_set_size_1;
-	private long write_set_size_gt_1;
-	private long read_map_size_0;
-	private long read_map_size_1;
-	private long read_map_size_10;
-	private long read_map_size_100;
-	private long read_map_size_1000;
-	private long read_map_size_gt_1000;
-	private long write_map_size_0;
-	private long write_map_size_1;
-	private long write_map_size_10;
-	private long write_map_size_100;
-	private long write_map_size_1000;
-	private long write_map_size_gt_1000;
+	private long[] clears_by_capo;
+	private long[] read_set_size_0;
+	private long[] read_set_size_1;
+	private long[] read_set_size_gt_1;
+	private long[] write_set_size_0;
+	private long[] write_set_size_1;
+	private long[] write_set_size_gt_1;
+	private long[] read_map_size_0;
+	private long[] read_map_size_1;
+	private long[] read_map_size_10;
+	private long[] read_map_size_100;
+	private long[] read_map_size_1000;
+	private long[] read_map_size_gt_1000;
+	private long[] write_map_size_0;
+	private long[] write_map_size_1;
+	private long[] write_map_size_10;
+	private long[] write_map_size_100;
+	private long[] write_map_size_1000;
+	private long[] write_map_size_gt_1000;
 	
 	private String config;
 	private String bench;
@@ -102,173 +102,177 @@ public class EventCounts {
 		this.bench = bench;
 	}
 	
-	public long getVal(long val, long eventCount, boolean final_count, int total_trials) {
-		return final_count ? ((val + eventCount) / total_trials) : (val + eventCount);
+	public long[] getVal(long[] val, long eventCount, int curr_trial, int total_trials) {
+		if (val == null) {
+			val = new long[total_trials];
+		}
+		val[curr_trial-1] = eventCount; //trial counts start at 1
+		return val;
 	}
 	
-	public void setEventCounts(String eventType, long eventCount, boolean final_count, int total_trials) {
+	public void setEventCounts(String eventType, long eventCount, int curr_trial, int total_trials) {
 		if (eventType.equals("Total Events")) {
-			setTotal(getVal(getTotal(), eventCount, final_count, total_trials));
+			setTotal(getVal(getTotal(), eventCount, curr_trial, total_trials));
 		} else if (eventType.equals("Total Fast Path Taken")) {
-			setTotal_fast_path_taken(getVal(getTotal_fast_path_taken(), eventCount, final_count, total_trials));
+			setTotal_fast_path_taken(getVal(getTotal_fast_path_taken(), eventCount, curr_trial, total_trials));
 		} else if (eventType.equals("Total Ops")) {
-			setTotal_ops(getVal(getTotal_ops(), eventCount, final_count, total_trials));
+			setTotal_ops(getVal(getTotal_ops(), eventCount, curr_trial, total_trials));
 		} else if (eventType.equals("Total Access Ops")) {
-			setTotal_access_ops(getVal(getTotal_access_ops(), eventCount, final_count, total_trials));
+			setTotal_access_ops(getVal(getTotal_access_ops(), eventCount, curr_trial, total_trials));
 		} else if (eventType.equals("Total Writes")) {
-			setTotal_writes(getVal(getTotal_writes(), eventCount, final_count, total_trials));
+			setTotal_writes(getVal(getTotal_writes(), eventCount, curr_trial, total_trials));
 		} else if (eventType.equals("Total Reads")) {
-			setTotal_reads(getVal(getTotal_reads(), eventCount, final_count, total_trials));
+			setTotal_reads(getVal(getTotal_reads(), eventCount, curr_trial, total_trials));
 		} else if (eventType.equals("Write Fast Path Taken")) {
-			setWrite_fast_path_taken(getVal(getWrite_fast_path_taken(), eventCount, final_count, total_trials));
+			setWrite_fast_path_taken(getVal(getWrite_fast_path_taken(), eventCount, curr_trial, total_trials));
 		} else if (eventType.equals("Read Fast Path Taken")) {
-			setRead_fast_path_taken(getVal(getRead_fast_path_taken(), eventCount, final_count, total_trials));
+			setRead_fast_path_taken(getVal(getRead_fast_path_taken(), eventCount, curr_trial, total_trials));
 		} else if (eventType.equals("Fork")) {
-			setFork(getVal(getFork(), eventCount, final_count, total_trials));
+			setFork(getVal(getFork(), eventCount, curr_trial, total_trials));
 		} else if (eventType.equals("Shared-Write Error")) {
-			setShared_write_race(getVal(getShared_write_race(), eventCount, final_count, total_trials));
+			setShared_write_race(getVal(getShared_write_race(), eventCount, curr_trial, total_trials));
 		} else if (eventType.equals("Read-Write Error")) {
-			setRead_write_race(getVal(getRead_write_race(), eventCount, final_count, total_trials));
+			setRead_write_race(getVal(getRead_write_race(), eventCount, curr_trial, total_trials));
 		} else if (eventType.equals("Write-Write Error")) {
-			setWrite_write_race(getVal(getWrite_write_race(), eventCount, final_count, total_trials));
+			setWrite_write_race(getVal(getWrite_write_race(), eventCount, curr_trial, total_trials));
 		} else if (eventType.equals("Write Shared")) {
-			setWrite_shared(getVal(getWrite_shared(), eventCount, final_count, total_trials));
+			setWrite_shared(getVal(getWrite_shared(), eventCount, curr_trial, total_trials));
 		} else if (eventType.equals("Write Exclusive")) {
-			setWrite_exclusive(getVal(getWrite_exclusive(), eventCount, final_count, total_trials));
+			setWrite_exclusive(getVal(getWrite_exclusive(), eventCount, curr_trial, total_trials));
 		} else if (eventType.equals("Write Same Epoch")) {
-			setWrite_same_epoch(getVal(getWrite_same_epoch(), eventCount, final_count, total_trials));
+			setWrite_same_epoch(getVal(getWrite_same_epoch(), eventCount, curr_trial, total_trials));
 		} else if (eventType.equals("Write Shared FP")) {
-			setWrite_sharedFP(getVal(getWrite_sharedFP(), eventCount, final_count, total_trials));
+			setWrite_sharedFP(getVal(getWrite_sharedFP(), eventCount, curr_trial, total_trials));
 		} else if (eventType.equals("Write Exclusive FP")) {
-			setWrite_exclusiveFP(getVal(getWrite_exclusiveFP(), eventCount, final_count, total_trials));
+			setWrite_exclusiveFP(getVal(getWrite_exclusiveFP(), eventCount, curr_trial, total_trials));
 		} else if (eventType.equals("Write Same Epoch FP")) {
-			setWrite_same_epochFP(getVal(getWrite_same_epochFP(), eventCount, final_count, total_trials));
+			setWrite_same_epochFP(getVal(getWrite_same_epochFP(), eventCount, curr_trial, total_trials));
 		} else if (eventType.equals("Write-Read Error")) {
-			setWrite_read_race(getVal(getWrite_read_race(), eventCount, final_count, total_trials));
+			setWrite_read_race(getVal(getWrite_read_race(), eventCount, curr_trial, total_trials));
 		} else if (eventType.equals("Read Shared")) {
-			setRead_shared(getVal(getRead_shared(), eventCount, final_count, total_trials));
+			setRead_shared(getVal(getRead_shared(), eventCount, curr_trial, total_trials));
 		} else if (eventType.equals("Read Share")) {
-			setRead_share(getVal(getRead_share(), eventCount, final_count, total_trials));
+			setRead_share(getVal(getRead_share(), eventCount, curr_trial, total_trials));
 		} else if (eventType.equals("Read Exclusive")) {
-			setRead_exclusive(getVal(getRead_exclusive(), eventCount, final_count, total_trials));
+			setRead_exclusive(getVal(getRead_exclusive(), eventCount, curr_trial, total_trials));
 		} else if (eventType.equals("Read Shared Same Epoch")) {
-			setRead_shared_same_epoch(getVal(getRead_shared_same_epoch(), eventCount, final_count, total_trials));
+			setRead_shared_same_epoch(getVal(getRead_shared_same_epoch(), eventCount, curr_trial, total_trials));
 		} else if (eventType.equals("Read Same Epoch")) {
-			setRead_same_epoch(getVal(getRead_same_epoch(), eventCount, final_count, total_trials));
+			setRead_same_epoch(getVal(getRead_same_epoch(), eventCount, curr_trial, total_trials));
 		} else if (eventType.equals("Read Shared FP")) {
-			setRead_sharedFP(getVal(getRead_sharedFP(), eventCount, final_count, total_trials));
+			setRead_sharedFP(getVal(getRead_sharedFP(), eventCount, curr_trial, total_trials));
 		} else if (eventType.equals("Read Share FP")) {
-			setRead_shareFP(getVal(getRead_shareFP(), eventCount, final_count, total_trials));
+			setRead_shareFP(getVal(getRead_shareFP(), eventCount, curr_trial, total_trials));
 		} else if (eventType.equals("Read Exclusive FP")) {
-			setRead_exclusiveFP(getVal(getRead_exclusiveFP(), eventCount, final_count, total_trials));
+			setRead_exclusiveFP(getVal(getRead_exclusiveFP(), eventCount, curr_trial, total_trials));
 		} else if (eventType.equals("Read Shared Same Epoch FP")) {
-			setRead_shared_same_epochFP(getVal(getRead_shared_same_epochFP(), eventCount, final_count, total_trials));
+			setRead_shared_same_epochFP(getVal(getRead_shared_same_epochFP(), eventCount, curr_trial, total_trials));
 		} else if (eventType.equals("Read Same Epoch FP")) {
-			setRead_same_epochFP(getVal(getRead_same_epochFP(), eventCount, final_count, total_trials));
+			setRead_same_epochFP(getVal(getRead_same_epochFP(), eventCount, curr_trial, total_trials));
 		} else if (eventType.equals("Exit")) {
-			setExit(getVal(getExit(), eventCount, final_count, total_trials));
+			setExit(getVal(getExit(), eventCount, curr_trial, total_trials));
 		} else if (eventType.equals("Fake Fork")) {
-			setFake_fork(getVal(getFake_fork(), eventCount, final_count, total_trials));
+			setFake_fork(getVal(getFake_fork(), eventCount, curr_trial, total_trials));
 		} else if (eventType.equals("Acquire")) {
-			setAcquire(getVal(getAcquire(), eventCount, final_count, total_trials));
+			setAcquire(getVal(getAcquire(), eventCount, curr_trial, total_trials));
 		} else if (eventType.equals("Release")) {
-			setRelease(getVal(getRelease(), eventCount, final_count, total_trials));
+			setRelease(getVal(getRelease(), eventCount, curr_trial, total_trials));
 		} else if (eventType.equals("Write")) {
-			setWrite(getVal(getWrite(), eventCount, final_count, total_trials));
+			setWrite(getVal(getWrite(), eventCount, curr_trial, total_trials));
 		} else if (eventType.equals("Read")) {
-			setRead(getVal(getRead(), eventCount, final_count, total_trials));
+			setRead(getVal(getRead(), eventCount, curr_trial, total_trials));
 		} else if (eventType.equals("WriteFastPath")) {
-			setFp_write(getVal(getFp_write(), eventCount, final_count, total_trials));
+			setFp_write(getVal(getFp_write(), eventCount, curr_trial, total_trials));
 		} else if (eventType.equals("ReadFastPath")) {
-			setFp_read(getVal(getFp_read(), eventCount, final_count, total_trials));
+			setFp_read(getVal(getFp_read(), eventCount, curr_trial, total_trials));
 		} else if (eventType.equals("Volatile Write")) {
-			setVol_write(getVal(getVol_write(), eventCount, final_count, total_trials));
+			setVol_write(getVal(getVol_write(), eventCount, curr_trial, total_trials));
 		} else if (eventType.equals("Volatile Read")) {
-			setVol_read(getVal(getVol_read(), eventCount, final_count, total_trials));
+			setVol_read(getVal(getVol_read(), eventCount, curr_trial, total_trials));
 		} else if (eventType.equals("Start")) {
-			setStart(getVal(getStart(), eventCount, final_count, total_trials));
+			setStart(getVal(getStart(), eventCount, curr_trial, total_trials));
 		} else if (eventType.equals("Join")) {
-			setJoin(getVal(getJoin(), eventCount, final_count, total_trials));
+			setJoin(getVal(getJoin(), eventCount, curr_trial, total_trials));
 		} else if (eventType.equals("Pre Wait")) {
-			setPre_wait(getVal(getPre_wait(), eventCount, final_count, total_trials));
+			setPre_wait(getVal(getPre_wait(), eventCount, curr_trial, total_trials));
 		} else if (eventType.equals("Post Wait")) {
-			setPost_wait(getVal(getPost_wait(), eventCount, final_count, total_trials));
+			setPost_wait(getVal(getPost_wait(), eventCount, curr_trial, total_trials));
 		} else if (eventType.equals("Class Initialized")) {
-			setClass_init(getVal(getClass_init(), eventCount, final_count, total_trials));
+			setClass_init(getVal(getClass_init(), eventCount, curr_trial, total_trials));
 		} else if (eventType.equals("Class Accessed")) {
-			setClass_access(getVal(getClass_access(), eventCount, final_count, total_trials));
+			setClass_access(getVal(getClass_access(), eventCount, curr_trial, total_trials));
 		} else if (eventType.equals("Volatile")) {
-			setVolatile_acc(getVal(getVolatile_acc(), eventCount, final_count, total_trials));
+			setVolatile_acc(getVal(getVolatile_acc(), eventCount, curr_trial, total_trials));
 		} else if (eventType.equals("Accesses Inside Critical Sections")) {
-			setAccess_insideCS(getVal(getAccess_insideCS(), eventCount, final_count, total_trials));
+			setAccess_insideCS(getVal(getAccess_insideCS(), eventCount, curr_trial, total_trials));
 		} else if (eventType.equals("Accesses Outisde Critical Sections")) {
-			setAccess_outsideCS(getVal(getAccess_outsideCS(), eventCount, final_count, total_trials));
+			setAccess_outsideCS(getVal(getAccess_outsideCS(), eventCount, curr_trial, total_trials));
 		} else if (eventType.equals("Write accesses Inside Critical Sections")) {
-			setWrite_insideCS(getVal(getWrite_insideCS(), eventCount, final_count, total_trials));
+			setWrite_insideCS(getVal(getWrite_insideCS(), eventCount, curr_trial, total_trials));
 		} else if (eventType.equals("Write accesses Inside Critical Sections succeeding Fast Path")) {
-			setWrite_insideCSFP(getVal(getWrite_insideCSFP(), eventCount, final_count, total_trials));
+			setWrite_insideCSFP(getVal(getWrite_insideCSFP(), eventCount, curr_trial, total_trials));
 		} else if (eventType.equals("Write accesses Outside Critical Sections")) {
-			setWrite_outsideCS(getVal(getWrite_outsideCS(), eventCount, final_count, total_trials));
+			setWrite_outsideCS(getVal(getWrite_outsideCS(), eventCount, curr_trial, total_trials));
 		} else if (eventType.equals("Write accesses Outside Critical Sections succeeding Fast Path")) {
-			setWrite_outsideCSFP(getVal(getWrite_outsideCSFP(), eventCount, final_count, total_trials));
+			setWrite_outsideCSFP(getVal(getWrite_outsideCSFP(), eventCount, curr_trial, total_trials));
 		} else if (eventType.equals("Read accesses Inside Critical Sections")) {
-			setRead_insideCS(getVal(getRead_insideCS(), eventCount, final_count, total_trials));
+			setRead_insideCS(getVal(getRead_insideCS(), eventCount, curr_trial, total_trials));
 		} else if (eventType.equals("Read accesses Inside Critical Sections succeeding Fast Path")) {
-			setRead_insideCSFP(getVal(getRead_insideCSFP(), eventCount, final_count, total_trials));
+			setRead_insideCSFP(getVal(getRead_insideCSFP(), eventCount, curr_trial, total_trials));
 		} else if (eventType.equals("Read accesses Outside Critical Sections")) {
-			setRead_outsideCS(getVal(getRead_outsideCS(), eventCount, final_count, total_trials));
+			setRead_outsideCS(getVal(getRead_outsideCS(), eventCount, curr_trial, total_trials));
 		} else if (eventType.equals("Read accesses Outside Critical Sections succeeding Fast Path")) {
-			setRead_outsideCSFP(getVal(getRead_outsideCSFP(), eventCount, final_count, total_trials));
+			setRead_outsideCSFP(getVal(getRead_outsideCSFP(), eventCount, curr_trial, total_trials));
 		} else if (eventType.equals("Read Rule A Succeed")) {
-			setRead_rule_A_succeed(getVal(getRead_rule_A_succeed(), eventCount, final_count, total_trials));
+			setRead_rule_A_succeed(getVal(getRead_rule_A_succeed(), eventCount, curr_trial, total_trials));
 		} else if (eventType.equals("Read Rule A Total Attempts")) {
-			setRead_rule_A_total_attempts(getVal(getRead_rule_A_total_attempts(), eventCount, final_count, total_trials));
+			setRead_rule_A_total_attempts(getVal(getRead_rule_A_total_attempts(), eventCount, curr_trial, total_trials));
 		} else if (eventType.equals("Write Write Rule A Succeed")) {
-			setWrite_write_rule_A_succeed(getVal(getWrite_write_rule_A_succeed(), eventCount, final_count, total_trials));
+			setWrite_write_rule_A_succeed(getVal(getWrite_write_rule_A_succeed(), eventCount, curr_trial, total_trials));
 		} else if (eventType.equals("Write Write Rule A Total Attempts")) {
-			setWrite_write_rule_A_total_attempts(getVal(getWrite_write_rule_A_total_attempts(), eventCount, final_count, total_trials));
+			setWrite_write_rule_A_total_attempts(getVal(getWrite_write_rule_A_total_attempts(), eventCount, curr_trial, total_trials));
 		} else if (eventType.equals("Write Read Rule A Succeed")) {
-			setWrite_read_rule_A_succeed(getVal(getWrite_read_rule_A_succeed(), eventCount, final_count, total_trials));
+			setWrite_read_rule_A_succeed(getVal(getWrite_read_rule_A_succeed(), eventCount, curr_trial, total_trials));
 		} else if (eventType.equals("Write Read Rule A Total Attempts")) {
-			setWrite_read_rule_A_total_attempts(getVal(getWrite_read_rule_A_total_attempts(), eventCount, final_count, total_trials));
+			setWrite_read_rule_A_total_attempts(getVal(getWrite_read_rule_A_total_attempts(), eventCount, curr_trial, total_trials));
 		} else if (eventType.equals("Clears by CAPO")) {
-			setClears_by_capo(getVal(getClears_by_capo(), eventCount, final_count, total_trials));
+			setClears_by_capo(getVal(getClears_by_capo(), eventCount, curr_trial, total_trials));
 		} else if (eventType.equals("Read Set Size 0")) {
-			setRead_set_size_0(getVal(getRead_set_size_0(), eventCount, final_count, total_trials));
+			setRead_set_size_0(getVal(getRead_set_size_0(), eventCount, curr_trial, total_trials));
 		} else if (eventType.equals("Read Set Size 1")) {
-			setRead_set_size_1(getVal(getRead_set_size_1(), eventCount, final_count, total_trials));
+			setRead_set_size_1(getVal(getRead_set_size_1(), eventCount, curr_trial, total_trials));
 		} else if (eventType.equals("Read Set Size Gt 1")) {
-			setRead_set_size_gt_1(getVal(getRead_set_size_gt_1(), eventCount, final_count, total_trials));
+			setRead_set_size_gt_1(getVal(getRead_set_size_gt_1(), eventCount, curr_trial, total_trials));
 		} else if (eventType.equals("Write Set Size 0")) {
-			setWrite_set_size_0(getVal(getWrite_set_size_0(), eventCount, final_count, total_trials));
+			setWrite_set_size_0(getVal(getWrite_set_size_0(), eventCount, curr_trial, total_trials));
 		} else if (eventType.equals("Write Set Size 1")) {
-			setWrite_set_size_1(getVal(getWrite_set_size_1(), eventCount, final_count, total_trials));
+			setWrite_set_size_1(getVal(getWrite_set_size_1(), eventCount, curr_trial, total_trials));
 		} else if (eventType.equals("Write Set Size Gt 1")) {
-			setWrite_set_size_gt_1(getVal(getWrite_set_size_gt_1(), eventCount, final_count, total_trials));
+			setWrite_set_size_gt_1(getVal(getWrite_set_size_gt_1(), eventCount, curr_trial, total_trials));
 		} else if (eventType.equals("Read Map Size 0")) {
-			setRead_map_size_0(getVal(getRead_map_size_0(), eventCount, final_count, total_trials));
+			setRead_map_size_0(getVal(getRead_map_size_0(), eventCount, curr_trial, total_trials));
 		} else if (eventType.equals("Read Map Size 1")) {
-			setRead_map_size_1(getVal(getRead_map_size_1(), eventCount, final_count, total_trials));
+			setRead_map_size_1(getVal(getRead_map_size_1(), eventCount, curr_trial, total_trials));
 		} else if (eventType.equals("Read Map Size 10")) {
-			setRead_map_size_10(getVal(getRead_map_size_10(), eventCount, final_count, total_trials));
+			setRead_map_size_10(getVal(getRead_map_size_10(), eventCount, curr_trial, total_trials));
 		} else if (eventType.equals("Read Map Size 100")) {
-			setRead_map_size_100(getVal(getRead_map_size_100(), eventCount, final_count, total_trials));
+			setRead_map_size_100(getVal(getRead_map_size_100(), eventCount, curr_trial, total_trials));
 		} else if (eventType.equals("Read Map Size 1000")) {
-			setRead_map_size_1000(getVal(getRead_map_size_1000(), eventCount, final_count, total_trials));
+			setRead_map_size_1000(getVal(getRead_map_size_1000(), eventCount, curr_trial, total_trials));
 		} else if (eventType.equals("Read Map Size Gt 1000")) {
-			setRead_map_size_gt_1000(getVal(getRead_map_size_gt_1000(), eventCount, final_count, total_trials));
+			setRead_map_size_gt_1000(getVal(getRead_map_size_gt_1000(), eventCount, curr_trial, total_trials));
 		} else if (eventType.equals("Write Map Size 0")) {
-			setWrite_map_size_0(getVal(getWrite_map_size_0(), eventCount, final_count, total_trials));
+			setWrite_map_size_0(getVal(getWrite_map_size_0(), eventCount, curr_trial, total_trials));
 		} else if (eventType.equals("Write Map Size 1")) {
-			setWrite_map_size_1(getVal(getWrite_map_size_1(), eventCount, final_count, total_trials));
+			setWrite_map_size_1(getVal(getWrite_map_size_1(), eventCount, curr_trial, total_trials));
 		} else if (eventType.equals("Write Map Size 10")) {
-			setWrite_map_size_10(getVal(getWrite_map_size_10(), eventCount, final_count, total_trials));
+			setWrite_map_size_10(getVal(getWrite_map_size_10(), eventCount, curr_trial, total_trials));
 		} else if (eventType.equals("Write Map Size 100")) {
-			setWrite_map_size_100(getVal(getWrite_map_size_100(), eventCount, final_count, total_trials));
+			setWrite_map_size_100(getVal(getWrite_map_size_100(), eventCount, curr_trial, total_trials));
 		} else if (eventType.equals("Write Map Size 1000")) {
-			setWrite_map_size_1000(getVal(getWrite_map_size_1000(), eventCount, final_count, total_trials));
+			setWrite_map_size_1000(getVal(getWrite_map_size_1000(), eventCount, curr_trial, total_trials));
 		} else if (eventType.equals("Write Map Size Gt 1000")) {
-			setWrite_map_size_gt_1000(getVal(getWrite_map_size_gt_1000(), eventCount, final_count, total_trials));
+			setWrite_map_size_gt_1000(getVal(getWrite_map_size_gt_1000(), eventCount, curr_trial, total_trials));
 		}
 	}
 	
@@ -435,12 +439,21 @@ public class EventCounts {
         }
     }
 	
-	public double getPercent(long val, long total) {
-		return BenchmarkInfo.getThreeSigsDouble(((val/(double)total)*100));
+	public static long getAvg(long[] array) {
+		long avg = 0;
+		for (int i = 0; i < array.length; i++) {
+			avg += array[i];
+		}
+		avg /= array.length;
+		return avg;
 	}
 	
-	public String roundTwoSigs(long val) {
-		double rounded = BenchmarkInfo.getTwoSigsDouble(val/(double)1000000);
+	public double getPercent(long[] val, long[]total) {
+		return BenchmarkInfo.getThreeSigsDouble(((getAvg(val)/(double)getAvg(total))*100));
+	}
+	
+	public String roundTwoSigs(long[] val) {
+		double rounded = BenchmarkInfo.getTwoSigsDouble(getAvg(val)/(double)1000000);
 		if (rounded < 1) {
 			return Double.toString(rounded);
 		}
@@ -449,23 +462,23 @@ public class EventCounts {
 	}
 	
 	public void getRuleACounts(BufferedWriter output) throws IOException {
-		if (getRead_rule_A_total_attempts() != 0) {
+		if (!isZero(getRead_rule_A_total_attempts())) {
 			output.write("\\newcommand{\\" + bench + "ReadRuleASuc}{" + getPercent(getRead_rule_A_succeed(), getRead_rule_A_total_attempts()) + "}\n");
 			output.write("\\newcommand{\\" + bench + "ReadRuleATot}{" + roundTwoSigs(getRead_rule_A_total_attempts()) + "}\n");
 		}
-		if (getWrite_write_rule_A_total_attempts() != 0) {
+		if (!isZero(getWrite_write_rule_A_total_attempts())) {
 			output.write("\\newcommand{\\" + bench + "WriteWriteRuleASuc}{" + getPercent(getWrite_write_rule_A_succeed(), getWrite_write_rule_A_total_attempts()) + "}\n");
 			output.write("\\newcommand{\\" + bench + "WriteWriteRuleATot}{" + roundTwoSigs(getWrite_write_rule_A_total_attempts()) + "}\n");
 		}
-		if (getWrite_read_rule_A_total_attempts() != 0) {
+		if (!isZero(getWrite_read_rule_A_total_attempts())) {
 			output.write("\\newcommand{\\" + bench + "WriteReadRuleASuc}{" + getPercent(getWrite_read_rule_A_succeed(), getWrite_read_rule_A_total_attempts()) + "}\n");
 			output.write("\\newcommand{\\" + bench + "WriteReadRuleATot}{" + roundTwoSigs(getWrite_read_rule_A_total_attempts()) + "}\n");
 		}
 	}
 	
 	public void getCAPOSetCounts(BufferedWriter output) throws IOException {
-		long totalClears = getClears_by_capo();
-		if (totalClears != 0) {
+		long[] totalClears = getClears_by_capo();
+		if (!isZero(totalClears)) {
 			output.write("\\newcommand{\\" + bench + "TotalSetClears}{" + roundTwoSigs(totalClears) + "}\n");
 			output.write("\\newcommand{\\" + bench + "ReadSetZero}{" + getPercent(getRead_set_size_0(), totalClears) + "}\n");
 			output.write("\\newcommand{\\" + bench + "ReadSetOne}{" + getPercent(getRead_set_size_1(), totalClears) + "}\n");
@@ -477,8 +490,8 @@ public class EventCounts {
 	}
 	//Note: TotalSetClears and TotalMapClears will be equal since the clear count acts as a counter for both set and map stats.
 	public void getCAPOMapCounts(BufferedWriter output) throws IOException {
-		long totalClears = getClears_by_capo();
-		if (totalClears != 0) {
+		long[] totalClears = getClears_by_capo();
+		if (!isZero(totalClears)) {
 			output.write("\\newcommand{\\" + bench + "TotalMapClears}{" + roundTwoSigs(totalClears) + "}\n");
 			output.write("\\newcommand{\\" + bench + "ReadMapZero}{" + getPercent(getRead_map_size_0(), totalClears) + "}\n");
 			output.write("\\newcommand{\\" + bench + "ReadMapOne}{" + getPercent(getRead_map_size_1(), totalClears) + "}\n");
@@ -495,36 +508,53 @@ public class EventCounts {
 		}
 	}
 	
+	public static long[] add(long[] array1, long[] array2) {
+		long[] arrayAdd = new long[array1.length];
+		for(int i = 0; i < array1.length; i++) {
+			arrayAdd[i] = array1[i] + array2[i];
+		}
+		return arrayAdd;
+	}
+	
+	public static long[] sub(long[] array1, long[] array2) {
+		long[] arraySub = new long[array1.length];
+		for(int i = 0; i < array1.length; i++) {
+			arraySub[i] = array1[i] - array2[i];
+		}
+		return arraySub;
+	}
+	
 	public void getAccessCounts(BufferedWriter output) throws IOException {
-		long totalEvents = getTotal_ops() + getTotal_fast_path_taken();
+		//Needs to be a pointwise add. make a function for it
+		long[] totalEvents = add(getTotal_ops(), getTotal_fast_path_taken());//getTotal_ops() + getTotal_fast_path_taken();
 		//Note: total events/reads/writes include race counts. total reads + total writes add up to total access ops
 		System.out.println("count bench: " + bench + " | config: " + config);
 		output.write("\\newcommand{\\" + bench + "Events}{" + roundTwoSigs(totalEvents) + "}\n");
 		output.write("\\newcommand{\\" + bench + "NoFPEvents}{" + roundTwoSigs(getTotal_ops()) +"}\n");
 		output.write("\\newcommand{\\" + bench + "ReadTotal}{" + getPercent(getTotal_reads(), getTotal_ops()) + "}\n");
 		output.write("\\newcommand{\\" + bench + "WriteTotal}{" + getPercent(getTotal_writes(), getTotal_ops()) + "}\n");
-		long noFPRdInCS = getRead_insideCS() - getRead_insideCSFP();
-		long noFPWrInCS = getWrite_insideCS() - getWrite_insideCSFP();
-		long noFPAccessInCS = noFPRdInCS + noFPWrInCS;
-		long noFPRdOutCS = getRead_outsideCS() - getRead_outsideCSFP();
-		long noFPWrOutCS = getWrite_outsideCS() - getWrite_outsideCSFP();
-		long noFPAccessOutCS = noFPRdOutCS + noFPWrOutCS;
-		long honestTotalWrites = getTotal_writes() - getWrite_write_race();
-		long honestTotalAccesses = getTotal_reads() + honestTotalWrites;
+		long[] noFPRdInCS = sub(getRead_insideCS(), getRead_insideCSFP());//getRead_insideCS() - getRead_insideCSFP();
+		long[] noFPWrInCS = sub(getWrite_insideCS(), getWrite_insideCSFP());//getWrite_insideCS() - getWrite_insideCSFP();
+		long[] noFPAccessInCS = add(noFPRdInCS, noFPWrInCS);//noFPRdInCS + noFPWrInCS;
+		long[] noFPRdOutCS = sub(getRead_outsideCS(), getRead_outsideCSFP());//getRead_outsideCS() - getRead_outsideCSFP();
+		long[] noFPWrOutCS = sub(getWrite_outsideCS(), getWrite_outsideCSFP());//getWrite_outsideCS() - getWrite_outsideCSFP();
+		long[] noFPAccessOutCS = add(noFPRdOutCS, noFPWrOutCS);//noFPRdOutCS + noFPWrOutCS;
+		long[] honestTotalWrites = sub(getTotal_writes(), getWrite_write_race());//getTotal_writes() - getWrite_write_race();
+		long[] honestTotalAccesses = add(getTotal_reads(), honestTotalWrites);//getTotal_reads() + honestTotalWrites;
 		output.write("\\newcommand{\\" + bench + "NoFPAccessInCS}{" + getPercent(noFPAccessInCS, honestTotalAccesses) + "}\n");
 		output.write("\\newcommand{\\" + bench + "NoFPAccessOutCS}{" + getPercent(noFPAccessOutCS, honestTotalAccesses) + "}\n");
-		long acqRelEvents = getAcquire() + getRelease();
+		long[] acqRelEvents = add(getAcquire(), getRelease());//getAcquire() + getRelease();
 		output.write("\\newcommand{\\" + bench + "AcqRelTotal}{" + getPercent(acqRelEvents, getTotal_ops()) + "}\n");		
-		long otherEvents = getTotal_ops() - getTotal_access_ops() - acqRelEvents;
+		long[] otherEvents = sub(sub(getTotal_ops(), getTotal_access_ops()), acqRelEvents);//getTotal_ops() - getTotal_access_ops() - acqRelEvents;
 		output.write("\\newcommand{\\" + bench + "OtherTotal}{" + getPercent(otherEvents, getTotal_ops()) + "}\n");
 	}
 	
 	public void getReadCounts(BufferedWriter output) throws IOException {
 		//Note: noFPReadTotal should be the same as readTotal, just want to distinguish getReadCounts' total from AccessCounts' read total
 		output.write("\\newcommand{\\" + bench + "NoFPReadTotal}{" + roundTwoSigs(getTotal_reads()) + "}\n");
-		long noFPRdInCS = getRead_insideCS() - getRead_insideCSFP();
+		long[] noFPRdInCS = sub(getRead_insideCS(), getRead_insideCSFP());//getRead_insideCS() - getRead_insideCSFP();
 		output.write("\\newcommand{\\" + bench + "ReadInCS}{" + getPercent(noFPRdInCS, getTotal_reads()) + "}\n");
-		long noFPRdOutCS = getRead_outsideCS() - getRead_outsideCSFP();
+		long[] noFPRdOutCS = sub(getRead_outsideCS(), getRead_outsideCSFP());//getRead_outsideCS() - getRead_outsideCSFP();
 		output.write("\\newcommand{\\" + bench + "ReadOutCS}{" + getPercent(noFPRdOutCS, getTotal_reads()) + "}\n");
 		output.write("\\newcommand{\\" + bench + "ReadSameEp}{" + getPercent(getRead_same_epoch(), getTotal_reads()) + "}\n");
 		output.write("\\newcommand{\\" + bench + "ReadSharedSameEp}{" + getPercent(getRead_shared_same_epoch(), getTotal_reads()) + "}\n");
@@ -534,11 +564,11 @@ public class EventCounts {
 	}
 	
 	public void getWriteCounts(BufferedWriter output) throws IOException {
-		long honestTotalWrites = getTotal_writes() - getWrite_write_race();
+		long[] honestTotalWrites = sub(getTotal_writes(), getWrite_write_race());//getTotal_writes() - getWrite_write_race();
 		output.write("\\newcommand{\\" + bench + "NoFPHonestWriteTotal}{" + roundTwoSigs(honestTotalWrites) + "}\n");
-		long noFPWrInCS = getWrite_insideCS() - getWrite_insideCSFP();
+		long[] noFPWrInCS = sub(getWrite_insideCS(), getWrite_insideCSFP());//getWrite_insideCS() - getWrite_insideCSFP();
 		output.write("\\newcommand{\\" + bench + "WriteInCS}{" + getPercent(noFPWrInCS, honestTotalWrites) + "}\n");
-		long noFPWrOutCS = getWrite_outsideCS() - getWrite_outsideCSFP();
+		long[] noFPWrOutCS = sub(getWrite_outsideCS(), getWrite_outsideCSFP());//getWrite_outsideCS() - getWrite_outsideCSFP();
 		output.write("\\newcommand{\\" + bench + "WriteOutCS}{" + getPercent(noFPWrOutCS, honestTotalWrites) + "}\n");
 		//Note: noFPWriteTotal should be the same as writeTotal, just want to distinguish getWriteCounts' total from AccessCounts' write total
 		output.write("\\newcommand{\\" + bench + "NoFPWriteTotal}{" + roundTwoSigs(getTotal_writes()) + "}\n");
@@ -549,11 +579,11 @@ public class EventCounts {
 	
 	public void getOtherCounts(BufferedWriter output) throws IOException {
 		//Note: noFPOtherTotal should be the same as otherTotal, just want to distinguish getOtherCounts' total from AccessCounts' other total
-		long otherEvents = getTotal_ops() - getTotal_access_ops();
+		long[] otherEvents = sub(getTotal_ops(), getTotal_access_ops());//getTotal_ops() - getTotal_access_ops();
 		output.write("\\newcommand{\\" + bench + "NoFPOtherTotal}{" + otherEvents + "}\n");
-		long acqRelEvents = getAcquire() + getRelease();
+		long[] acqRelEvents = add(getAcquire(), getRelease());//getAcquire() + getRelease();
 		output.write("\\newcommand{\\" + bench + "AcqRelOtherTotal}{" + getPercent(acqRelEvents, otherEvents) + "}\n");
-		otherEvents = otherEvents - acqRelEvents;
+		otherEvents = sub(otherEvents, acqRelEvents);//otherEvents - acqRelEvents;
 		output.write("\\newcommand{\\" + bench + "NoAcqRelOtherTotal}{" + otherEvents + "}\n");
 		output.write("\\newcommand{\\" + bench + "Fork}{" + getPercent(getFork(), otherEvents) + "}\n");
 		output.write("\\newcommand{\\" + bench + "Join}{" + getPercent(getJoin(), otherEvents) + "}\n");
@@ -565,626 +595,635 @@ public class EventCounts {
 	}
 	
 	public void getRaceTypeCounts(BufferedWriter output) throws IOException {
-		long raceTotal = getWrite_read_race() + getWrite_write_race() + getRead_write_race() + getShared_write_race();
+		long[] raceTotal = add(add(add(getWrite_read_race(), getWrite_write_race()), getRead_write_race()), getShared_write_race());// getWrite_read_race() + getWrite_write_race() + getRead_write_race() + getShared_write_race();
 		output.write("\\newcommand{\\" + bench + "RaceTotal}{" + raceTotal + "}\n");
-		output.write("\\newcommand{\\" + bench + "WrRdRace}{" + (raceTotal==0 ? raceTotal : getPercent(getWrite_read_race(), raceTotal)) + "}\n");
-		output.write("\\newcommand{\\" + bench + "WrWrRace}{" + (raceTotal==0 ? raceTotal : getPercent(getWrite_write_race(), raceTotal)) + "}\n");
-		output.write("\\newcommand{\\" + bench + "RdWrRace}{" + (raceTotal==0 ? raceTotal : getPercent(getRead_write_race(), raceTotal)) + "}\n");
-		output.write("\\newcommand{\\" + bench + "RdShWrRace}{" + (raceTotal==0 ? raceTotal : getPercent(getShared_write_race(), raceTotal)) + "}\n");
+		output.write("\\newcommand{\\" + bench + "WrRdRace}{" + (isZero(raceTotal) ? raceTotal : getPercent(getWrite_read_race(), raceTotal)) + "}\n");
+		output.write("\\newcommand{\\" + bench + "WrWrRace}{" + (isZero(raceTotal) ? raceTotal : getPercent(getWrite_write_race(), raceTotal)) + "}\n");
+		output.write("\\newcommand{\\" + bench + "RdWrRace}{" + (isZero(raceTotal) ? raceTotal : getPercent(getRead_write_race(), raceTotal)) + "}\n");
+		output.write("\\newcommand{\\" + bench + "RdShWrRace}{" + (isZero(raceTotal) ? raceTotal : getPercent(getShared_write_race(), raceTotal)) + "}\n");
 	}
 	
-	public long getTotal() {
+	public boolean isZero(long[] array) {
+		for (int i = 0; i < array.length; i++) {
+			if (array[i] != 0) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	public long[] getTotal() {
 		return total;
 	}
-	public void setTotal(long total) {
+	public void setTotal(long[] total) {
 		this.total = total;
 	}
-	public long getExit() {
+	public long[] getExit() {
 		return exit;
 	}
-	public void setExit(long exit) {
+	public void setExit(long[] exit) {
 		this.exit = exit;
 	}
-	public long getFake_fork() {
+	public long[] getFake_fork() {
 		return fake_fork;
 	}
-	public void setFake_fork(long fake_fork) {
+	public void setFake_fork(long[] fake_fork) {
 		this.fake_fork = fake_fork;
 	}
-	public long getAcquire() {
+	public long[] getAcquire() {
 		return acquire;
 	}
-	public void setAcquire(long acquire) {
+	public void setAcquire(long[] acquire) {
 		this.acquire = acquire;
 	}
-	public long getRelease() {
+	public long[] getRelease() {
 		return release;
 	}
-	public void setRelease(long release) {
+	public void setRelease(long[] release) {
 		this.release = release;
 	}
-	public long getWrite() {
+	public long[] getWrite() {
 		return write;
 	}
-	public void setWrite(long write) {
+	public void setWrite(long[] write) {
 		this.write = write;
 	}
-	public long getRead() {
+	public long[] getRead() {
 		return read;
 	}
-	public void setRead(long read) {
+	public void setRead(long[] read) {
 		this.read = read;
 	}
-	public long getFp_write() {
+	public long[] getFp_write() {
 		return fp_write;
 	}
-	public void setFp_write(long fp_write) {
+	public void setFp_write(long[] fp_write) {
 		this.fp_write = fp_write;
 	}
-	public long getFp_read() {
+	public long[] getFp_read() {
 		return fp_read;
 	}
-	public void setFp_read(long fp_read) {
+	public void setFp_read(long[] fp_read) {
 		this.fp_read = fp_read;
 	}
-	public long getVol_write() {
+	public long[] getVol_write() {
 		return vol_write;
 	}
-	public void setVol_write(long vol_write) {
+	public void setVol_write(long[] vol_write) {
 		this.vol_write = vol_write;
 	}
-	public long getVol_read() {
+	public long[] getVol_read() {
 		return vol_read;
 	}
-	public void setVol_read(long vol_read) {
+	public void setVol_read(long[] vol_read) {
 		this.vol_read = vol_read;
 	}
-	public long getStart() {
+	public long[] getStart() {
 		return start;
 	}
-	public void setStart(long start) {
+	public void setStart(long[] start) {
 		this.start = start;
 	}
-	public long getJoin() {
+	public long[] getJoin() {
 		return join;
 	}
-	public void setJoin(long join) {
+	public void setJoin(long[] join) {
 		this.join = join;
 	}
-	public long getPre_wait() {
+	public long[] getPre_wait() {
 		return pre_wait;
 	}
-	public void setPre_wait(long pre_wait) {
+	public void setPre_wait(long[] pre_wait) {
 		this.pre_wait = pre_wait;
 	}
-	public long getPost_wait() {
+	public long[] getPost_wait() {
 		return post_wait;
 	}
-	public void setPost_wait(long post_wait) {
+	public void setPost_wait(long[] post_wait) {
 		this.post_wait = post_wait;
 	}
-	public long getClass_init() {
+	public long[] getClass_init() {
 		return class_init;
 	}
-	public void setClass_init(long class_init) {
+	public void setClass_init(long[] class_init) {
 		this.class_init = class_init;
 	}
-	public long getClass_access() {
+	public long[] getClass_access() {
 		return class_access;
 	}
-	public void setClass_access(long class_access) {
+	public void setClass_access(long[] class_access) {
 		this.class_access = class_access;
 	}
 
-	public long getAccess_insideCS() {
+	public long[] getAccess_insideCS() {
 		return access_insideCS;
 	}
 
-	public void setAccess_insideCS(long access_insideCS) {
+	public void setAccess_insideCS(long[] access_insideCS) {
 		this.access_insideCS = access_insideCS;
 	}
 
-	public long getAccess_outsideCS() {
+	public long[] getAccess_outsideCS() {
 		return access_outsideCS;
 	}
 
-	public void setAccess_outsideCS(long access_outsideCS) {
+	public void setAccess_outsideCS(long[] access_outsideCS) {
 		this.access_outsideCS = access_outsideCS;
 	}
 
-	public long getRead_same_epoch() {
+	public long[] getRead_same_epoch() {
 		return read_same_epoch;
 	}
 
-	public void setRead_same_epoch(long read_same_epoch) {
+	public void setRead_same_epoch(long[] read_same_epoch) {
 		this.read_same_epoch = read_same_epoch;
 	}
 
-	public long getRead_shared_same_epoch() {
+	public long[] getRead_shared_same_epoch() {
 		return read_shared_same_epoch;
 	}
 
-	public void setRead_shared_same_epoch(long read_shared_same_epoch) {
+	public void setRead_shared_same_epoch(long[] read_shared_same_epoch) {
 		this.read_shared_same_epoch = read_shared_same_epoch;
 	}
 
-	public long getRead_exclusive() {
+	public long[] getRead_exclusive() {
 		return read_exclusive;
 	}
 
-	public void setRead_exclusive(long read_exclusive) {
+	public void setRead_exclusive(long[] read_exclusive) {
 		this.read_exclusive = read_exclusive;
 	}
 
-	public long getRead_share() {
+	public long[] getRead_share() {
 		return read_share;
 	}
 
-	public void setRead_share(long read_share) {
+	public void setRead_share(long[] read_share) {
 		this.read_share = read_share;
 	}
 
-	public long getRead_shared() {
+	public long[] getRead_shared() {
 		return read_shared;
 	}
 
-	public void setRead_shared(long read_shared) {
+	public void setRead_shared(long[] read_shared) {
 		this.read_shared = read_shared;
 	}
 
-	public long getWrite_read_race() {
+	public long[] getWrite_read_race() {
 		return write_read_race;
 	}
 
-	public void setWrite_read_race(long write_read_race) {
+	public void setWrite_read_race(long[] write_read_race) {
 		this.write_read_race = write_read_race;
 	}
 
-	public long getWrite_same_epoch() {
+	public long[] getWrite_same_epoch() {
 		return write_same_epoch;
 	}
 
-	public void setWrite_same_epoch(long write_same_epoch) {
+	public void setWrite_same_epoch(long[] write_same_epoch) {
 		this.write_same_epoch = write_same_epoch;
 	}
 
-	public long getWrite_exclusive() {
+	public long[] getWrite_exclusive() {
 		return write_exclusive;
 	}
 
-	public void setWrite_exclusive(long write_exclusive) {
+	public void setWrite_exclusive(long[] write_exclusive) {
 		this.write_exclusive = write_exclusive;
 	}
 
-	public long getWrite_shared() {
+	public long[] getWrite_shared() {
 		return write_shared;
 	}
 
-	public void setWrite_shared(long write_shared) {
+	public void setWrite_shared(long[] write_shared) {
 		this.write_shared = write_shared;
 	}
 
-	public long getWrite_write_race() {
+	public long[] getWrite_write_race() {
 		return write_write_race;
 	}
 
-	public void setWrite_write_race(long write_write_race) {
+	public void setWrite_write_race(long[] write_write_race) {
 		this.write_write_race = write_write_race;
 	}
 
-	public long getRead_write_race() {
+	public long[] getRead_write_race() {
 		return read_write_race;
 	}
 
-	public void setRead_write_race(long read_write_race) {
+	public void setRead_write_race(long[] read_write_race) {
 		this.read_write_race = read_write_race;
 	}
 
-	public long getShared_write_race() {
+	public long[] getShared_write_race() {
 		return shared_write_race;
 	}
 
-	public void setShared_write_race(long shared_write_race) {
+	public void setShared_write_race(long[] shared_write_race) {
 		this.shared_write_race = shared_write_race;
 	}
 
-	public long getFork() {
+	public long[] getFork() {
 		return fork;
 	}
 
-	public void setFork(long fork) {
+	public void setFork(long[] fork) {
 		this.fork = fork;
 	}
 
-	public long getRead_fast_path_taken() {
+	public long[] getRead_fast_path_taken() {
 		return read_fast_path_taken;
 	}
 
-	public void setRead_fast_path_taken(long read_fast_path_taken) {
+	public void setRead_fast_path_taken(long[] read_fast_path_taken) {
 		this.read_fast_path_taken = read_fast_path_taken;
 	}
 
-	public long getWrite_fast_path_taken() {
+	public long[] getWrite_fast_path_taken() {
 		return write_fast_path_taken;
 	}
 
-	public void setWrite_fast_path_taken(long write_fast_path_taken) {
+	public void setWrite_fast_path_taken(long[] write_fast_path_taken) {
 		this.write_fast_path_taken = write_fast_path_taken;
 	}
 
-	public long getTotal_reads() {
+	public long[] getTotal_reads() {
 		return total_reads;
 	}
 
-	public void setTotal_reads(long total_reads) {
+	public void setTotal_reads(long[] total_reads) {
 		this.total_reads = total_reads;
 	}
 
-	public long getTotal_writes() {
+	public long[] getTotal_writes() {
 		return total_writes;
 	}
 
-	public void setTotal_writes(long total_writes) {
+	public void setTotal_writes(long[] total_writes) {
 		this.total_writes = total_writes;
 	}
 
-	public long getTotal_access_ops() {
+	public long[] getTotal_access_ops() {
 		return total_access_ops;
 	}
 
-	public void setTotal_access_ops(long total_access_ops) {
+	public void setTotal_access_ops(long[] total_access_ops) {
 		this.total_access_ops = total_access_ops;
 	}
 
-	public long getTotal_ops() {
+	public long[] getTotal_ops() {
 		return total_ops;
 	}
 
-	public void setTotal_ops(long total_ops) {
+	public void setTotal_ops(long[] total_ops) {
 		this.total_ops = total_ops;
 	}
 
-	public long getTotal_fast_path_taken() {
+	public long[] getTotal_fast_path_taken() {
 		return total_fast_path_taken;
 	}
 
-	public void setTotal_fast_path_taken(long total_fast_path_taken) {
+	public void setTotal_fast_path_taken(long[] total_fast_path_taken) {
 		this.total_fast_path_taken = total_fast_path_taken;
 	}
 
-	public long getWrite_insideCS() {
+	public long[] getWrite_insideCS() {
 		return write_insideCS;
 	}
 
-	public void setWrite_insideCS(long write_insideCS) {
+	public void setWrite_insideCS(long[] write_insideCS) {
 		this.write_insideCS = write_insideCS;
 	}
 	
-	public long getWrite_insideCSFP() {
+	public long[] getWrite_insideCSFP() {
 		return write_insideCSFP;
 	}
 	
-	public void setWrite_insideCSFP(long write_insideCSFP) {
+	public void setWrite_insideCSFP(long[] write_insideCSFP) {
 		this.write_insideCSFP = write_insideCSFP;
 	}
 
-	public long getWrite_outsideCS() {
+	public long[] getWrite_outsideCS() {
 		return write_outsideCS;
 	}
 
-	public void setWrite_outsideCS(long write_outsideCS) {
+	public void setWrite_outsideCS(long[] write_outsideCS) {
 		this.write_outsideCS = write_outsideCS;
 	}
 	
-	public long getWrite_outsideCSFP() {
+	public long[] getWrite_outsideCSFP() {
 		return write_outsideCSFP;
 	}
 
-	public void setWrite_outsideCSFP(long write_outsideCSFP) {
+	public void setWrite_outsideCSFP(long[] write_outsideCSFP) {
 		this.write_outsideCSFP = write_outsideCSFP;
 	}	
 
-	public long getRead_insideCS() {
+	public long[] getRead_insideCS() {
 		return read_insideCS;
 	}
 
-	public void setRead_insideCS(long read_insideCS) {
+	public void setRead_insideCS(long[] read_insideCS) {
 		this.read_insideCS = read_insideCS;
 	}
 	
-	public long getRead_insideCSFP() {
+	public long[] getRead_insideCSFP() {
 		return read_insideCSFP;
 	}
 
-	public void setRead_insideCSFP(long read_insideCSFP) {
+	public void setRead_insideCSFP(long[] read_insideCSFP) {
 		this.read_insideCSFP = read_insideCSFP;
 	}
 
-	public long getRead_outsideCS() {
+	public long[] getRead_outsideCS() {
 		return read_outsideCS;
 	}
 
-	public void setRead_outsideCS(long read_outsideCS) {
+	public void setRead_outsideCS(long[] read_outsideCS) {
 		this.read_outsideCS = read_outsideCS;
 	}
 	
-	public long getRead_outsideCSFP() {
+	public long[] getRead_outsideCSFP() {
 		return read_outsideCSFP;
 	}
 
-	public void setRead_outsideCSFP(long read_outsideCSFP) {
+	public void setRead_outsideCSFP(long[] read_outsideCSFP) {
 		this.read_outsideCSFP = read_outsideCSFP;
 	}
 
-	public long getVolatile_acc() {
+	public long[] getVolatile_acc() {
 		return volatile_acc;
 	}
 
-	public void setVolatile_acc(long volatile_acc) {
+	public void setVolatile_acc(long[] volatile_acc) {
 		this.volatile_acc = volatile_acc;
 	}
 
-	public long getRead_same_epochFP() {
+	public long[] getRead_same_epochFP() {
 		return read_same_epochFP;
 	}
 
-	public void setRead_same_epochFP(long read_same_epochFP) {
+	public void setRead_same_epochFP(long[] read_same_epochFP) {
 		this.read_same_epochFP = read_same_epochFP;
 	}
 
-	public long getRead_shared_same_epochFP() {
+	public long[]getRead_shared_same_epochFP() {
 		return read_shared_same_epochFP;
 	}
 
-	public void setRead_shared_same_epochFP(long read_shared_same_epochFP) {
+	public void setRead_shared_same_epochFP(long[] read_shared_same_epochFP) {
 		this.read_shared_same_epochFP = read_shared_same_epochFP;
 	}
 
-	public long getRead_exclusiveFP() {
+	public long[]getRead_exclusiveFP() {
 		return read_exclusiveFP;
 	}
 
-	public void setRead_exclusiveFP(long read_exclusiveFP) {
+	public void setRead_exclusiveFP(long[] read_exclusiveFP) {
 		this.read_exclusiveFP = read_exclusiveFP;
 	}
 
-	public long getRead_shareFP() {
+	public long[]getRead_shareFP() {
 		return read_shareFP;
 	}
 
-	public void setRead_shareFP(long read_shareFP) {
+	public void setRead_shareFP(long[] read_shareFP) {
 		this.read_shareFP = read_shareFP;
 	}
 
-	public long getRead_sharedFP() {
+	public long[]getRead_sharedFP() {
 		return read_sharedFP;
 	}
 
-	public void setRead_sharedFP(long read_sharedFP) {
+	public void setRead_sharedFP(long[] read_sharedFP) {
 		this.read_sharedFP = read_sharedFP;
 	}
 
-	public long getWrite_same_epochFP() {
+	public long[]getWrite_same_epochFP() {
 		return write_same_epochFP;
 	}
 
-	public void setWrite_same_epochFP(long write_same_epochFP) {
+	public void setWrite_same_epochFP(long[] write_same_epochFP) {
 		this.write_same_epochFP = write_same_epochFP;
 	}
 
-	public long getWrite_exclusiveFP() {
+	public long[]getWrite_exclusiveFP() {
 		return write_exclusiveFP;
 	}
 
-	public void setWrite_exclusiveFP(long write_exclusiveFP) {
+	public void setWrite_exclusiveFP(long[] write_exclusiveFP) {
 		this.write_exclusiveFP = write_exclusiveFP;
 	}
 
-	public long getWrite_sharedFP() {
+	public long[]getWrite_sharedFP() {
 		return write_sharedFP;
 	}
 
-	public void setWrite_sharedFP(long write_sharedFP) {
+	public void setWrite_sharedFP(long[] write_sharedFP) {
 		this.write_sharedFP = write_sharedFP;
 	}
 
-	public long getRead_rule_A_succeed() {
+	public long[]getRead_rule_A_succeed() {
 		return read_rule_A_succeed;
 	}
 
-	public void setRead_rule_A_succeed(long read_rule_A_succeed) {
+	public void setRead_rule_A_succeed(long[] read_rule_A_succeed) {
 		this.read_rule_A_succeed = read_rule_A_succeed;
 	}
 
-	public long getRead_rule_A_total_attempts() {
+	public long[]getRead_rule_A_total_attempts() {
 		return read_rule_A_total_attempts;
 	}
 
-	public void setRead_rule_A_total_attempts(long read_rule_A_total_attempts) {
+	public void setRead_rule_A_total_attempts(long[] read_rule_A_total_attempts) {
 		this.read_rule_A_total_attempts = read_rule_A_total_attempts;
 	}
 
-	public long getWrite_write_rule_A_succeed() {
+	public long[]getWrite_write_rule_A_succeed() {
 		return write_write_rule_A_succeed;
 	}
 
-	public void setWrite_write_rule_A_succeed(long write_write_rule_A_succeed) {
+	public void setWrite_write_rule_A_succeed(long[] write_write_rule_A_succeed) {
 		this.write_write_rule_A_succeed = write_write_rule_A_succeed;
 	}
 
-	public long getWrite_write_rule_A_total_attempts() {
+	public long[]getWrite_write_rule_A_total_attempts() {
 		return write_write_rule_A_total_attempts;
 	}
 
-	public void setWrite_write_rule_A_total_attempts(long write_write_rule_A_total_attempts) {
+	public void setWrite_write_rule_A_total_attempts(long[] write_write_rule_A_total_attempts) {
 		this.write_write_rule_A_total_attempts = write_write_rule_A_total_attempts;
 	}
 
-	public long getWrite_read_rule_A_succeed() {
+	public long[]getWrite_read_rule_A_succeed() {
 		return write_read_rule_A_succeed;
 	}
 
-	public void setWrite_read_rule_A_succeed(long write_read_rule_A_succeed) {
+	public void setWrite_read_rule_A_succeed(long[] write_read_rule_A_succeed) {
 		this.write_read_rule_A_succeed = write_read_rule_A_succeed;
 	}
 
-	public long getWrite_read_rule_A_total_attempts() {
+	public long[]getWrite_read_rule_A_total_attempts() {
 		return write_read_rule_A_total_attempts;
 	}
 
-	public void setWrite_read_rule_A_total_attempts(long write_read_rule_A_total_attempts) {
+	public void setWrite_read_rule_A_total_attempts(long[] write_read_rule_A_total_attempts) {
 		this.write_read_rule_A_total_attempts = write_read_rule_A_total_attempts;
 	}
 
-	public long getClears_by_capo() {
+	public long[]getClears_by_capo() {
 		return clears_by_capo;
 	}
 
-	public void setClears_by_capo(long clears_by_capo) {
+	public void setClears_by_capo(long[] clears_by_capo) {
 		this.clears_by_capo = clears_by_capo;
 	}
 
-	public long getRead_set_size_0() {
+	public long[]getRead_set_size_0() {
 		return read_set_size_0;
 	}
 
-	public void setRead_set_size_0(long read_set_size_0) {
+	public void setRead_set_size_0(long[] read_set_size_0) {
 		this.read_set_size_0 = read_set_size_0;
 	}
 
-	public long getRead_set_size_1() {
+	public long[]getRead_set_size_1() {
 		return read_set_size_1;
 	}
 
-	public void setRead_set_size_1(long read_set_size_1) {
+	public void setRead_set_size_1(long[] read_set_size_1) {
 		this.read_set_size_1 = read_set_size_1;
 	}
 
-	public long getRead_set_size_gt_1() {
+	public long[]getRead_set_size_gt_1() {
 		return read_set_size_gt_1;
 	}
 
-	public void setRead_set_size_gt_1(long read_set_size_gt_1) {
+	public void setRead_set_size_gt_1(long[] read_set_size_gt_1) {
 		this.read_set_size_gt_1 = read_set_size_gt_1;
 	}
 
-	public long getWrite_set_size_0() {
+	public long[]getWrite_set_size_0() {
 		return write_set_size_0;
 	}
 
-	public void setWrite_set_size_0(long write_set_size_0) {
+	public void setWrite_set_size_0(long[] write_set_size_0) {
 		this.write_set_size_0 = write_set_size_0;
 	}
 
-	public long getWrite_set_size_1() {
+	public long[]getWrite_set_size_1() {
 		return write_set_size_1;
 	}
 
-	public void setWrite_set_size_1(long write_set_size_1) {
+	public void setWrite_set_size_1(long[] write_set_size_1) {
 		this.write_set_size_1 = write_set_size_1;
 	}
 
-	public long getWrite_set_size_gt_1() {
+	public long[]getWrite_set_size_gt_1() {
 		return write_set_size_gt_1;
 	}
 
-	public void setWrite_set_size_gt_1(long write_set_size_gt_1) {
+	public void setWrite_set_size_gt_1(long[] write_set_size_gt_1) {
 		this.write_set_size_gt_1 = write_set_size_gt_1;
 	}
 
-	public long getRead_map_size_0() {
+	public long[]getRead_map_size_0() {
 		return read_map_size_0;
 	}
 
-	public void setRead_map_size_0(long read_map_size_0) {
+	public void setRead_map_size_0(long[] read_map_size_0) {
 		this.read_map_size_0 = read_map_size_0;
 	}
 
-	public long getRead_map_size_1() {
+	public long[]getRead_map_size_1() {
 		return read_map_size_1;
 	}
 
-	public void setRead_map_size_1(long read_map_size_1) {
+	public void setRead_map_size_1(long[] read_map_size_1) {
 		this.read_map_size_1 = read_map_size_1;
 	}
 
-	public long getRead_map_size_10() {
+	public long[]getRead_map_size_10() {
 		return read_map_size_10;
 	}
 
-	public void setRead_map_size_10(long read_map_size_10) {
+	public void setRead_map_size_10(long[] read_map_size_10) {
 		this.read_map_size_10 = read_map_size_10;
 	}
 
-	public long getRead_map_size_100() {
+	public long[]getRead_map_size_100() {
 		return read_map_size_100;
 	}
 
-	public void setRead_map_size_100(long read_map_size_100) {
+	public void setRead_map_size_100(long[] read_map_size_100) {
 		this.read_map_size_100 = read_map_size_100;
 	}
 
-	public long getRead_map_size_1000() {
+	public long[]getRead_map_size_1000() {
 		return read_map_size_1000;
 	}
 
-	public void setRead_map_size_1000(long read_map_size_1000) {
+	public void setRead_map_size_1000(long[] read_map_size_1000) {
 		this.read_map_size_1000 = read_map_size_1000;
 	}
 
-	public long getRead_map_size_gt_1000() {
+	public long[]getRead_map_size_gt_1000() {
 		return read_map_size_gt_1000;
 	}
 
-	public void setRead_map_size_gt_1000(long read_map_size_gt_1000) {
+	public void setRead_map_size_gt_1000(long[] read_map_size_gt_1000) {
 		this.read_map_size_gt_1000 = read_map_size_gt_1000;
 	}
 
-	public long getWrite_map_size_0() {
+	public long[]getWrite_map_size_0() {
 		return write_map_size_0;
 	}
 
-	public void setWrite_map_size_0(long write_map_size_0) {
+	public void setWrite_map_size_0(long[] write_map_size_0) {
 		this.write_map_size_0 = write_map_size_0;
 	}
 
-	public long getWrite_map_size_1() {
+	public long[]getWrite_map_size_1() {
 		return write_map_size_1;
 	}
 
-	public void setWrite_map_size_1(long write_map_size_1) {
+	public void setWrite_map_size_1(long[] write_map_size_1) {
 		this.write_map_size_1 = write_map_size_1;
 	}
 
-	public long getWrite_map_size_10() {
+	public long[]getWrite_map_size_10() {
 		return write_map_size_10;
 	}
 
-	public void setWrite_map_size_10(long write_map_size_10) {
+	public void setWrite_map_size_10(long[] write_map_size_10) {
 		this.write_map_size_10 = write_map_size_10;
 	}
 
-	public long getWrite_map_size_100() {
+	public long[]getWrite_map_size_100() {
 		return write_map_size_100;
 	}
 
-	public void setWrite_map_size_100(long write_map_size_100) {
+	public void setWrite_map_size_100(long[] write_map_size_100) {
 		this.write_map_size_100 = write_map_size_100;
 	}
 
-	public long getWrite_map_size_1000() {
+	public long[]getWrite_map_size_1000() {
 		return write_map_size_1000;
 	}
 
-	public void setWrite_map_size_1000(long write_map_size_1000) {
+	public void setWrite_map_size_1000(long[] write_map_size_1000) {
 		this.write_map_size_1000 = write_map_size_1000;
 	}
 
-	public long getWrite_map_size_gt_1000() {
+	public long[]getWrite_map_size_gt_1000() {
 		return write_map_size_gt_1000;
 	}
 
-	public void setWrite_map_size_gt_1000(long write_map_size_gt_1000) {
+	public void setWrite_map_size_gt_1000(long[] write_map_size_gt_1000) {
 		this.write_map_size_gt_1000 = write_map_size_gt_1000;
 	}
 }
