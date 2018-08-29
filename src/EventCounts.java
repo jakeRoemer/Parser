@@ -68,6 +68,11 @@ public class EventCounts {
 	private long[] total_ops;
 	private long[] total_fast_path_taken;
 	
+	private long[] hold_locks;
+	private long[] one_lock_held;
+	private long[] two_nestedLocks_held;
+	private long[] many_nestedLocks_held;
+	
 	private long[] read_rule_A_succeed;
 	private long[] read_rule_A_total_attempts;
 	private long[] write_write_rule_A_succeed;
@@ -320,6 +325,14 @@ public class EventCounts {
 			setWrite_map_size_1000(getVal(getWrite_map_size_1000(), eventCount, curr_trial, total_trials));
 		} else if (eventType.equals("Write Map Size Gt 1000")) {
 			setWrite_map_size_gt_1000(getVal(getWrite_map_size_gt_1000(), eventCount, curr_trial, total_trials));
+		} else if (eventType.equals("Holding Lock during Access Event")) {
+			setHold_locks(getVal(getHold_locks(), eventCount, curr_trial, total_trials));
+		} else if (eventType.equals("One Lock Held")) {
+			setOne_lock_held(getVal(getOne_lock_held(), eventCount, curr_trial, total_trials));
+		} else if (eventType.equals("Two Nested Locks Held")) {
+			setTwo_nestedLocks_held(getVal(getTwo_nestedLocks_held(), eventCount, curr_trial, total_trials));
+		} else if (eventType.equals("More than two Nested Locks Held")) {
+			setMany_nestedLocks_held(getVal(getMany_nestedLocks_held(), eventCount, curr_trial, total_trials));
 		}
 	}
 	
@@ -406,6 +419,11 @@ public class EventCounts {
 				input.println("total access ops: " + getTotal_access_ops());
 				input.println("total ops: " + getTotal_ops());
 				input.println("total fast path taken: " + getTotal_fast_path_taken());
+
+				input.println("hold locks: " + getHold_locks());
+				input.println("one lock held: " + getOne_lock_held());
+				input.println("two nestedLocks held: " + getTwo_nestedLocks_held());
+				input.println("many nestedLocks held: " + getMany_nestedLocks_held());
 				
 				input.println("read rule A succeed: " + getRead_rule_A_succeed());
 				input.println("read rule A total attempts: " + getRead_rule_A_total_attempts());
@@ -439,6 +457,7 @@ public class EventCounts {
 	}
 	
 	public void recordExtraCounts(BufferedWriter output) throws IOException {
+		getLocksHeldCounts(output);
 		getRuleACounts(output);
 		getCAPOSetCounts(output);
 		getCAPOMapCounts(output);
@@ -453,6 +472,13 @@ public class EventCounts {
 		
 		//Enable if extra stats are collected
 		if (parseDC.extraStats) recordExtraCounts(output);
+	}
+	
+	public void getLocksHeldCounts(BufferedWriter output) throws IOException {
+		output.write("\\newcommand{\\" + bench + "HoldLocksTotal}{" + roundTwoSigs(getHold_locks()) + "}\n");
+		output.write("\\newcommand{\\" + bench + "OneLockHeld}{" + getPercent(getOne_lock_held(), getHold_locks()) + "}\n");
+		output.write("\\newcommand{\\" + bench + "TwoNestedLocks}{" + getPercent(getTwo_nestedLocks_held(), getHold_locks()) + "}\n");
+		output.write("\\newcommand{\\" + bench + "ManyNestedLocks}{" + getPercent(getMany_nestedLocks_held(), getHold_locks()));
 	}
 	
 	public void getRuleACounts(BufferedWriter output) throws IOException {
@@ -1288,5 +1314,37 @@ public class EventCounts {
 
 	public void setWrite_map_size_gt_1000(long[] write_map_size_gt_1000) {
 		this.write_map_size_gt_1000 = write_map_size_gt_1000;
+	}
+	
+	public long[] getHold_locks() {
+		return hold_locks;
+	}
+
+	public void setHold_locks(long[] hold_locks) {
+		this.hold_locks = hold_locks;
+	}
+
+	public long[] getOne_lock_held() {
+		return one_lock_held;
+	}
+
+	public void setOne_lock_held(long[] one_lock_held) {
+		this.one_lock_held = one_lock_held;
+	}
+
+	public long[] getTwo_nestedLocks_held() {
+		return two_nestedLocks_held;
+	}
+
+	public void setTwo_nestedLocks_held(long[] two_nestedLocks_held) {
+		this.two_nestedLocks_held = two_nestedLocks_held;
+	}
+
+	public long[] getMany_nestedLocks_held() {
+		return many_nestedLocks_held;
+	}
+
+	public void setMany_nestedLocks_held(long[] many_nestedLocks_held) {
+		this.many_nestedLocks_held = many_nestedLocks_held;
 	}
 }
