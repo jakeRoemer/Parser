@@ -478,7 +478,7 @@ public class EventCounts {
 		output.write("\\newcommand{\\" + bench + "HoldLocksTotal}{" + roundTwoSigs(getHold_locks()) + "}\n");
 		output.write("\\newcommand{\\" + bench + "OneLockHeld}{" + getPercent(getOne_lock_held(), getHold_locks()) + "}\n");
 		output.write("\\newcommand{\\" + bench + "TwoNestedLocks}{" + getPercent(getTwo_nestedLocks_held(), getHold_locks()) + "}\n");
-		output.write("\\newcommand{\\" + bench + "ManyNestedLocks}{" + getPercent(getMany_nestedLocks_held(), getHold_locks()));
+		output.write("\\newcommand{\\" + bench + "ManyNestedLocks}{" + getPercent(getMany_nestedLocks_held(), getHold_locks()) + "}\n");
 	}
 	
 	public void getRuleACounts(BufferedWriter output) throws IOException {

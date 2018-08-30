@@ -8,7 +8,7 @@ import java.util.Arrays;
 import java.util.LinkedList;
 
 public class parseDC {
-	static final boolean extraStats = false;
+	static final boolean extraStats = true;//false;
 	
 	public static void main (String [] args) {
 //		String output_dir = args[0];
@@ -30,7 +30,8 @@ public class parseDC {
 //		String output_dir = "PIP_fastTool_correctnessRuns";
 //		String output_dir = "PIP_slowTool_correctnessRuns";
 //		String output_dir = "PIP_fastTool_CAPOOpt_fixes";
-		String output_dir = "PIP_fastTool_noRaceLimit";
+//		String output_dir = "PIP_fastTool_noRaceLimit";
+		String output_dir = "PIP_fastTool_raceEdgeAdd_lockCount";
 		String [] benchmarks = {"avrora", "batik", "htwo", "jython", "luindex", "lusearch", "pmd", "sunflow", "tomcat", "xalan"};
 		//Vindicator tool
 //		String [] configs = {"base", "empty", "hbwcp", "wdc_noG", "wdc"};//, "capo_only", "pip_only"};//, "wdc_noG", "capo_noG", "pip_noG"};
@@ -48,7 +49,7 @@ public class parseDC {
 //		String [] configs = {"base", "empty", "ft", "hb", "hbwcp", "wdc_noG", "wdc"};//, "wdc_noG", "wdc_exc", "capo"};//, "wdc_exc", "capo_exc", "pip_exc", "pip"};
 //		String [] configNames = {"Base", "Empty", "FT", "HB", "HBWCP", "WDCLite", "WDC"};//, "WDCLite", "WDCExc", "CAPOFull"};//, "DCExc", "CAPOExc", "PIPExc", "PIP"};
 		//configs -> wdc_testconfig | configNames = DCLite
-		int trials = 2; //Integer.parseInt(args[1]);
+		int trials = 5; //Integer.parseInt(args[1]);
 		String tool = "PIP"; //DC or PIP
 		boolean fieldRace = false; //true = field, false = single second site
 		LinkedList<BenchmarkInfo> benchmarks_info = new LinkedList<BenchmarkInfo>();

@@ -390,7 +390,7 @@ public class BenchmarkInfo {
 		//If this is the last trial and there were failed trials, resize the data set with only successful trials
 		if (curr_trial == total_trials) {
 			int failures = EventCounts.failedTrials(type_races);
-			System.out.println(String.format("config: %s bench: %s trial: %d failures %d", config, benchmark, curr_trial, failures));
+//			System.out.println(String.format("config: %s bench: %s trial: %d failures %d", config, benchmark, curr_trial, failures));
 			if (failures > 0) type_races = EventCounts.resize(type_races, type_races.length-failures);
 		}
 		this.types.put(type, type_races);
