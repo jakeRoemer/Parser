@@ -9,10 +9,8 @@ public class BenchmarkInfo {
 	String event_total;
 	double event_total_trials;
 	
-	String total_thread_count;
-	int total_thread_count_trials;
-	String max_live_thread_count;
-	int max_live_thread_count_trials;
+	HashMap<String, int[]> total_thread_count;
+	HashMap<String, int[]> max_live_thread_count;
 	
 	LinkedList<String> config_total_time;
 	HashMap<String, Double> config_total_time_trials;
@@ -58,9 +56,10 @@ public class BenchmarkInfo {
 		this.pip_race_types = new LinkedList<String>();
 		this.pip_types = new HashMap<String, Double>();
 		
+		this.total_thread_count = new HashMap<String, int[]>();
+		this.max_live_thread_count = new HashMap<String, int[]>();
+		
 		this.event_total_trials = 0;
-		this.total_thread_count_trials = 0;
-		this.max_live_thread_count_trials = 0;
 		this.config_total_time_trials = new HashMap<String, Double>();
 		this.config_mem_trials = new HashMap<String, Double>();
 		this.static_check_time_trials = 0;
@@ -213,37 +212,49 @@ public class BenchmarkInfo {
 		}
 	}
 
-	public String getTotalThread_count() {
-		if (total_thread_count == null) {
-			this.total_thread_count = "\\newcommand{\\"+benchmark+"TotalThreads}{\\rna}\n";
+	public String getTotalThread_count(String config) {
+		int[] thread_counts = this.total_thread_count.get(config);
+		if (thread_counts == null) {
+			return "\\newcommand{\\"+benchmark+"TotalThreads}{\\rna}\n";
 		}
-		return total_thread_count;
+		return "\\newcommand{\\"+benchmark+"TotalThreads}{"+EventCounts.getAvg(thread_counts)+"}\n";
 	}
 
-	public void setTotalThread_count(String config, String thread_count, boolean final_trial) {
-		if (config.equals("pipQ_dc")) config = "pip_dc";
-		if (config.equals("wdc_exc") || config.equals("pip_dc")) {
-			this.total_thread_count_trials += Integer.parseInt(thread_count);
-			if (final_trial) {
-				this.total_thread_count = "\\newcommand{\\"+benchmark+"TotalThreads}{"+(this.total_thread_count_trials/this.total_trials)+"}\n";
-			}
+	public void setTotalThread_count(String config, String thread_count, int curr_trial, int total_trials) {			
+		int[] thread_counts = this.total_thread_count.get(config);
+		if (thread_counts == null) {
+			thread_counts = new int[total_trials];
+			for (int i = 0; i < thread_counts.length; i++) thread_counts[i] = -1; //failed trial identifier
+			this.total_thread_count.put(config, thread_counts);
+		}
+		thread_counts[curr_trial-1] = Integer.parseInt(thread_count); //trial counts start at 1
+		//If this is the last trial and there were failed trials, resize the data set with only successful trials
+		if (curr_trial == total_trials) {
+			int failures = EventCounts.failedTrials(thread_counts);
+			if (failures > 0) thread_counts = EventCounts.resize(thread_counts, thread_counts.length-failures);
 		}
 	}
 	
-	public String getMaxLiveThread_count() {
-		if (max_live_thread_count == null) {
-			this.max_live_thread_count = "\\newcommand{\\"+benchmark+"MaxLiveThreads}{\\rna}\n";
+	public String getMaxLiveThread_count(String config) {
+		int[] thread_counts = this.max_live_thread_count.get(config);
+		if (thread_counts == null) {
+			return "\\newcommand{\\"+benchmark+"MaxLiveThreads}{\\rna}\n";
 		}
-		return max_live_thread_count;
+		return "\\newcommand{\\"+benchmark+"MaxLiveThreads}{"+EventCounts.getAvg(thread_counts)+"}\n";
 	}
 
-	public void setMaxLiveThread_count(String config, String thread_count, boolean final_trial) {
-		if (config.equals("pipQ_dc")) config = "pip_dc";
-		if (config.equals("wdc_exc") || config.equals("pip_dc")) {
-			this.max_live_thread_count_trials += Integer.parseInt(thread_count);
-			if (final_trial) {
-				this.max_live_thread_count = "\\newcommand{\\"+benchmark+"MaxLiveThreads}{"+(this.max_live_thread_count_trials/this.total_trials)+"}\n";
-			}
+	public void setMaxLiveThread_count(String config, String thread_count, int curr_trial, int total_trials) {
+		int[] thread_counts = this.max_live_thread_count.get(config);
+		if (thread_counts == null) {
+			thread_counts = new int[total_trials];
+			for (int i = 0; i < thread_counts.length; i++) thread_counts[i] = -1; //failed trial identifier
+			this.max_live_thread_count.put(config, thread_counts);
+		}
+		thread_counts[curr_trial-1] = Integer.parseInt(thread_count); //trial counts start at 1
+		//If this is the last trial and there were failed trials, resize the data set with only successful trials
+		if (curr_trial == total_trials) {
+			int failures = EventCounts.failedTrials(thread_counts);
+			if (failures > 0) thread_counts = EventCounts.resize(thread_counts, thread_counts.length-failures);
 		}
 	}
 

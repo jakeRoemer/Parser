@@ -124,6 +124,14 @@ public class EventCounts {
 		return failures;
 	}
 	
+	public static int failedTrials(int[] array) {
+		int failures = 0;
+		for (int i = 0; i < array.length; i++) {
+			if (array[i] == -1) failures++;
+		}
+		return failures;
+	}
+	
 	public long[] resize(long[] array, int newSize) {
 		long[] resized = new long[newSize];
 		int index = 0;
@@ -138,6 +146,18 @@ public class EventCounts {
 	
 	public static double[] resize(double[] array, int newSize) {
 		double[] resized = new double[newSize];
+		int index = 0;
+		for (int i = 0; i < array.length; i++) {
+			if (array[i] != -1) {
+				resized[index] = array[i];
+				index++;
+			}
+		}
+		return resized;
+	}
+	
+	public static int[] resize(int[] array, int newSize) {
+		int[] resized = new int[newSize];
 		int index = 0;
 		for (int i = 0; i < array.length; i++) {
 			if (array[i] != -1) {
@@ -456,29 +476,24 @@ public class EventCounts {
 		} catch (FileNotFoundException e) {e.printStackTrace();}
 	}
 	
-	public void recordExtraCounts(BufferedWriter output) throws IOException {
-		getLocksHeldCounts(output);
-		getRuleACounts(output);
-		getCAPOSetCounts(output);
-		getCAPOMapCounts(output);
-	}
-	
 	public void recordCounts(BufferedWriter output) throws IOException {
-		getAccessCounts(output);
+		getEventCounts(output);
 		getReadCounts(output);
 		getWriteCounts(output);
 		getOtherCounts(output);
 		getRaceTypeCounts(output);
 		
-		//Enable if extra stats are collected
-		if (parseDC.extraStats) recordExtraCounts(output);
+		//Extra counts
+		getLocksHeldCounts(output);
 	}
 	
 	public void getLocksHeldCounts(BufferedWriter output) throws IOException {
-		output.write("\\newcommand{\\" + bench + "HoldLocksTotal}{" + roundTwoSigs(getHold_locks()) + "}\n");
-		output.write("\\newcommand{\\" + bench + "OneLockHeld}{" + getPercent(getOne_lock_held(), getHold_locks()) + "}\n");
-		output.write("\\newcommand{\\" + bench + "TwoNestedLocks}{" + getPercent(getTwo_nestedLocks_held(), getHold_locks()) + "}\n");
-		output.write("\\newcommand{\\" + bench + "ManyNestedLocks}{" + getPercent(getMany_nestedLocks_held(), getHold_locks()) + "}\n");
+		if (!isZero(getHold_locks())) {
+			output.write("\\newcommand{\\" + bench + "HoldLocksTotal}{" + roundTwoSigs(getHold_locks()) + "}\n");
+			output.write("\\newcommand{\\" + bench + "OneLockHeld}{" + getPercent(getOne_lock_held(), getHold_locks()) + "}\n");
+			output.write("\\newcommand{\\" + bench + "TwoNestedLocks}{" + getPercent(getTwo_nestedLocks_held(), getHold_locks()) + "}\n");
+			output.write("\\newcommand{\\" + bench + "ManyNestedLocks}{" + getPercent(getMany_nestedLocks_held(), getHold_locks()) + "}\n");
+		} // else I could print \nra values
 	}
 	
 	public void getRuleACounts(BufferedWriter output) throws IOException {
@@ -528,37 +543,37 @@ public class EventCounts {
 		}
 	}
 	
-	public void getAccessCounts(BufferedWriter output) throws IOException {
-		//Needs to be a pointwise add. make a function for it
-		long[] totalEvents = add(getTotal_ops(), getTotal_fast_path_taken());//getTotal_ops() + getTotal_fast_path_taken();
+	public void getEventCounts(BufferedWriter output) throws IOException {
+		//Needs to be a pointwise add.
+		long[] totalEvents = add(getTotal_ops(), getTotal_fast_path_taken());
 		//Note: total events/reads/writes include race counts. total reads + total writes add up to total access ops
 		System.out.println("count bench: " + bench + " | config: " + config);
-		output.write("\\newcommand{\\" + bench + "Events}{" + roundTwoSigs(totalEvents) + "}\n");
-		output.write("\\newcommand{\\" + bench + "NoFPEvents}{" + roundTwoSigs(getTotal_ops()) +"}\n");
+		output.write("\\newcommand{\\" + bench + "EventTotal}{" + roundTwoSigs(totalEvents) + "}\n");
+		output.write("\\newcommand{\\" + bench + "NoFPEventTotal}{" + roundTwoSigs(getTotal_ops()) +"}\n");
 		output.write("\\newcommand{\\" + bench + "ReadTotal}{" + getPercent(getTotal_reads(), getTotal_ops()) + "}\n");
 		output.write("\\newcommand{\\" + bench + "WriteTotal}{" + getPercent(getTotal_writes(), getTotal_ops()) + "}\n");
-		long[] noFPRdInCS = sub(getRead_insideCS(), getRead_insideCSFP());//getRead_insideCS() - getRead_insideCSFP();
-		long[] noFPWrInCS = sub(getWrite_insideCS(), getWrite_insideCSFP());//getWrite_insideCS() - getWrite_insideCSFP();
-		long[] noFPAccessInCS = add(noFPRdInCS, noFPWrInCS);//noFPRdInCS + noFPWrInCS;
-		long[] noFPRdOutCS = sub(getRead_outsideCS(), getRead_outsideCSFP());//getRead_outsideCS() - getRead_outsideCSFP();
-		long[] noFPWrOutCS = sub(getWrite_outsideCS(), getWrite_outsideCSFP());//getWrite_outsideCS() - getWrite_outsideCSFP();
-		long[] noFPAccessOutCS = add(noFPRdOutCS, noFPWrOutCS);//noFPRdOutCS + noFPWrOutCS;
-		long[] honestTotalWrites = sub(getTotal_writes(), getWrite_write_race());//getTotal_writes() - getWrite_write_race();
-		long[] honestTotalAccesses = add(getTotal_reads(), honestTotalWrites);//getTotal_reads() + honestTotalWrites;
+		long[] noFPRdInCS = sub(getRead_insideCS(), getRead_insideCSFP());
+		long[] noFPWrInCS = sub(getWrite_insideCS(), getWrite_insideCSFP());
+		long[] noFPAccessInCS = add(noFPRdInCS, noFPWrInCS);
+		long[] noFPRdOutCS = sub(getRead_outsideCS(), getRead_outsideCSFP());
+		long[] noFPWrOutCS = sub(getWrite_outsideCS(), getWrite_outsideCSFP());
+		long[] noFPAccessOutCS = add(noFPRdOutCS, noFPWrOutCS);
+		long[] honestTotalWrites = sub(getTotal_writes(), getWrite_write_race());
+		long[] honestTotalAccesses = add(getTotal_reads(), honestTotalWrites);
 		output.write("\\newcommand{\\" + bench + "NoFPAccessInCS}{" + getPercent(noFPAccessInCS, honestTotalAccesses) + "}\n");
 		output.write("\\newcommand{\\" + bench + "NoFPAccessOutCS}{" + getPercent(noFPAccessOutCS, honestTotalAccesses) + "}\n");
-		long[] acqRelEvents = add(getAcquire(), getRelease());//getAcquire() + getRelease();
+		long[] acqRelEvents = add(getAcquire(), getRelease());
 		output.write("\\newcommand{\\" + bench + "AcqRelTotal}{" + getPercent(acqRelEvents, getTotal_ops()) + "}\n");		
-		long[] otherEvents = sub(sub(getTotal_ops(), getTotal_access_ops()), acqRelEvents);//getTotal_ops() - getTotal_access_ops() - acqRelEvents;
+		long[] otherEvents = sub(sub(getTotal_ops(), getTotal_access_ops()), acqRelEvents);
 		output.write("\\newcommand{\\" + bench + "OtherTotal}{" + getPercent(otherEvents, getTotal_ops()) + "}\n");
 	}
 	
 	public void getReadCounts(BufferedWriter output) throws IOException {
 		//Note: noFPReadTotal should be the same as readTotal, just want to distinguish getReadCounts' total from AccessCounts' read total
 		output.write("\\newcommand{\\" + bench + "NoFPReadTotal}{" + roundTwoSigs(getTotal_reads()) + "}\n");
-		long[] noFPRdInCS = sub(getRead_insideCS(), getRead_insideCSFP());//getRead_insideCS() - getRead_insideCSFP();
+		long[] noFPRdInCS = sub(getRead_insideCS(), getRead_insideCSFP());
 		output.write("\\newcommand{\\" + bench + "ReadInCS}{" + getPercent(noFPRdInCS, getTotal_reads()) + "}\n");
-		long[] noFPRdOutCS = sub(getRead_outsideCS(), getRead_outsideCSFP());//getRead_outsideCS() - getRead_outsideCSFP();
+		long[] noFPRdOutCS = sub(getRead_outsideCS(), getRead_outsideCSFP());
 		output.write("\\newcommand{\\" + bench + "ReadOutCS}{" + getPercent(noFPRdOutCS, getTotal_reads()) + "}\n");
 		output.write("\\newcommand{\\" + bench + "ReadSameEp}{" + getPercent(getRead_same_epoch(), getTotal_reads()) + "}\n");
 		output.write("\\newcommand{\\" + bench + "ReadSharedSameEp}{" + getPercent(getRead_shared_same_epoch(), getTotal_reads()) + "}\n");
@@ -568,11 +583,11 @@ public class EventCounts {
 	}
 	
 	public void getWriteCounts(BufferedWriter output) throws IOException {
-		long[] honestTotalWrites = sub(getTotal_writes(), getWrite_write_race());//getTotal_writes() - getWrite_write_race();
+		long[] honestTotalWrites = sub(getTotal_writes(), getWrite_write_race());
 		output.write("\\newcommand{\\" + bench + "NoFPHonestWriteTotal}{" + roundTwoSigs(honestTotalWrites) + "}\n");
-		long[] noFPWrInCS = sub(getWrite_insideCS(), getWrite_insideCSFP());//getWrite_insideCS() - getWrite_insideCSFP();
+		long[] noFPWrInCS = sub(getWrite_insideCS(), getWrite_insideCSFP());
 		output.write("\\newcommand{\\" + bench + "WriteInCS}{" + getPercent(noFPWrInCS, honestTotalWrites) + "}\n");
-		long[] noFPWrOutCS = sub(getWrite_outsideCS(), getWrite_outsideCSFP());//getWrite_outsideCS() - getWrite_outsideCSFP();
+		long[] noFPWrOutCS = sub(getWrite_outsideCS(), getWrite_outsideCSFP());
 		output.write("\\newcommand{\\" + bench + "WriteOutCS}{" + getPercent(noFPWrOutCS, honestTotalWrites) + "}\n");
 		//Note: noFPWriteTotal should be the same as writeTotal, just want to distinguish getWriteCounts' total from AccessCounts' write total
 		output.write("\\newcommand{\\" + bench + "NoFPWriteTotal}{" + roundTwoSigs(getTotal_writes()) + "}\n");
@@ -583,12 +598,12 @@ public class EventCounts {
 	
 	public void getOtherCounts(BufferedWriter output) throws IOException {
 		//Note: noFPOtherTotal should be the same as otherTotal, just want to distinguish getOtherCounts' total from AccessCounts' other total
-		long[] otherEvents = sub(getTotal_ops(), getTotal_access_ops());//getTotal_ops() - getTotal_access_ops();
-		output.write("\\newcommand{\\" + bench + "NoFPOtherTotal}{" + otherEvents + "}\n");
-		long[] acqRelEvents = add(getAcquire(), getRelease());//getAcquire() + getRelease();
+		long[] otherEvents = sub(getTotal_ops(), getTotal_access_ops());
+		output.write("\\newcommand{\\" + bench + "NoFPOtherTotal}{" + getAvg(otherEvents) + "}\n");
+		long[] acqRelEvents = add(getAcquire(), getRelease());
 		output.write("\\newcommand{\\" + bench + "AcqRelOtherTotal}{" + getPercent(acqRelEvents, otherEvents) + "}\n");
-		otherEvents = sub(otherEvents, acqRelEvents);//otherEvents - acqRelEvents;
-		output.write("\\newcommand{\\" + bench + "NoAcqRelOtherTotal}{" + otherEvents + "}\n");
+		otherEvents = sub(otherEvents, acqRelEvents);
+		output.write("\\newcommand{\\" + bench + "NoAcqRelOtherTotal}{" + getAvg(otherEvents) + "}\n");
 		output.write("\\newcommand{\\" + bench + "Fork}{" + getPercent(getFork(), otherEvents) + "}\n");
 		output.write("\\newcommand{\\" + bench + "Join}{" + getPercent(getJoin(), otherEvents) + "}\n");
 		output.write("\\newcommand{\\" + bench + "PreWait}{" + getPercent(getPre_wait(), otherEvents) + "}\n");
@@ -599,12 +614,12 @@ public class EventCounts {
 	}
 	
 	public void getRaceTypeCounts(BufferedWriter output) throws IOException {
-		long[] raceTotal = add(add(add(getWrite_read_race(), getWrite_write_race()), getRead_write_race()), getShared_write_race());// getWrite_read_race() + getWrite_write_race() + getRead_write_race() + getShared_write_race();
-		output.write("\\newcommand{\\" + bench + "RaceTotal}{" + raceTotal + "}\n");
-		output.write("\\newcommand{\\" + bench + "WrRdRace}{" + (isZero(raceTotal) ? raceTotal : getPercent(getWrite_read_race(), raceTotal)) + "}\n");
-		output.write("\\newcommand{\\" + bench + "WrWrRace}{" + (isZero(raceTotal) ? raceTotal : getPercent(getWrite_write_race(), raceTotal)) + "}\n");
-		output.write("\\newcommand{\\" + bench + "RdWrRace}{" + (isZero(raceTotal) ? raceTotal : getPercent(getRead_write_race(), raceTotal)) + "}\n");
-		output.write("\\newcommand{\\" + bench + "RdShWrRace}{" + (isZero(raceTotal) ? raceTotal : getPercent(getShared_write_race(), raceTotal)) + "}\n");
+		long[] raceTotal = add(add(add(getWrite_read_race(), getWrite_write_race()), getRead_write_race()), getShared_write_race());
+		output.write("\\newcommand{\\" + bench + "RaceTotal}{" + (isZero(raceTotal) ? "\\rna" : getAvg(raceTotal)) + "}\n");
+		output.write("\\newcommand{\\" + bench + "WrRdRace}{" + (isZero(raceTotal) ? "\\rna" : getPercent(getWrite_read_race(), raceTotal)) + "}\n");
+		output.write("\\newcommand{\\" + bench + "WrWrRace}{" + (isZero(raceTotal) ? "\\rna" : getPercent(getWrite_write_race(), raceTotal)) + "}\n");
+		output.write("\\newcommand{\\" + bench + "RdWrRace}{" + (isZero(raceTotal) ? "\\rna" : getPercent(getRead_write_race(), raceTotal)) + "}\n");
+		output.write("\\newcommand{\\" + bench + "RdShWrRace}{" + (isZero(raceTotal) ? "\\rna" : getPercent(getShared_write_race(), raceTotal)) + "}\n");
 	}
 	
 	public static double calcCI(double[] data) {
@@ -633,12 +648,17 @@ public class EventCounts {
     }
 	
 	public static long getAvg(long[] array) {
-		long avg = 0;
+		double avg = 0; 
 		for (int i = 0; i < array.length; i++) {
 			avg += array[i];
 		}
-		avg /= array.length;
-		return avg;
+		avg /= (double) array.length;
+		if ((avg - Math.floor(avg)) >= 0.5) {
+			avg = Math.floor(avg) + 1;
+		} else {
+			avg = Math.floor(avg);
+		}
+		return (long) avg;
 	}
 	
 	public static double getAvg(double[] array) {
@@ -646,11 +666,25 @@ public class EventCounts {
 		for (int i = 0; i < array.length; i++) {
 			avg += array[i];
 		}
-		avg /= array.length;
+		avg /= (double) array.length;
 		return avg;
 	}
 	
-	public double getPercent(long[] val, long[]total) {
+	public static int getAvg(int[] array) {
+		double avg = 0;
+		for (int i = 0; i < array.length; i++) {
+			avg += array[i];
+		}
+		avg /= (double) array.length;
+		if ((avg - Math.floor(avg)) >= 0.5) {
+			avg = Math.floor(avg) + 1;
+		} else {
+			avg = Math.floor(avg);
+		}
+		return (int) avg;
+	}
+	
+	public double getPercent(long[] val, long[] total) {
 		return BenchmarkInfo.getThreeSigsDouble(((getAvg(val)/(double)getAvg(total))*100));
 	}
 	
