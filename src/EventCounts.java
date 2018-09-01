@@ -547,7 +547,6 @@ public class EventCounts {
 		//Needs to be a pointwise add.
 		long[] totalEvents = add(getTotal_ops(), getTotal_fast_path_taken());
 		//Note: total events/reads/writes include race counts. total reads + total writes add up to total access ops
-		System.out.println("count bench: " + bench + " | config: " + config);
 		output.write("\\newcommand{\\" + bench + "EventTotal}{" + roundTwoSigs(totalEvents) + "}\n");
 		output.write("\\newcommand{\\" + bench + "NoFPEventTotal}{" + roundTwoSigs(getTotal_ops()) +"}\n");
 		output.write("\\newcommand{\\" + bench + "ReadTotal}{" + getPercent(getTotal_reads(), getTotal_ops()) + "}\n");
