@@ -326,53 +326,26 @@ public class BenchmarkInfo {
 		this.config_bench_time.add("\\newcommand{\\"+benchmark+configName+"Bench}{"+bench_time+"}\n");
 	}
 
-	public LinkedList<String> getRace_types(String tool) {
-		if (tool.equals("DC")) {
-			String[] types = {"HB", "HBDynamic", "PIPHB", "PIPHBDynamic", "FT", "FTDynamic", "WCP", "WCPDynamic", "PIPWCP", "PIPWCPDynamic", "WDC", "WDCDynamic", "PIPWDC", "PIPWDCDynamic", "CAPO", "CAPODynamic", "PIPCAPO", "PIPCAPODynamic", "PIP", "PIPDynamic", "PIPPIP", "PIPPIPDynamic"};
-			for (String type : types) {
-				if (this.types.get(type) == null) {
-					this.race_types.add("\\newcommand{\\"+benchmark+type+"}{\\rna}\n");
-					this.race_types.add("\\newcommand{\\"+benchmark+type+"CI}{\\rna}\n");
-					this.race_types.add("\\newcommand{\\"+benchmark+type+"CIMIN}{\\rna}\n");
-					this.race_types.add("\\newcommand{\\"+benchmark+type+"CIMAX}{\\rna}\n");
-				} else {
-					long avgRaces = round(EventCounts.getAvg(this.types.get(type)));
-					String type_races_string = String.valueOf(avgRaces);
-					this.race_types.add("\\newcommand{\\"+benchmark+type+"}{"+getParenthesis(type_races_string)+"}\n");
-					//Add confidence intervals
-					long ci = round(EventCounts.calcCI(this.types.get(type)));
-					String ciString = String.valueOf(ci);
-					this.race_types.add("\\newcommand{\\"+benchmark+type+"CI}{"+getParenthesis(ciString)+"}\n");
-					//Applying confidence intervals to data set
-					String minRaces = String.valueOf(avgRaces - ci);
-					String maxRaces = String.valueOf(avgRaces + ci);
-					this.race_types.add("\\newcommand{\\"+benchmark+type+"CIMIN}{"+getParenthesis(minRaces)+"}\n");
-					this.race_types.add("\\newcommand{\\"+benchmark+type+"CIMAX}{"+getParenthesis(maxRaces)+"}\n");
-				}
-			}
-		}
-		if (tool.equals("PIP")) {
-			String[] types = {"HB", "HBDynamic", "FT", "FTDynamic", "WCP", "WCPDynamic", "WDC", "WDCDynamic", "CAPO", "CAPODynamic", "CAPOOPT", "CAPOOPTDynamic", "CAPOOPTALT", "CAPOOPTALTDynamic"};//, "PIP", "PIPDynamic"};
-			for (String type : types) {
-				if (this.types.get(type) == null) {
-					this.race_types.add("\\newcommand{\\"+benchmark+type+"}{\\rna}\n");
-					this.race_types.add("\\newcommand{\\"+benchmark+type+"CI}{\\rna}\n");
-					this.race_types.add("\\newcommand{\\"+benchmark+type+"CIMIN}{\\rna}\n");
-					this.race_types.add("\\newcommand{\\"+benchmark+type+"CIMAX}{\\rna}\n");
-				} else {
-					long avgRaces = round(EventCounts.getAvg(this.types.get(type)));
-					String type_races_string = String.valueOf(avgRaces);
-					this.race_types.add("\\newcommand{\\"+benchmark+type+"}{"+getParenthesis(type_races_string)+"}\n");
-					//Add confidence intervals
-					long ci = round(EventCounts.calcCI(this.types.get(type)));
-					String ciString = String.valueOf(ci);
-					this.race_types.add("\\newcommand{\\"+benchmark+type+"CI}{"+getParenthesis(ciString)+"}\n");
-					//Applying confidence intervals to data set
-					String minRaces = String.valueOf(avgRaces - ci);
-					String maxRaces = String.valueOf(avgRaces + ci);
-					this.race_types.add("\\newcommand{\\"+benchmark+type+"CIMIN}{"+getParenthesis(minRaces)+"}\n");
-					this.race_types.add("\\newcommand{\\"+benchmark+type+"CIMAX}{"+getParenthesis(maxRaces)+"}\n");
-				}
+	public LinkedList<String> getRace_types(String tool, String[] types) {
+		for (String type : types) {
+			if (this.types.get(type) == null) {
+				this.race_types.add("\\newcommand{\\"+benchmark+type+"}{\\rna}\n");
+				this.race_types.add("\\newcommand{\\"+benchmark+type+"CI}{\\rna}\n");
+				this.race_types.add("\\newcommand{\\"+benchmark+type+"CIMIN}{\\rna}\n");
+				this.race_types.add("\\newcommand{\\"+benchmark+type+"CIMAX}{\\rna}\n");
+			} else {
+				long avgRaces = round(EventCounts.getAvg(this.types.get(type)));
+				String type_races_string = String.valueOf(avgRaces);
+				this.race_types.add("\\newcommand{\\"+benchmark+type+"}{"+getParenthesis(type_races_string)+"}\n");
+				//Add confidence intervals
+				long ci = round(EventCounts.calcCI(this.types.get(type)));
+				String ciString = String.valueOf(ci);
+				this.race_types.add("\\newcommand{\\"+benchmark+type+"CI}{"+getParenthesis(ciString)+"}\n");
+				//Applying confidence intervals to data set
+				String minRaces = String.valueOf(avgRaces - ci);
+				String maxRaces = String.valueOf(avgRaces + ci);
+				this.race_types.add("\\newcommand{\\"+benchmark+type+"CIMIN}{"+getParenthesis(minRaces)+"}\n");
+				this.race_types.add("\\newcommand{\\"+benchmark+type+"CIMAX}{"+getParenthesis(maxRaces)+"}\n");
 			}
 		}
 		return race_types;
@@ -486,66 +459,30 @@ public class BenchmarkInfo {
 		return counts;
 	}
 	
-	//TODO: clean this up
-	public String getCount_Total(String tool, String totalType) {
-		String config = "";
-		if (tool.equals("DC")) {
-			config = "wdc_exc";
-		} else { //PIP tool
-			config = "pip_dc";
-		}
-		String event_total_string = "";
-		if (config.equals("pip_dc")) {
+	public String getCount_Total(String tool, String config, String totalType) {
+		String event_total_string = "0";
+		long avgEvents = 0;
+		long ci = 0;
+		if (counts.get(config) != null) {
 			if (totalType.equals("Events")) {
-				if (counts.get(config) == null) { //fail state
-					event_total_string = "0";
-				} else {
-					event_total_string = String.valueOf(getTwoSigsRound(counts.get(config).getTotal()));
-				}
-				if (event_total_string.equals("0")) {
-					if (counts.get(config) != null) {
-						event_total_string = String.valueOf(getTwoSigsRound(EventCounts.add(counts.get(config).getTotal_ops(), counts.get(config).getTotal_fast_path_taken())));//counts.get(config).getTotal_ops() + counts.get(config).getTotal_fast_path_taken()));
-					}
-				}
+				event_total_string = String.valueOf(getTwoSigsRound(EventCounts.add(counts.get(config).getTotal_ops(), counts.get(config).getTotal_fast_path_taken())));
+				avgEvents = round(EventCounts.getAvg(EventCounts.add(counts.get(config).getTotal_ops(), counts.get(config).getTotal_fast_path_taken())));
+				ci = round(EventCounts.calcCI(EventCounts.add(counts.get(config).getTotal_ops(), counts.get(config).getTotal_fast_path_taken())));
 			} else if (totalType.equals("NoFPEvents")) {
-				if (counts.get(config) == null) { //fail state
-					event_total_string = "0";
-				} else {
-					event_total_string = String.valueOf(getTwoSigsRound(EventCounts.add(EventCounts.add(counts.get(config).getTotal(), counts.get(config).getFp_write()), counts.get(config).getFp_read())));//counts.get(config).getTotal() + counts.get(config).getFp_write() + counts.get(config).getFp_read()));
-				}
-				if (event_total_string.equals("0")) {
-					if (counts.get(config) != null) {
-						event_total_string = String.valueOf(getTwoSigsRound(counts.get(config).getTotal_ops()));
-					}
-				}
+				event_total_string = String.valueOf(getTwoSigsRound(counts.get(config).getTotal_ops()));
+				avgEvents = round(EventCounts.getAvg(counts.get(config).getTotal_ops()));
+				ci = round(EventCounts.calcCI(counts.get(config).getTotal_ops()));
 			}
-		} else { //For wdc_exc
-			if (totalType.equals("Events")) {
-				if (counts.get(config) == null) { //fail state
-					event_total_string = "0";
-				} else {
-					event_total_string = String.valueOf(getTwoSigsRound(EventCounts.add(EventCounts.add(counts.get(config).getTotal(), counts.get(config).getFp_write()), counts.get(config).getFp_read())));//counts.get(config).getTotal() + counts.get(config).getFp_write() + counts.get(config).getFp_read()));
-				}
-				if (event_total_string.equals("0")) {
-					if (counts.get(config) != null) {
-						event_total_string = String.valueOf(getTwoSigsRound(counts.get(config).getTotal_ops()));
-					}
-				}
-			} else if (totalType.equals("NoFPEvents")) {
-				if (counts.get(config) == null) { //fail state
-					event_total_string = "0";
-				} else {
-					event_total_string = String.valueOf(getTwoSigsRound(counts.get(config).getTotal()));
-				}
-				if (event_total_string.equals("0")) {
-					if (counts.get(config) != null) {
-						event_total_string = String.valueOf(getTwoSigsRound(EventCounts.sub(counts.get(config).getTotal_ops(), counts.get(config).getTotal_fast_path_taken())));//counts.get(config).getTotal_ops() - counts.get(config).getTotal_fast_path_taken()));
-					}
-				}
-			} else if (totalType.equals("Ops")) {
-				event_total_string = String.valueOf(getTwoSigsRound(counts.get(config).getTotal()));
-			}
+			//Add confidence intervals
+			String ciString = String.valueOf(ci);
+			this.race_types.add("\\newcommand{\\"+benchmark+totalType+"CI}{"+getParenthesis(ciString)+"}\n");
+			//Applying confidence intervals to data set
+			String minRaces = String.valueOf(avgEvents - ci);
+			String maxRaces = String.valueOf(avgEvents + ci);
+			this.race_types.add("\\newcommand{\\"+benchmark+totalType+"CIMIN}{"+getParenthesis(minRaces)+"}\n");
+			this.race_types.add("\\newcommand{\\"+benchmark+totalType+"CIMAX}{"+getParenthesis(maxRaces)+"}\n");
 		}
+			
 		if (event_total_string.isEmpty()) {
 			this.event_total = "\\newcommand{\\"+benchmark+totalType+"}{\\rna}\n";
 		} else {
