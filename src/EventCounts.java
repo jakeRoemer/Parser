@@ -116,6 +116,21 @@ public class EventCounts {
 	private long[] write_map_size_100;
 	private long[] write_map_size_1000;
 	private long[] write_map_size_gt_1000;
+
+	private long[] rule_a_total_successes;
+	private long[] rule_a_changed_a_single_thread;
+	private long[] rule_a_changed_two_threads;
+	private long[] rule_a_changed_more_than_two_threads;
+	private long[] rule_a_changed_every_thread;
+	
+	private long[] total_one_lock_held;
+	private long[] rule_a_success_one_lock_held;
+	private long[] total_two_locks_held;
+	private long[] rule_a_success_inner_lock_held;
+	private long[] rule_a_success_outer_lock_held;
+	private long[] total_many_locks_held;
+	private long[] rule_a_success_inner_most_lock_held;
+	private long[] rule_a_success_outer_most_lock_held;
 	
 	private String config;
 	private String bench;
@@ -374,6 +389,32 @@ public class EventCounts {
 			setWrite_map_size_1000(getVal(getWrite_map_size_1000(), eventCount, curr_trial, total_trials));
 		} else if (eventType.equals("Write Map Size Gt 1000")) {
 			setWrite_map_size_gt_1000(getVal(getWrite_map_size_gt_1000(), eventCount, curr_trial, total_trials));
+		} else if (eventType.equals("Rule A Total Successes")) {
+			setRule_a_total_successes(getVal(getRule_a_total_successes(), eventCount, curr_trial, total_trials));
+		} else if (eventType.equals("Rule A changed a single thread")) {
+			setRule_a_changed_a_single_thread(getVal(getRule_a_changed_a_single_thread(), eventCount, curr_trial, total_trials));
+		} else if (eventType.equals("Rule A changed two threads")) {
+			setRule_a_changed_two_threads(getVal(getRule_a_changed_two_threads(), eventCount, curr_trial, total_trials));
+		} else if (eventType.equals("Rule A changed more than two threads")) {
+			setRule_a_changed_more_than_two_threads(getVal(getRule_a_changed_more_than_two_threads(), eventCount, curr_trial, total_trials));
+		} else if (eventType.equals("Rule A changed every thread")) {
+			setRule_a_changed_every_thread(getVal(getRule_a_changed_every_thread(), eventCount, curr_trial, total_trials));
+		} else if (eventType.equals("Total One Lock Held")) {
+			setTotal_one_lock_held(getVal(getTotal_one_lock_held(), eventCount, curr_trial, total_trials));
+		} else if (eventType.equals("Rule A Success One Lock Held")) {
+			setRule_a_success_one_lock_held(getVal(getRule_a_success_one_lock_held(), eventCount, curr_trial, total_trials));
+		} else if (eventType.equals("Total Two Locks Held")) {
+			setTotal_two_locks_held(getVal(getTotal_two_locks_held(), eventCount, curr_trial, total_trials));
+		} else if (eventType.equals("Rule A Success Inner Lock Held")) {
+			setRule_a_success_inner_lock_held(getVal(getRule_a_success_inner_lock_held(), eventCount, curr_trial, total_trials));
+		} else if (eventType.equals("Rule A Success Outer Lock Held")) {
+			setRule_a_success_outer_lock_held(getVal(getRule_a_success_outer_lock_held(), eventCount, curr_trial, total_trials));
+		} else if (eventType.equals("Total Many Locks Held")) {
+			setTotal_many_locks_held(getVal(getTotal_many_locks_held(), eventCount, curr_trial, total_trials));
+		} else if (eventType.equals("Rule A Success Inner Most Lock Held")) {
+			setRule_a_success_inner_most_lock_held(getVal(getRule_a_success_inner_most_lock_held(), eventCount, curr_trial, total_trials));
+		} else if (eventType.equals("Rule A Success Outer Most Lock Held")) {
+			setRule_a_success_outer_most_lock_held(getVal(getRule_a_success_outer_most_lock_held(), eventCount, curr_trial, total_trials));
 		}
 	}
 	
@@ -491,6 +532,21 @@ public class EventCounts {
 				input.println("write map size 100: " + getWrite_map_size_100());
 				input.println("write map size 1000: " + getWrite_map_size_1000());
 				input.println("write map size gt 1000: " + getWrite_map_size_gt_1000());
+				
+				input.println("rule A total successes: " + getRule_a_total_successes());
+				input.println("rule A changed a single thread: " + getRule_a_changed_a_single_thread());
+				input.println("rule A changed two threads: " + getRule_a_changed_two_threads());
+				input.println("rule A changed more than two threads: " + getRule_a_changed_more_than_two_threads());
+				input.println("rule A changed every thread: " + getRule_a_changed_every_thread());
+				
+				input.println("total one lock held: " + getTotal_one_lock_held());
+				input.println("rule A success one lock held: " + getRule_a_success_one_lock_held());
+				input.println("total two locks held: " + getTotal_two_locks_held());
+				input.println("rule A success inner lock held: " + getRule_a_success_inner_lock_held());
+				input.println("rule A success outer lock held: " + getRule_a_success_outer_lock_held());
+				input.println("total many locks held: " + getTotal_many_locks_held());
+				input.println("rule A success inner most lock held: " + getRule_a_success_inner_most_lock_held());
+				input.println("rule A success outer most lock held: " + getRule_a_success_outer_most_lock_held());				
 				input.close();
 			}
 		} catch (FileNotFoundException e) {e.printStackTrace();}
@@ -505,6 +561,43 @@ public class EventCounts {
 		
 		//Extra counts
 		getLocksHeldCounts(output);
+		getRuleAChanges(output);
+		getRuleALockSuccess(output);
+	}
+	
+	public void getRuleALockSuccess(BufferedWriter output) throws IOException {
+		long[] totalEventsHeldLocks = add(getTotal_one_lock_held(), add(getTotal_two_locks_held(), getTotal_many_locks_held()));
+		if (!isZero(totalEventsHeldLocks)) {
+			output.write("\\newcommand{\\" + bench + "TotalLockHeld}{" + roundTwoSigs(totalEventsHeldLocks) + "}\n");
+			output.write("\\newcommand{\\" + bench + "SingleLockHeld}{" + getPercent(getTotal_one_lock_held(), totalEventsHeldLocks) + "}\n");
+			output.write("\\newcommand{\\" + bench + "TwoLocksHeld}{" + getPercent(getTotal_two_locks_held(), totalEventsHeldLocks) + "}\n");
+			output.write("\\newcommand{\\" + bench + "ManyLocksHeld}{" + getPercent(getTotal_many_locks_held(), totalEventsHeldLocks) + "}\n");
+			
+			output.write("\\newcommand{\\" + bench + "TotalSingleLockHeld}{" + roundTwoSigs(getTotal_one_lock_held()) + "}\n");
+			output.write("\\newcommand{\\" + bench + "SucSingleLockHeld}{" + getPercent(getRule_a_success_one_lock_held(), getTotal_one_lock_held()) + "}\n");
+			
+			output.write("\\newcommand{\\" + bench + "TotalTwoLocksHeld}{" + roundTwoSigs(getTotal_two_locks_held()) + "}\n");
+			double innerSucc = isZero(getTotal_two_locks_held()) ? 0 : getPercent(getRule_a_success_inner_lock_held(), getTotal_two_locks_held());
+			double outerSucc = isZero(getTotal_two_locks_held()) ? 0 : getPercent(getRule_a_success_outer_lock_held(), getTotal_two_locks_held());
+			output.write("\\newcommand{\\" + bench + "SucInnerLockHeld}{" + innerSucc + "}\n");
+			output.write("\\newcommand{\\" + bench + "SucOuterLockHeld}{" + outerSucc + "}\n");
+			
+			output.write("\\newcommand{\\" + bench + "TotalManyLocksHeld}{" + roundTwoSigs(getTotal_many_locks_held()) + "}\n");
+			double innerMostSucc = isZero(getTotal_many_locks_held()) ? 0 : getPercent(getRule_a_success_inner_most_lock_held(), getTotal_many_locks_held());
+			double outerMostSucc = isZero(getTotal_many_locks_held()) ? 0 : getPercent(getRule_a_success_outer_most_lock_held(), getTotal_many_locks_held());
+			output.write("\\newcommand{\\" + bench + "SucInnerMostLockHeld}{" + innerMostSucc + "}\n");
+			output.write("\\newcommand{\\" + bench + "SucOuterMostLockHeld}{" + outerMostSucc + "}\n");
+		}
+	}
+	
+	public void getRuleAChanges(BufferedWriter output) throws IOException {
+		if (!isZero(getRule_a_total_successes())) {
+			output.write("\\newcommand{\\" + bench + "TotalRuleASuc}{" + roundTwoSigs(getRule_a_total_successes()) + "}\n");
+			output.write("\\newcommand{\\" + bench + "OneThrChanged}{" + getPercent(getRule_a_changed_a_single_thread(), getRule_a_total_successes()) + "}\n");
+			output.write("\\newcommand{\\" + bench + "TwoThrChanged}{" + getPercent(getRule_a_changed_two_threads(), getRule_a_total_successes()) + "}\n");
+			output.write("\\newcommand{\\" + bench + "ManyThrChanged}{" + getPercent(getRule_a_changed_more_than_two_threads(), getRule_a_total_successes()) + "}\n");
+			output.write("\\newcommand{\\" + bench + "AllThrChanged}{" + getPercent(getRule_a_changed_every_thread(), getRule_a_total_successes()) + "}\n");
+		}
 	}
 	
 	public void getLocksHeldCounts(BufferedWriter output) throws IOException {
@@ -1461,6 +1554,108 @@ public class EventCounts {
 		this.write_map_size_gt_1000 = write_map_size_gt_1000;
 	}
 	
-	
+	public long[] getRule_a_total_successes() {
+		return rule_a_total_successes;
+	}
+
+	public void setRule_a_total_successes(long[] rule_a_total_successes) {
+		this.rule_a_total_successes = rule_a_total_successes;
+	}
+
+	public long[] getRule_a_changed_a_single_thread() {
+		return rule_a_changed_a_single_thread;
+	}
+
+	public void setRule_a_changed_a_single_thread(long[] rule_a_changed_a_single_thread) {
+		this.rule_a_changed_a_single_thread = rule_a_changed_a_single_thread;
+	}
+
+	public long[] getRule_a_changed_two_threads() {
+		return rule_a_changed_two_threads;
+	}
+
+	public void setRule_a_changed_two_threads(long[] rule_a_changed_two_threads) {
+		this.rule_a_changed_two_threads = rule_a_changed_two_threads;
+	}
+
+	public long[] getRule_a_changed_more_than_two_threads() {
+		return rule_a_changed_more_than_two_threads;
+	}
+
+	public void setRule_a_changed_more_than_two_threads(long[] rule_a_changed_more_than_two_threads) {
+		this.rule_a_changed_more_than_two_threads = rule_a_changed_more_than_two_threads;
+	}
+
+	public long[] getRule_a_changed_every_thread() {
+		return rule_a_changed_every_thread;
+	}
+
+	public void setRule_a_changed_every_thread(long[] rule_a_changed_every_thread) {
+		this.rule_a_changed_every_thread = rule_a_changed_every_thread;
+	}
+
+	public long[] getTotal_one_lock_held() {
+		return total_one_lock_held;
+	}
+
+	public void setTotal_one_lock_held(long[] total_one_lock_held) {
+		this.total_one_lock_held = total_one_lock_held;
+	}
+
+	public long[] getRule_a_success_one_lock_held() {
+		return rule_a_success_one_lock_held;
+	}
+
+	public void setRule_a_success_one_lock_held(long[] rule_a_success_one_lock_held) {
+		this.rule_a_success_one_lock_held = rule_a_success_one_lock_held;
+	}
+
+	public long[] getTotal_two_locks_held() {
+		return total_two_locks_held;
+	}
+
+	public void setTotal_two_locks_held(long[] total_two_locks_held) {
+		this.total_two_locks_held = total_two_locks_held;
+	}
+
+	public long[] getRule_a_success_inner_lock_held() {
+		return rule_a_success_inner_lock_held;
+	}
+
+	public void setRule_a_success_inner_lock_held(long[] rule_a_success_inner_lock_held) {
+		this.rule_a_success_inner_lock_held = rule_a_success_inner_lock_held;
+	}
+
+	public long[] getRule_a_success_outer_lock_held() {
+		return rule_a_success_outer_lock_held;
+	}
+
+	public void setRule_a_success_outer_lock_held(long[] rule_a_success_outer_lock_held) {
+		this.rule_a_success_outer_lock_held = rule_a_success_outer_lock_held;
+	}
+
+	public long[] getTotal_many_locks_held() {
+		return total_many_locks_held;
+	}
+
+	public void setTotal_many_locks_held(long[] total_many_locks_held) {
+		this.total_many_locks_held = total_many_locks_held;
+	}
+
+	public long[] getRule_a_success_inner_most_lock_held() {
+		return rule_a_success_inner_most_lock_held;
+	}
+
+	public void setRule_a_success_inner_most_lock_held(long[] rule_a_success_inner_most_lock_held) {
+		this.rule_a_success_inner_most_lock_held = rule_a_success_inner_most_lock_held;
+	}
+
+	public long[] getRule_a_success_outer_most_lock_held() {
+		return rule_a_success_outer_most_lock_held;
+	}
+
+	public void setRule_a_success_outer_most_lock_held(long[] rule_a_success_outer_most_lock_held) {
+		this.rule_a_success_outer_most_lock_held = rule_a_success_outer_most_lock_held;
+	}
 	
 }

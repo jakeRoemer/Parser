@@ -296,7 +296,12 @@ public class BenchmarkInfo {
 		this.config_total_time_trials.put(config, time);
 	}
 
-	public LinkedList<String> getConfig_mem() {
+	public LinkedList<String> getConfig_mem(String tool, String[] types) {
+		for (String type : types) {
+			if (!this.config_mem_trials.containsKey(type)) {
+				this.config_mem.add("\\newcommand{\\"+benchmark+type+"Mem}{\\memna}\n");
+			}
+		}
 		return this.config_mem;
 	}
 

@@ -9,11 +9,11 @@ import java.util.LinkedList;
 
 public class parseDC {
 	static final String[] benchmarks = {"avrora", "batik", "htwo", "jython", "luindex", "lusearch", "pmd", "sunflow", "tomcat", "xalan"};
-	static final int trials = 5; //Integer.parseInt(args[1]);
-	static final String tool = "DC"; //DC or PIP
+	static final int trials = 10; //Integer.parseInt(args[1]);
+	static final String tool = "PIP"; //DC or PIP
 	static final boolean fieldRace = false; //true = field, false = single second site
-	static final boolean extraStats = false; //false for DC tool and false if counts are not collected.
-	static final String output_dir = /*args[0];*/ "PIP_slowTool_raceLimitFix_assertCheck";
+	static final boolean extraStats = true; //false for DC tool and false if counts are not collected.
+	static final String output_dir = /*args[0];*/ "PIP_fastTool_FTO_All";
 	
 	//TODO: Change everything WDC to DC
 	public static void main (String [] args) {
@@ -21,14 +21,17 @@ public class parseDC {
 //		String [] configs = {"base", "empty", "hbwcp", "wdc_noG", "wdc"};//, "capo_only", "pip_only"};//, "wdc_noG", "capo_noG", "pip_noG"};
 //		String [] configNames = {"Base", "Empty", "HBWCP", "DCLite", "WDC"};//, "CAPO", "PIP"};// ,"DCLite", "CAPOLite", "PIPLite"};
 		//PIP tool (fast tool)
-//		String [] configs = {"base", "empty", "ft", "pip_hb", "pip_wcp", "pip_dc", "pip_capo", "pip_capoOpt", "pip_capoOptAlt"}; //, "pip_pip"};
-//		String [] configNames = {"Base", "Empty", "FT", "HB", "WCP", "DC", "CAPO", "CAPOOPT", "CAPOOPTALT"}; //, "PIP"};
+//		String [] configs = {"base", "empty", "ft", "pip_hb", "pip_wcp", "pip_dc", "pip_capo", "pip_capoOpt", "pip_capoOptAlt", "pip_capoRE", "pip_capoREAlt", "pip_capoREOpt"}; //, "pip_pip"};
+//		String [] configNames = {"Base", "Empty", "FT", "HB", "WCP", "DC", "CAPO", "CAPOOPT", "CAPOOPTALT", "CAPORE", "CAPOREALT", "CAPOREOPT"}; //, "PIP"};
+		//FTO PIP tool (fast tool)
+		String [] configs = {"base", "empty", "ft", "pip_hb", "pip_fto_hb", "pip_wcp", "pip_fto_wcp", "pip_fto_re_wcp", "pip_dc", "pip_fto_dc", "pip_fto_re_dc", "pip_capo", "pip_fto_capo", "pip_capoOpt", "pip_fto_capoOpt", "pip_capoOptAlt", "pip_capoRE"};
+		String [] configNames = {"Base", "Empty", "FT", "HB", "FTOHB", "WCP", "FTOWCP", "REWCP", "DC", "FTODC", "REDC", "CAPO", "FTOCAPO", "CAPOOPT", "FTOCAPOOPT", "CAPOOPTALT", "CAPORE"};
 		//Quiet PIP tool (fast tool)
 //		String [] configs = {"base", "empty", "ft", "pipQ_hb", "pipQ_wcp", "pipQ_dc", "pipQ_capo", "pipQ_capoOpt", "pipQ_capoOptAlt"};
 //		String [] configNames = {"Base", "Empty", "FT", "HB", "WCP", "DC", "CAPO", "CAPOOPT", "CAPOOPTALT"};
 		//PIP tool (slow tool)
-		String [] configs = {"base", "empty", "ft", "hb", "hbwcp", "wdc_noG", "wdc"};//, "wdc_noG", "wdc_exc", "capo"};//, "wdc_exc", "capo_exc", "pip_exc", "pip"};
-		String [] configNames = {"Base", "Empty", "FT", "HB", "WCP", "WDCnoG", "WDC"};//, "WDCLite", "WDCExc", "CAPOFull"};//, "DCExc", "CAPOExc", "PIPExc", "PIP"};
+//		String [] configs = {"base", "empty", "ft", "hb", "hbwcp", "wdc_noG", "wdc", "capo_noG", "capo"};//, "wdc_noG", "wdc_exc", "capo"};//, "wdc_exc", "capo_exc", "pip_exc", "pip"};
+//		String [] configNames = {"Base", "Empty", "FT", "HB", "WCP", "WDCnoG", "WDC", "CAPOnoG", "CAPO"};//, "WDCLite", "WDCExc", "CAPOFull"};//, "DCExc", "CAPOExc", "PIPExc", "PIP"};
 		//PIP tool (slow tool for alternate hb configurations
 //		String [] configs = {"base", "ft", "hb", "hb_g", "hb_raceedge", "hb_noG_raceedge"};
 //		String [] configNames = {"Base", "FT", "HB", "HBwG", "HBwRaceEdge", "HBnoGwRaceEdge"};
@@ -40,10 +43,10 @@ public class parseDC {
 			String memory = "";
 			String bench_time = "";
 			System.out.println("Parsing result files...");
-			LinkedList<String> raceIdentifierDC = new LinkedList<String>(Arrays.asList("HB", "wG", "wRaceEdge", "noGwRaceEdge", "WCP", "WDCnoG", "WDC", "CAPO", /*"PIP"*/ "CAPOOPT", "CAPOOPTALT"));
+			LinkedList<String> raceIdentifierDC = new LinkedList<String>(Arrays.asList("HB", "wG", "wRaceEdge", "noGwRaceEdge", "WCP", "WDCnoG", "WDC", "CAPOnoG", "CAPO", /*"PIP"*/ "CAPOOPT", "CAPOOPTALT", "CAPORE", "CAPOREALT", "CAPOREOPT"));
 			LinkedList<String> raceIdentifierPIP = new LinkedList<String>(Arrays.asList("PIP", "FastTrack"));
 			LinkedList<String> raceIdentifier = (tool.equals("DC") ? raceIdentifierDC : raceIdentifierPIP);
-			LinkedList<String> raceTypeTotal = new LinkedList<String>(Arrays.asList("HB", "WCP", "DC", "CAPO", /*"PIP"*/ "CAPOOPT", "CAPOOPTALT"));
+			LinkedList<String> raceTypeTotal = new LinkedList<String>(Arrays.asList("HB", "WCP", "FTOWCP", "REWCP", "DC", "FTODC", "REDC", "CAPO", /*"PIP"*/ "CAPOOPT", "CAPOOPTALT", "CAPORE", "CAPOREALT", "CAPOREOPT"));
 			for (String benchmark : benchmarks) {
 				BenchmarkInfo bench = new BenchmarkInfo(benchmark, trials);
 				for (int trial = 1; trial <= trials; trial++) {
@@ -314,6 +317,10 @@ public class parseDC {
 					bench.getCounts().get("pip_capo").getCAPOSetCounts(output);
 					bench.getCounts().get("pip_capo").getCAPOMapCounts(output);
 				}
+				//Note: The following count set is only collected for CAPO_RE_Alt configuration
+				if (bench.getCounts().get("pip_capoREAlt") != null) {
+					bench.getCounts().get("pip_capoREAlt").getRuleALockSuccess(output);
+				}
 			}
 			output.write(bench.getMaxLiveThread_count(observed_config));
 			output.write(bench.getTotalThread_count(observed_config));			
@@ -322,15 +329,23 @@ public class parseDC {
 			}
 			output.write(bench.getStatic_check_time());
 			output.write(bench.getDynamic_check_time());
-			for (String config_mem : bench.getConfig_mem()) {
+			//TODO: move this to the top so it can be set appropriately
+			String[] memsDC = {"HB", "FT", "WCP", "WDCnoG", "WDC", "CAPOnoG", "CAPO", "PIP"};
+			String[] memsPIP = {"HB", "FTOHB", "FT", "WCP", "WDC", "FTOWCP", "REWCP", "FTODC", "REDC",
+					"CAPO", "FTOCAPO", "CAPOOPT", "CAPOOPTALT", "CAPORE", "CAPOREALT", "CAPOREOPT"};//, "PIP", "PIPDynamic"};
+			String[] mems = tool.equals("DC") ? memsDC : memsPIP;
+			for (String config_mem : bench.getConfig_mem(tool, mems)) {
 				output.write(config_mem);
 			}
 			//TODO: move this to the top so it can be set appropriately
-			String[] typesDC = {"HB", "HBDynamic", "FT", "FTDynamic", "WCP", "WCPDynamic", "WDCnoG", "WDCnoGDynamic", "WDC", "WDCDynamic", "CAPO", "CAPODynamic", "PIP", "PIPDynamic",
-					"HBUP", "HBDynamicUP", "WCPUP", "WCPDynamicUP", "WDCnoGUP", "WDCnoGDynamicUP", "WDCUP", "WDCDynamicUP", "CAPOUP", "CAPODynamicUP", "PIPUP", "PIPDynamicUP",
+			String[] typesDC = {"HB", "HBDynamic", "FT", "FTDynamic", "WCP", "WCPDynamic", "WDCnoG", "WDCnoGDynamic", "WDC", "WDCDynamic", "CAPOnoG", "CAPOnoGDynamic", "CAPO", "CAPODynamic", "PIP", "PIPDynamic",
+					"HBUP", "HBDynamicUP", "WCPUP", "WCPDynamicUP", "WDCnoGUP", "WDCnoGDynamicUP", "WDCUP", "WDCDynamicUP", "CAPOnoGUP", "CAPOnoGDynamicUP", "CAPOUP", "CAPODynamicUP", "PIPUP", "PIPDynamicUP",
 					"PIPHB", "PIPHBDynamic", "PIPWCP", "PIPWCPDynamic", "PIPWDC", "PIPWDCDynamic", "PIPCAPO", "PIPCAPODynamic", "PIPPIP", "PIPPIPDynamic"};
 			String[] typesHB = {"HB", "HBDynamic", "HBwG", "HBwGDynamic", "HBwRaceEdge", "HBwRaceEdgeDynamic", "HBnoGwRaceEdge", "HBnoGwRaceEdgeDynamic"};
-			String[] typesPIP = {"HB", "HBDynamic", "FT", "FTDynamic", "WCP", "WCPDynamic", "WDC", "WDCDynamic", "CAPO", "CAPODynamic", "CAPOOPT", "CAPOOPTDynamic", "CAPOOPTALT", "CAPOOPTALTDynamic"};//, "PIP", "PIPDynamic"};
+			String[] typesPIP = {"HB", "HBDynamic", "FT", "FTDynamic", "WCP", "WCPDynamic", "WDC", "WDCDynamic", 
+					"FTOHB", "FTOHBDynamic", "FTOWCP", "FTOWCPDynamic", "REWCP", "REWCPDynamic", "FTODC", "FTODCDynamic", "REDC", "REDCDynamic",
+					"CAPO", "CAPODynamic", "FTOCAPO", "FTOCAPODynamic", "CAPOOPT", "CAPOOPTDynamic", "CAPOOPTALT", "CAPOOPTALTDynamic",
+					"CAPORE", "CAPOREDynamic", "CAPOREALT", "CAPOREALTDynamic", "CAPOREOPT", "CAPOREOPTDynamic"};//, "PIP", "PIPDynamic"};
 			String[] types = tool.equals("DC") ? typesDC : typesPIP;
 			for (String race_type : bench.getRace_types(tool, types)) {
 				output.write(race_type);
