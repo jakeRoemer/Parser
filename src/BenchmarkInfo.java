@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 
 public class BenchmarkInfo {
+	final String tool;
 	final String benchmark;
 	
 	String event_total;
@@ -13,10 +14,10 @@ public class BenchmarkInfo {
 	HashMap<String, int[]> max_live_thread_count;
 	
 	LinkedList<String> config_total_time;
-	HashMap<String, Double> config_total_time_trials;
+	HashMap<String, double[]> config_total_time_trials;
 	
 	LinkedList<String> config_mem;
-	HashMap<String, Double> config_mem_trials;
+	HashMap<String, double[]> config_mem_trials;
 	
 	LinkedList<String> config_bench_time;
 	
@@ -41,7 +42,8 @@ public class BenchmarkInfo {
 	
 	HashMap<String, EventCounts> counts;
 	
-	public BenchmarkInfo(String benchmark, int total_trials) {
+	public BenchmarkInfo(String tool, String benchmark, int total_trials) {
+		this.tool = tool.equals("DC") ? "SLOW" : "FAST";
 		this.benchmark = benchmark;
 		this.config_total_time = new LinkedList<String>();
 		this.config_mem = new LinkedList<String>();
@@ -60,8 +62,8 @@ public class BenchmarkInfo {
 		this.max_live_thread_count = new HashMap<String, int[]>();
 		
 		this.event_total_trials = 0;
-		this.config_total_time_trials = new HashMap<String, Double>();
-		this.config_mem_trials = new HashMap<String, Double>();
+		this.config_total_time_trials = new HashMap<String, double[]>();
+		this.config_mem_trials = new HashMap<String, double[]>();
 		this.static_check_time_trials = 0;
 		this.dynamic_check_time_trials = 0;
 		this.total_trials = total_trials;
@@ -69,6 +71,9 @@ public class BenchmarkInfo {
 		this.counts = new HashMap<String, EventCounts>();
 	}
 	
+	public String getTool() {
+		return tool;
+	}
 	public String getBenchmark() {
 		return benchmark;
 	}
@@ -215,9 +220,9 @@ public class BenchmarkInfo {
 	public String getTotalThread_count(String config) {
 		int[] thread_counts = this.total_thread_count.get(config);
 		if (thread_counts == null) {
-			return "\\newcommand{\\"+benchmark+"TotalThreads}{\\rna}\n";
+			return "\\newcommand{\\"+getTool()+benchmark+"TotalThreads}{\\rna}\n";
 		}
-		return "\\newcommand{\\"+benchmark+"TotalThreads}{"+EventCounts.getAvg(thread_counts)+"}\n";
+		return "\\newcommand{\\"+getTool()+benchmark+"TotalThreads}{"+EventCounts.getAvg(thread_counts)+"}\n";
 	}
 
 	public void setTotalThread_count(String config, String thread_count, int curr_trial, int total_trials) {			
@@ -238,9 +243,9 @@ public class BenchmarkInfo {
 	public String getMaxLiveThread_count(String config) {
 		int[] thread_counts = this.max_live_thread_count.get(config);
 		if (thread_counts == null) {
-			return "\\newcommand{\\"+benchmark+"MaxLiveThreads}{\\rna}\n";
+			return "\\newcommand{\\"+getTool()+benchmark+"MaxLiveThreads}{\\rna}\n";
 		}
-		return "\\newcommand{\\"+benchmark+"MaxLiveThreads}{"+EventCounts.getAvg(thread_counts)+"}\n";
+		return "\\newcommand{\\"+getTool()+benchmark+"MaxLiveThreads}{"+EventCounts.getAvg(thread_counts)+"}\n";
 	}
 
 	public void setMaxLiveThread_count(String config, String thread_count, int curr_trial, int total_trials) {
@@ -258,69 +263,137 @@ public class BenchmarkInfo {
 		}
 	}
 
-	public LinkedList<String> getConfig_total_time(String [] configs, String [] configNames) {
-		for (int i = 0; i < configs.length; i++) {
-			if (this.config_total_time_trials.get(configs[i]) == null) {
-				this.config_total_time.add("\\newcommand{\\"+benchmark+configNames[i]+"Time}{\\rna}\n");
+	public LinkedList<String> getConfig_total_time(String [] configNames, HashMap<String, double[]> geoMeanTime, int benchIndex) {
+		for (int i = 0; i < configNames.length; i++) {
+			double normalized_time = -1;
+			if (this.config_total_time_trials.get(configNames[i]) == null) {
+				this.config_total_time.add("\\newcommand{\\"+getTool()+benchmark+configNames[i]+"Time}{\\rna}\n");
+				this.config_total_time.add("\\newcommand{\\"+getTool()+benchmark+configNames[i]+"TimeCI}{\\rna}\n");
+				this.config_total_time.add("\\newcommand{\\"+getTool()+benchmark+configNames[i]+"TimeCIMIN}{\\rna}\n");
+				this.config_total_time.add("\\newcommand{\\"+getTool()+benchmark+configNames[i]+"TimeCIMAX}{\\rna}\n");
 			} else {
-				Double normalized_time = this.config_total_time_trials.get(configs[i])/this.total_trials;
-				if (!configs[i].equals("base")) {
-//					normalized_time = normalized_time / (this.config_total_time_trials.get("base")/this.total_trials);
-					normalized_time = normalized_time / 1000;
-					normalized_time = normalized_time / (this.config_total_time_trials.get("base")/1000/this.total_trials);
+				double[] config_total_time_trial = this.config_total_time_trials.get(configNames[i]);
+				int failures = EventCounts.failedTrials(config_total_time_trial);
+				if (failures > 0) config_total_time_trial = EventCounts.resize(config_total_time_trial, config_total_time_trial.length - failures);
+				normalized_time = EventCounts.getAvg(config_total_time_trial);
+				if (!configNames[i].equals("Base")) {
+					normalized_time = normalized_time / (double)1000;
+					normalized_time = normalized_time / (EventCounts.getAvg(this.config_total_time_trials.get("Base"))/(double)1000);
 				}
 				String config_total_time_string = String.valueOf(getTwoSigsRound(normalized_time));
 				if (config_total_time_string.length() <= 1) {
 					config_total_time_string = String.valueOf(getTwoSigsDouble(normalized_time));
 				}
-				if (configs[i].equals("base")) {
+				if (configNames[i].equals("Base")) {
 					if (config_total_time_string.length() > 4) {
 						config_total_time_string = getParenthesis(config_total_time_string.substring(0, config_total_time_string.length()-3));
 					} else {
-						config_total_time_string =  getDecimals(config_total_time_string);
+						config_total_time_string = getDecimals(config_total_time_string);
 					}
 				} else if (config_total_time_string.length() >= 4 && !config_total_time_string.contains(".")) {
 					config_total_time_string = getParenthesis(config_total_time_string);
 				}
-				this.config_total_time.add("\\newcommand{\\"+benchmark+configNames[i]+"Time}{"+config_total_time_string+"}\n");
+				if (config_total_time_string.length() > 3 && config_total_time_string.substring(config_total_time_string.length()-2).equals(".0")) {
+					config_total_time_string = config_total_time_string.substring(0, config_total_time_string.length()-2);
+				}
+				this.config_total_time.add("\\newcommand{\\"+getTool()+benchmark+configNames[i]+"Time}{"+config_total_time_string+"}\n");
+				//Add confidence intervals
+				if (!configNames[i].equals("Base")) {
+					for (int k = 0; k < this.config_total_time_trials.get(configNames[i]).length; k++) {
+						this.config_total_time_trials.get(configNames[i])[k] = (this.config_total_time_trials.get(configNames[i])[k] / (double)1000) / (this.config_total_time_trials.get("Base")[k] / (double)1000);
+					}
+				}
+				double ci = EventCounts.calcCI(this.config_total_time_trials.get(configNames[i]));
+				String ciString = String.valueOf(getTwoSigsRound(ci));
+				if (ciString.length() <= 1) ciString = String.valueOf(getTwoSigsDouble(ci));
+				if (ciString.length() >= 4 && !ciString.contains(".")) ciString = getParenthesis(ciString);
+				this.config_total_time.add("\\newcommand{\\"+getTool()+benchmark+configNames[i]+"TimeCI}{"+ciString+"}\n");
+				//Applying confidence intervals to data set
+//				String minTime = String.valueOf(getTwoSigsRound(normalized_time - ci));
+//				String maxTime = String.valueOf(getTwoSigsRound(normalized_time + ci));
+//				if (minTime.length() >= 4 && !minTime.contains(".")) minTime = getParenthesis(minTime);
+//				if (maxTime.length() >= 4 && !maxTime.contains(".")) maxTime = getParenthesis(maxTime);
+//				this.config_total_time.add("\\newcommand{\\"+getTool()+benchmark+configNames[i]+"TimeCIMIN}{"+minTime+"}\n");
+//				this.config_total_time.add("\\newcommand{\\"+getTool()+benchmark+configNames[i]+"TimeCIMAX}{"+maxTime+"}\n");
 			}
+			geoMeanTime.get(configNames[i])[benchIndex] = normalized_time;
 		}
 		return config_total_time;
 	}
 
-	public void setConfig_total_time(String configName, String config, String total_time, String bench_time, boolean final_trial) {
-		double time = Double.parseDouble(total_time);
-		if (this.config_total_time_trials.containsKey(config)) {
-			time += this.config_total_time_trials.get(config);
+	public void setConfig_total_time(String configName, String total_time, String bench_time, int curr_trial, int total_trials) {
+		double[] config_total_time_trial = this.config_total_time_trials.get(configName);
+		if (config_total_time_trial == null) {
+			config_total_time_trial = new double[total_trials];
+			for (int i = 0; i < config_total_time_trial.length; i++) {
+				config_total_time_trial[i] = -1; //failed trial identifier
+			}
 		}
-		this.config_total_time_trials.put(config, time);
+		double time = Double.parseDouble(total_time);
+		config_total_time_trial[curr_trial-1] = time;
+		this.config_total_time_trials.put(configName, config_total_time_trial);
 	}
 
-	public LinkedList<String> getConfig_mem(String tool, String[] types) {
+	public LinkedList<String> getConfig_mem(String tool, String[] types, HashMap<String, double[]> geoMeanMem, int benchIndex) {
 		for (String type : types) {
+			double normalized_mem = -1;
 			if (!this.config_mem_trials.containsKey(type)) {
-				this.config_mem.add("\\newcommand{\\"+benchmark+type+"Mem}{\\memna}\n");
+				this.config_mem.add("\\newcommand{\\"+getTool()+benchmark+type+"Mem}{\\memna}\n");
+				this.config_mem.add("\\newcommand{\\"+getTool()+benchmark+type+"MemCI}{\\memna}\n");
+				this.config_mem.add("\\newcommand{\\"+getTool()+benchmark+type+"MemCIMIN}{\\memna}\n");
+				this.config_mem.add("\\newcommand{\\"+getTool()+benchmark+type+"MemCIMAX}{\\memna}\n");
+			} else {
+				double[] config_mem_trial = this.config_mem_trials.get(type);
+				int failures = EventCounts.failedTrials(config_mem_trial);
+				if (failures > 0) config_mem_trial = EventCounts.resize(config_mem_trial, config_mem_trial.length - failures);
+				normalized_mem = getTwoSigsDouble(EventCounts.getAvg(config_mem_trial));
+				if (!type.equals("Base")) {
+					double[] base_mem_trial = this.config_mem_trials.get("Base");
+					int base_failures = EventCounts.failedTrials(base_mem_trial);
+					if (base_failures > 0) base_mem_trial = EventCounts.resize(base_mem_trial, base_mem_trial.length - base_failures);
+					normalized_mem = normalized_mem / EventCounts.getAvg(base_mem_trial);
+				}
+				String config_mem_string = String.valueOf(getTwoSigsRound(normalized_mem));
+				if (config_mem_string.length() <= 1) {
+					config_mem_string = String.valueOf(getTwoSigsDouble(normalized_mem));
+				} else if (config_mem_string.length() >= 4 && !config_mem_string.contains(".")) {
+					config_mem_string = getParenthesis(config_mem_string);
+				}
+				if (config_mem_string.length() > 3 && config_mem_string.substring(config_mem_string.length()-2).equals(".0")) {
+					config_mem_string = config_mem_string.substring(0, config_mem_string.length()-2);
+				}
+				this.config_mem.add("\\newcommand{\\"+getTool()+benchmark+type+"Mem}{"+config_mem_string+"}\n");
+				//Add confidence intervals
+				if (!type.equals("Base")) {
+					for (int i = 0; i < this.config_mem_trials.get(type).length; i++) {
+						this.config_mem_trials.get(type)[i] = (this.config_mem_trials.get(type)[i]) / (this.config_mem_trials.get("Base")[i]);
+					}
+				}
+				double ci = EventCounts.calcCI(this.config_mem_trials.get(type));
+				String ciString = String.valueOf(getTwoSigsDouble(ci));
+				this.config_mem.add("\\newcommand{\\"+getTool()+benchmark+type+"MemCI}{"+ciString+"}\n");
+				//Applying confidence intervals to data set
+//				String minMem = String.valueOf(getTwoSigsRound(normalized_mem - ci));
+//				String maxMem = String.valueOf(getTwoSigsRound(normalized_mem + ci));
+//				this.config_mem.add("\\newcommand{\\"+getTool()+benchmark+type+"MemCIMIN}{"+getParenthesis(minMem)+"}\n");
+//				this.config_mem.add("\\newcommand{\\"+getTool()+benchmark+type+"MemCIMAX}{"+getParenthesis(maxMem)+"}\n");
 			}
+			geoMeanMem.get(type)[benchIndex] = normalized_mem; //Mb
 		}
 		return this.config_mem;
 	}
 
-	public void setConfig_mem(String configName, String memory, boolean final_trial) {
-		double time = Double.parseDouble(memory)/1000; //From MBs to GBs
-		if (this.config_mem_trials.containsKey(configName)) {
-			time += this.config_mem_trials.get(configName);
+	public void setConfig_mem(String configName, String memory, int curr_trial, int total_trials) {
+		double[] config_mem_trial = this.config_mem_trials.get(configName);
+		if (config_mem_trial == null) {
+			config_mem_trial = new double[total_trials];
+			for (int i = 0; i < config_mem_trial.length; i++) config_mem_trial[i] = -1; //failed trial identifier
 		}
-		this.config_mem_trials.put(configName, time);
-		if (final_trial) {
-			long avg_mem = getTwoSigsRound(this.config_mem_trials.get(configName)/this.total_trials);
-			String config_mem_string = String.valueOf(avg_mem);
-			if (avg_mem/1000.0 <= 2.0) {
-				config_mem_string = "\\memna";
-			} else {
-				config_mem_string = config_mem_string.length() > 4 ? getParenthesis(config_mem_string.substring(0, config_mem_string.length()-3)) : getDecimals(config_mem_string);
-			}
-			this.config_mem.add("\\newcommand{\\"+benchmark+configName+"Mem}{"+config_mem_string+"}\n");
-		}
+		double mem = Double.parseDouble(memory)/1000; //From kBs to MBs
+//		System.out.println("mem: " + memory + " | mb: " + mem + " | gb: " + (mem/1000));
+//		mem = mem/1000; //From MBs to GBs
+		config_mem_trial[curr_trial-1] = mem;
+		this.config_mem_trials.put(configName, config_mem_trial);
 	}
 
 	public LinkedList<String> getConfig_bench_time() {
@@ -328,40 +401,43 @@ public class BenchmarkInfo {
 	}
 
 	public void setConfig_bench_time(String configName, String bench_time) {
-		this.config_bench_time.add("\\newcommand{\\"+benchmark+configName+"Bench}{"+bench_time+"}\n");
+		this.config_bench_time.add("\\newcommand{\\"+getTool()+benchmark+configName+"Bench}{"+bench_time+"}\n");
 	}
 
-	public LinkedList<String> getRace_types(String tool, String[] types) {
+	public LinkedList<String> getRace_types(String tool, String[] types, HashMap<String, double[]> totalRace, int benchIndex, int total_benchmarks) {
+		if (totalRace.isEmpty()) { 
+			for (String type : types) {
+				totalRace.put(type, new double[total_benchmarks]);
+			}
+		}
 		for (String type : types) {
+			long avgRaces = 0;
 			if (this.types.get(type) == null) {
-				this.race_types.add("\\newcommand{\\"+benchmark+type+"}{\\rna}\n");
-				this.race_types.add("\\newcommand{\\"+benchmark+type+"CI}{\\rna}\n");
-				this.race_types.add("\\newcommand{\\"+benchmark+type+"CIMIN}{\\rna}\n");
-				this.race_types.add("\\newcommand{\\"+benchmark+type+"CIMAX}{\\rna}\n");
+				this.race_types.add("\\newcommand{\\"+getTool()+benchmark+type+"}{\\rna}\n");
+				this.race_types.add("\\newcommand{\\"+getTool()+benchmark+type+"CI}{\\rna}\n");
+				this.race_types.add("\\newcommand{\\"+getTool()+benchmark+type+"CIMIN}{\\rna}\n");
+				this.race_types.add("\\newcommand{\\"+getTool()+benchmark+type+"CIMAX}{\\rna}\n");
 			} else {
-				long avgRaces = round(EventCounts.getAvg(this.types.get(type)));
+				double[] type_races = this.types.get(type);
+				int failures = EventCounts.failedTrials(type_races);
+//				System.out.println("bench: " + benchmark + " |type: " + type + " |failures: " + failures);
+				if (failures > 0) type_races = EventCounts.resize(type_races, type_races.length-failures);
+				avgRaces = round(EventCounts.getAvg(type_races));				
 				String type_races_string = String.valueOf(avgRaces);
-				this.race_types.add("\\newcommand{\\"+benchmark+type+"}{"+getParenthesis(type_races_string)+"}\n");
+				this.race_types.add("\\newcommand{\\"+getTool()+benchmark+type+"}{"+getParenthesis(type_races_string)+"}\n");
 				//Add confidence intervals
 				long ci = round(EventCounts.calcCI(this.types.get(type)));
 				String ciString = String.valueOf(ci);
-				this.race_types.add("\\newcommand{\\"+benchmark+type+"CI}{"+getParenthesis(ciString)+"}\n");
+				this.race_types.add("\\newcommand{\\"+getTool()+benchmark+type+"CI}{"+getParenthesis(ciString)+"}\n");
 				//Applying confidence intervals to data set
 				String minRaces = String.valueOf(avgRaces - ci);
 				String maxRaces = String.valueOf(avgRaces + ci);
-				this.race_types.add("\\newcommand{\\"+benchmark+type+"CIMIN}{"+getParenthesis(minRaces)+"}\n");
-				this.race_types.add("\\newcommand{\\"+benchmark+type+"CIMAX}{"+getParenthesis(maxRaces)+"}\n");
+				this.race_types.add("\\newcommand{\\"+getTool()+benchmark+type+"CIMIN}{"+getParenthesis(minRaces)+"}\n");
+				this.race_types.add("\\newcommand{\\"+getTool()+benchmark+type+"CIMAX}{"+getParenthesis(maxRaces)+"}\n");
 			}
+			totalRace.get(type)[benchIndex] = avgRaces;
 		}
 		return race_types;
-	}
-	
-	public LinkedList<String> getCapoRace_types() {
-		return capo_race_types;
-	}
-	
-	public LinkedList<String> getPIPRace_types() {
-		return pip_race_types;
 	}
 
 	public void setRace_types(String config, String type, String race_num, String tool, int curr_trial, int total_trials) {
@@ -374,13 +450,6 @@ public class BenchmarkInfo {
 			type_races[curr_trial-1] += Double.parseDouble(race_num);
 		} else {
 			type_races[curr_trial-1] = Double.parseDouble(race_num);
-		}
-//		System.out.println(String.format("setting config, type: %s, %s | race_num: %s", config, type, race_num));
-		//If this is the last trial and there were failed trials, resize the data set with only successful trials
-		if (curr_trial == total_trials) {
-			int failures = EventCounts.failedTrials(type_races);
-//			System.out.println(String.format("config: %s bench: %s trial: %d failures %d", config, benchmark, curr_trial, failures));
-			if (failures > 0) type_races = EventCounts.resize(type_races, type_races.length-failures);
 		}
 		this.types.put(type, type_races);
 	}
@@ -408,10 +477,18 @@ public class BenchmarkInfo {
 			this.latest_race.incrementTotal_dynamic_instances();
 		}
 	}
+	
+	public LinkedList<String> getCapoRace_types() {
+		return capo_race_types;
+	}
+	
+	public LinkedList<String> getPIPRace_types() {
+		return pip_race_types;
+	}
 
 	public String getStatic_check_time() {
 		if (this.static_check_time_trials == 0) {
-			this.static_check_time = "\\newcommand{\\"+benchmark+"StaticTime}{\\rzero}\n";
+			this.static_check_time = "\\newcommand{\\"+getTool()+benchmark+"StaticTime}{\\rzero}\n";
 		} else {
 			Double normalized_time = this.static_check_time_trials/this.total_trials;
 			normalized_time = normalized_time / 1000;
@@ -422,7 +499,7 @@ public class BenchmarkInfo {
 			} else if (static_check_time_string.length() >= 4) {
 				static_check_time_string = getParenthesis(static_check_time_string);
 			}
-			this.static_check_time = "\\newcommand{\\"+benchmark+"StaticTime}{"+(static_check_time_string.equals("0.000") ? "\\rzero" : static_check_time_string)+"}\n";
+			this.static_check_time = "\\newcommand{\\"+getTool()+benchmark+"StaticTime}{"+(static_check_time_string.equals("0.000") ? "\\rzero" : static_check_time_string)+"}\n";
 		}
 		return static_check_time;
 	}
@@ -430,15 +507,12 @@ public class BenchmarkInfo {
 	public void setStatic_check_time(String config, String static_check_time, boolean final_trial) {
 		if (config.equals("wdc_exc")) {
 			this.static_check_time_trials += Double.parseDouble(static_check_time);
-			double config_time = this.config_total_time_trials.get("wdc_exc");
-			config_time += Double.parseDouble(static_check_time);
-			this.config_total_time_trials.put("wdc_exc", config_time);
 		}
 	}
 
 	public String getDynamic_check_time() {
 		if (this.dynamic_check_time_trials == 0) {
-			this.dynamic_check_time = "\\newcommand{\\"+benchmark+"DynamicTime}{\\rzero}\n";
+			this.dynamic_check_time = "\\newcommand{\\"+getTool()+benchmark+"DynamicTime}{\\rzero}\n";
 		} else {
 			Double normalized_time = this.dynamic_check_time_trials/this.total_trials;
 //			normalized_time = normalized_time / (this.config_total_time_trials.get("base")/this.total_trials);
@@ -449,7 +523,7 @@ public class BenchmarkInfo {
 			} else if (dynamic_check_time_string.length() >= 4) {
 				dynamic_check_time_string = getParenthesis(dynamic_check_time_string);
 			}
-			this.dynamic_check_time = "\\newcommand{\\"+benchmark+"DynamicTime}{"+(dynamic_check_time_string.equals("0.000") ? "\\rzero" : dynamic_check_time_string)+"}\n";
+			this.dynamic_check_time = "\\newcommand{\\"+getTool()+benchmark+"DynamicTime}{"+(dynamic_check_time_string.equals("0.000") ? "\\rzero" : dynamic_check_time_string)+"}\n";
 		}
 		return dynamic_check_time;
 	}
@@ -480,22 +554,22 @@ public class BenchmarkInfo {
 			}
 			//Add confidence intervals
 			String ciString = String.valueOf(ci);
-			this.race_types.add("\\newcommand{\\"+benchmark+totalType+"CI}{"+getParenthesis(ciString)+"}\n");
+			this.race_types.add("\\newcommand{\\"+getTool()+benchmark+totalType+"CI}{"+getParenthesis(ciString)+"}\n");
 			//Applying confidence intervals to data set
 			String minRaces = String.valueOf(avgEvents - ci);
 			String maxRaces = String.valueOf(avgEvents + ci);
-			this.race_types.add("\\newcommand{\\"+benchmark+totalType+"CIMIN}{"+getParenthesis(minRaces)+"}\n");
-			this.race_types.add("\\newcommand{\\"+benchmark+totalType+"CIMAX}{"+getParenthesis(maxRaces)+"}\n");
+			this.race_types.add("\\newcommand{\\"+getTool()+benchmark+totalType+"CIMIN}{"+getParenthesis(minRaces)+"}\n");
+			this.race_types.add("\\newcommand{\\"+getTool()+benchmark+totalType+"CIMAX}{"+getParenthesis(maxRaces)+"}\n");
 		}
 			
 		if (event_total_string.isEmpty()) {
-			this.event_total = "\\newcommand{\\"+benchmark+totalType+"}{\\rna}\n";
+			this.event_total = "\\newcommand{\\"+getTool()+benchmark+totalType+"}{\\rna}\n";
 		} else {
 			if (!event_total_string.equals("0")) {
 				event_total_string = event_total_string.substring(0, event_total_string.length()-3);
 				event_total_string = event_total_string.length() > 4 ? getParenthesis(event_total_string.substring(0, event_total_string.length()-3)) : getDecimals(event_total_string);
 			}
-			this.event_total = "\\newcommand{\\"+benchmark+totalType+"}{"+event_total_string+"}\n";
+			this.event_total = "\\newcommand{\\"+getTool()+benchmark+totalType+"}{"+event_total_string+"}\n";
 		}
 		
 		return event_total;

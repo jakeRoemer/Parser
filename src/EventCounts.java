@@ -57,11 +57,14 @@ public class EventCounts {
 	private long[] read_same_epoch;
 	private long[] read_shared_same_epoch;
 	private long[] read_exclusive;
+	private long[] read_owned;
 	private long[] read_share;
 	private long[] read_shared;
+	private long[] read_shared_owned;
 	private long[] write_read_race;
 	private long[] write_same_epoch;
 	private long[] write_exclusive;
+	private long[] write_owned;
 	private long[] write_shared;
 	private long[] write_write_race;
 	private long[] read_write_race;
@@ -74,10 +77,13 @@ public class EventCounts {
 	private long[] read_same_epochFP;
 	private long[] read_shared_same_epochFP;
 	private long[] read_exclusiveFP;
+	private long[] read_ownedFP;
 	private long[] read_shareFP;
 	private long[] read_sharedFP;
+	private long[] read_shared_ownedFP;
 	private long[] write_same_epochFP;
 	private long[] write_exclusiveFP;
+	private long[] write_ownedFP;
 	private long[] write_sharedFP;
 	
 	private long[] write_accesses_inside_CSFP;
@@ -88,7 +94,15 @@ public class EventCounts {
 	private long[] hold_locks;
 	private long[] one_lock_held;
 	private long[] two_nestedLocks_held;
-	private long[] many_nestedLocks_held;
+	private long[] three_nestedLocks_held;
+	private long[] four_nestedLocks_held;
+	private long[] five_nestedLocks_held;
+	private long[] six_nestedLocks_held;
+	private long[] seven_nestedLocks_held;
+	private long[] eight_nestedLocks_held;
+	private long[] nine_nestedLocks_held;
+	private long[] ten_nestedLocks_held;
+	private long[] hundred_nestedLocks_held;
 	
 	private long[] read_rule_A_succeed;
 	private long[] read_rule_A_total_attempts;
@@ -283,16 +297,22 @@ public class EventCounts {
 			setRead_shared_same_epoch(getVal(getRead_shared_same_epoch(), eventCount, curr_trial, total_trials));
 		} else if (eventType.equals("Read Exclusive")) {
 			setRead_exclusive(getVal(getRead_exclusive(), eventCount, curr_trial, total_trials));
+		} else if (eventType.equals("Read Owned")) {
+			setRead_owned(getVal(getRead_owned(), eventCount, curr_trial, total_trials));
 		} else if (eventType.equals("Read Share")) {
 			setRead_share(getVal(getRead_share(), eventCount, curr_trial, total_trials));
 		} else if (eventType.equals("Read Shared")) {
 			setRead_shared(getVal(getRead_shared(), eventCount, curr_trial, total_trials));
+		} else if (eventType.equals("Read Shared Owned")) {
+			setRead_shared_owned(getVal(getRead_shared_owned(), eventCount, curr_trial, total_trials));
 		} else if (eventType.equals("Write-Read Error")) {
 			setWrite_read_race(getVal(getWrite_read_race(), eventCount, curr_trial, total_trials));
 		} else if (eventType.equals("Write Same Epoch")) {
 			setWrite_same_epoch(getVal(getWrite_same_epoch(), eventCount, curr_trial, total_trials));
 		} else if (eventType.equals("Write Exclusive")) {
 			setWrite_exclusive(getVal(getWrite_exclusive(), eventCount, curr_trial, total_trials));
+		} else if (eventType.equals("Write Owned")) {
+			setWrite_owned(getVal(getWrite_owned(), eventCount, curr_trial, total_trials));
 		} else if (eventType.equals("Write Shared")) {
 			setWrite_shared(getVal(getWrite_shared(), eventCount, curr_trial, total_trials));
 		} else if (eventType.equals("Write-Write Error")) {
@@ -313,14 +333,20 @@ public class EventCounts {
 			setRead_shared_same_epochFP(getVal(getRead_shared_same_epochFP(), eventCount, curr_trial, total_trials));
 		} else if (eventType.equals("Read Exclusive FP")) {
 			setRead_exclusiveFP(getVal(getRead_exclusiveFP(), eventCount, curr_trial, total_trials));
+		} else if (eventType.equals("Read Owned FP")) {
+			setRead_ownedFP(getVal(getRead_ownedFP(), eventCount, curr_trial, total_trials));
 		} else if (eventType.equals("Read Share FP")) {
 			setRead_shareFP(getVal(getRead_shareFP(), eventCount, curr_trial, total_trials));
 		} else if (eventType.equals("Read Shared FP")) {
 			setRead_sharedFP(getVal(getRead_sharedFP(), eventCount, curr_trial, total_trials));
+		} else if (eventType.equals("Read Shared Owned FP")) {
+			setRead_shared_ownedFP(getVal(getRead_shared_ownedFP(), eventCount, curr_trial, total_trials));
 		} else if (eventType.equals("Write Same Epoch FP")) {
 			setWrite_same_epochFP(getVal(getWrite_same_epochFP(), eventCount, curr_trial, total_trials));
 		} else if (eventType.equals("Write Exclusive FP")) {
 			setWrite_exclusiveFP(getVal(getWrite_exclusiveFP(), eventCount, curr_trial, total_trials));
+		} else if (eventType.equals("Write Owned FP")) {
+			setWrite_ownedFP(getVal(getWrite_ownedFP(), eventCount, curr_trial, total_trials));
 		} else if (eventType.equals("Write Shared FP")) {
 			setWrite_sharedFP(getVal(getWrite_sharedFP(), eventCount, curr_trial, total_trials));
 		} else if (eventType.equals("Write accesses Inside Critical Sections succeeding Fast Path")) {
@@ -337,8 +363,24 @@ public class EventCounts {
 			setOne_lock_held(getVal(getOne_lock_held(), eventCount, curr_trial, total_trials));
 		} else if (eventType.equals("Two Nested Locks Held")) {
 			setTwo_nestedLocks_held(getVal(getTwo_nestedLocks_held(), eventCount, curr_trial, total_trials));
-		} else if (eventType.equals("More than two Nested Locks Held")) {
-			setMany_nestedLocks_held(getVal(getMany_nestedLocks_held(), eventCount, curr_trial, total_trials));
+		} else if (eventType.equals("Three Nested Locks Held")) {
+			setThree_nestedLocks_held(getVal(getThree_nestedLocks_held(), eventCount, curr_trial, total_trials));
+		} else if (eventType.equals("Four Nested Locks Held")) {
+			setFour_nestedLocks_held(getVal(getFour_nestedLocks_held(), eventCount, curr_trial, total_trials));
+		} else if (eventType.equals("Five Nested Locks Held")) {
+			setFive_nestedLocks_held(getVal(getFive_nestedLocks_held(), eventCount, curr_trial, total_trials));
+		} else if (eventType.equals("Six Nested Locks Held")) {
+			setSix_nestedLocks_held(getVal(getSix_nestedLocks_held(), eventCount, curr_trial, total_trials));
+		} else if (eventType.equals("Seven Nested Locks Held")) {
+			setSeven_nestedLocks_held(getVal(getSeven_nestedLocks_held(), eventCount, curr_trial, total_trials));
+		} else if (eventType.equals("Eight Nested Locks Held")) {
+			setEight_nestedLocks_held(getVal(getEight_nestedLocks_held(), eventCount, curr_trial, total_trials));
+		} else if (eventType.equals("Nine Nested Locks Held")) {
+			setNine_nestedLocks_held(getVal(getNine_nestedLocks_held(), eventCount, curr_trial, total_trials));
+		} else if (eventType.equals("Ten Nested Locks Held")) {
+			setTen_nestedLocks_held(getVal(getTen_nestedLocks_held(), eventCount, curr_trial, total_trials));
+		} else if (eventType.equals("Hundred Nested Locks Held")) {
+			setHundred_nestedLocks_held(getVal(getHundred_nestedLocks_held(), eventCount, curr_trial, total_trials));
 		} else if (eventType.equals("Read Rule A Succeed")) {
 			setRead_rule_A_succeed(getVal(getRead_rule_A_succeed(), eventCount, curr_trial, total_trials));
 		} else if (eventType.equals("Read Rule A Total Attempts")) {
@@ -455,15 +497,18 @@ public class EventCounts {
 			}
 			if (tool.equals("PIP")) {
 				PrintWriter input = new PrintWriter(configDir+"/fast_event_counts.txt");
-				input.println(bench + " " + config);
+				input.println(bench + config + " " + config);
 				input.println("read same epoch: " + getRead_same_epoch());
 				input.println("read shared same epoch: " + getRead_shared_same_epoch());
 				input.println("read exclusive: " + getRead_exclusive());
+				input.println("read owned: " + getRead_owned());
 				input.println("read share: " + getRead_share());
 				input.println("read shared: " + getRead_shared());
+				input.println("read shared owned: " + getRead_shared_owned());
 				input.println("write-read race: " + getWrite_read_race());
 				input.println("write same epoch: " + getWrite_same_epoch());
 				input.println("write exclusive: " + getWrite_exclusive());
+				input.println("write owned: " + getWrite_owned());
 				input.println("write shared: " + getWrite_shared());
 				input.println("write-write race: " + getWrite_write_race());
 				input.println("read-write race: " + getRead_write_race());
@@ -471,10 +516,13 @@ public class EventCounts {
 				input.println("read same epoch FP: " + getRead_same_epochFP());
 				input.println("read shared same epoch FP: " + getRead_shared_same_epochFP());
 				input.println("read exclusive FP: " + getRead_exclusiveFP());
+				input.println("read owned FP: " + getRead_ownedFP());
 				input.println("read share FP: " + getRead_shareFP());
 				input.println("read shared FP: " + getRead_sharedFP());
+				input.println("read shared owned FP: " + getRead_shared_ownedFP());
 				input.println("write same epoch FP: " + getWrite_same_epochFP());
 				input.println("write exclusive FP: " + getWrite_exclusiveFP());
+				input.println("write owned FP: " + getWrite_ownedFP());
 				input.println("write shared FP: " + getWrite_sharedFP());
 				input.println("acquire: " + getAcquire());
 				input.println("release: " + getRelease());
@@ -504,7 +552,15 @@ public class EventCounts {
 				input.println("hold locks: " + getHold_locks());
 				input.println("one lock held: " + getOne_lock_held());
 				input.println("two nestedLocks held: " + getTwo_nestedLocks_held());
-				input.println("many nestedLocks held: " + getMany_nestedLocks_held());
+				input.println("three nestedLocks held: " + getThree_nestedLocks_held());
+				input.println("four nestedLocks held: " + getFour_nestedLocks_held());
+				input.println("five nestedLocks held: " + getFive_nestedLocks_held());
+				input.println("six nestedLocks held: " + getSix_nestedLocks_held());
+				input.println("seven nestedLocks held: " + getSeven_nestedLocks_held());
+				input.println("eight nestedLocks held: " + getEight_nestedLocks_held());
+				input.println("nine nestedLocks held: " + getNine_nestedLocks_held());
+				input.println("ten nestedLocks held: " + getTen_nestedLocks_held());
+				input.println("hundred nestedLocks held: " + getHundred_nestedLocks_held());
 				
 				input.println("read rule A succeed: " + getRead_rule_A_succeed());
 				input.println("read rule A total attempts: " + getRead_rule_A_total_attempts());
@@ -552,7 +608,8 @@ public class EventCounts {
 		} catch (FileNotFoundException e) {e.printStackTrace();}
 	}
 	
-	public void recordCounts(BufferedWriter output) throws IOException {
+	public void recordCounts(BufferedWriter output, String config_type) throws IOException {
+		this.config = config_type;
 		getEventCounts(output);
 		getReadCounts(output);
 		getWriteCounts(output);
@@ -564,95 +621,180 @@ public class EventCounts {
 		getRuleAChanges(output);
 		getRuleALockSuccess(output);
 	}
+
+	public String getCountPercent(long [] countType, long [] countTotal) {
+		String zeroCount = "\\cna";
+		String minimumCount = "<0.001";
+		if (isZero(countType)) {
+			return zeroCount;
+		} else {
+			double percent = getPercent(countType, countTotal);
+			if (percent < 0.001) {
+				return minimumCount;
+			}
+			String percentStr = Double.toString(percent);
+			if (percentStr.length() > 3 && percentStr.substring(percentStr.length()-2).equals(".0")) {
+				percentStr = percentStr.substring(0, percentStr.length()-2);
+			}
+			return percentStr;
+		}
+	}
+	
+	public String getLockHeldPercent(long [] countType, long [] countTotal) {
+		String zeroCount = "\\cna";
+		String minimumCount = "<0.1";
+		if (isZero(countType)) {
+			return zeroCount;
+		} else {
+			double percent = (getAvg(countType)/(double)getAvg(countTotal))*100;//BenchmarkInfo.round(((getAvg(countType)/(double)getAvg(countTotal))*100));
+			if (percent < 0.1) {
+				return minimumCount;
+			}
+			String percentStr = Double.toString(percent);
+			if (percentStr.length() > 4) {
+				percentStr = percentStr.substring(0, 4);
+			}
+			return percentStr;
+		}
+	}
 	
 	public void getRuleALockSuccess(BufferedWriter output) throws IOException {
 		long[] totalEventsHeldLocks = add(getTotal_one_lock_held(), add(getTotal_two_locks_held(), getTotal_many_locks_held()));
 		if (!isZero(totalEventsHeldLocks)) {
-			output.write("\\newcommand{\\" + bench + "TotalLockHeld}{" + roundTwoSigs(totalEventsHeldLocks) + "}\n");
-			output.write("\\newcommand{\\" + bench + "SingleLockHeld}{" + getPercent(getTotal_one_lock_held(), totalEventsHeldLocks) + "}\n");
-			output.write("\\newcommand{\\" + bench + "TwoLocksHeld}{" + getPercent(getTotal_two_locks_held(), totalEventsHeldLocks) + "}\n");
-			output.write("\\newcommand{\\" + bench + "ManyLocksHeld}{" + getPercent(getTotal_many_locks_held(), totalEventsHeldLocks) + "}\n");
+			output.write("\\newcommand{\\" + bench + config + "TotalLockHeld}{" + roundTwoSigs(totalEventsHeldLocks) + "}\n");
+			output.write("\\newcommand{\\" + bench + config + "SingleLockHeld}{" + getPercent(getTotal_one_lock_held(), totalEventsHeldLocks) + "}\n");
+			output.write("\\newcommand{\\" + bench + config + "TwoLocksHeld}{" + getPercent(getTotal_two_locks_held(), totalEventsHeldLocks) + "}\n");
+			output.write("\\newcommand{\\" + bench + config + "ManyLocksHeld}{" + getPercent(getTotal_many_locks_held(), totalEventsHeldLocks) + "}\n");
 			
-			output.write("\\newcommand{\\" + bench + "TotalSingleLockHeld}{" + roundTwoSigs(getTotal_one_lock_held()) + "}\n");
-			output.write("\\newcommand{\\" + bench + "SucSingleLockHeld}{" + getPercent(getRule_a_success_one_lock_held(), getTotal_one_lock_held()) + "}\n");
+			output.write("\\newcommand{\\" + bench + config + "TotalSingleLockHeld}{" + roundTwoSigs(getTotal_one_lock_held()) + "}\n");
+			output.write("\\newcommand{\\" + bench + config + "SucSingleLockHeld}{" + getPercent(getRule_a_success_one_lock_held(), getTotal_one_lock_held()) + "}\n");
 			
-			output.write("\\newcommand{\\" + bench + "TotalTwoLocksHeld}{" + roundTwoSigs(getTotal_two_locks_held()) + "}\n");
+			output.write("\\newcommand{\\" + bench + config + "TotalTwoLocksHeld}{" + roundTwoSigs(getTotal_two_locks_held()) + "}\n");
 			double innerSucc = isZero(getTotal_two_locks_held()) ? 0 : getPercent(getRule_a_success_inner_lock_held(), getTotal_two_locks_held());
 			double outerSucc = isZero(getTotal_two_locks_held()) ? 0 : getPercent(getRule_a_success_outer_lock_held(), getTotal_two_locks_held());
-			output.write("\\newcommand{\\" + bench + "SucInnerLockHeld}{" + innerSucc + "}\n");
-			output.write("\\newcommand{\\" + bench + "SucOuterLockHeld}{" + outerSucc + "}\n");
+			output.write("\\newcommand{\\" + bench + config + "SucInnerLockHeld}{" + innerSucc + "}\n");
+			output.write("\\newcommand{\\" + bench + config + "SucOuterLockHeld}{" + outerSucc + "}\n");
 			
-			output.write("\\newcommand{\\" + bench + "TotalManyLocksHeld}{" + roundTwoSigs(getTotal_many_locks_held()) + "}\n");
+			output.write("\\newcommand{\\" + bench + config + "TotalManyLocksHeld}{" + roundTwoSigs(getTotal_many_locks_held()) + "}\n");
 			double innerMostSucc = isZero(getTotal_many_locks_held()) ? 0 : getPercent(getRule_a_success_inner_most_lock_held(), getTotal_many_locks_held());
 			double outerMostSucc = isZero(getTotal_many_locks_held()) ? 0 : getPercent(getRule_a_success_outer_most_lock_held(), getTotal_many_locks_held());
-			output.write("\\newcommand{\\" + bench + "SucInnerMostLockHeld}{" + innerMostSucc + "}\n");
-			output.write("\\newcommand{\\" + bench + "SucOuterMostLockHeld}{" + outerMostSucc + "}\n");
+			output.write("\\newcommand{\\" + bench + config + "SucInnerMostLockHeld}{" + innerMostSucc + "}\n");
+			output.write("\\newcommand{\\" + bench + config + "SucOuterMostLockHeld}{" + outerMostSucc + "}\n");
 		}
 	}
 	
 	public void getRuleAChanges(BufferedWriter output) throws IOException {
 		if (!isZero(getRule_a_total_successes())) {
-			output.write("\\newcommand{\\" + bench + "TotalRuleASuc}{" + roundTwoSigs(getRule_a_total_successes()) + "}\n");
-			output.write("\\newcommand{\\" + bench + "OneThrChanged}{" + getPercent(getRule_a_changed_a_single_thread(), getRule_a_total_successes()) + "}\n");
-			output.write("\\newcommand{\\" + bench + "TwoThrChanged}{" + getPercent(getRule_a_changed_two_threads(), getRule_a_total_successes()) + "}\n");
-			output.write("\\newcommand{\\" + bench + "ManyThrChanged}{" + getPercent(getRule_a_changed_more_than_two_threads(), getRule_a_total_successes()) + "}\n");
-			output.write("\\newcommand{\\" + bench + "AllThrChanged}{" + getPercent(getRule_a_changed_every_thread(), getRule_a_total_successes()) + "}\n");
+			output.write("\\newcommand{\\" + bench + config + "TotalRuleASuc}{" + roundTwoSigs(getRule_a_total_successes()) + "}\n");
+			output.write("\\newcommand{\\" + bench + config + "OneThrChanged}{" + getPercent(getRule_a_changed_a_single_thread(), getRule_a_total_successes()) + "}\n");
+			output.write("\\newcommand{\\" + bench + config + "TwoThrChanged}{" + getPercent(getRule_a_changed_two_threads(), getRule_a_total_successes()) + "}\n");
+			output.write("\\newcommand{\\" + bench + config + "ManyThrChanged}{" + getPercent(getRule_a_changed_more_than_two_threads(), getRule_a_total_successes()) + "}\n");
+			output.write("\\newcommand{\\" + bench + config + "AllThrChanged}{" + getPercent(getRule_a_changed_every_thread(), getRule_a_total_successes()) + "}\n");
 		}
 	}
 	
 	public void getLocksHeldCounts(BufferedWriter output) throws IOException {
 		if (!isZero(getHold_locks())) {
-			output.write("\\newcommand{\\" + bench + "HoldLocksTotal}{" + roundTwoSigs(getHold_locks()) + "}\n");
-			output.write("\\newcommand{\\" + bench + "OneLockHeld}{" + getPercent(getOne_lock_held(), getHold_locks()) + "}\n");
-			output.write("\\newcommand{\\" + bench + "TwoNestedLocks}{" + getPercent(getTwo_nestedLocks_held(), getHold_locks()) + "}\n");
-			output.write("\\newcommand{\\" + bench + "ManyNestedLocks}{" + getPercent(getMany_nestedLocks_held(), getHold_locks()) + "}\n");
+			long[] falseFPRd = add(getRead_exclusiveFP(), add(getRead_ownedFP(), add(getRead_shareFP(), add(getRead_sharedFP(), getRead_shared_ownedFP()))));
+			long[] nonFPRd = add(getRead_exclusive(), add(getRead_owned(), add(getRead_share(), add(getRead_shared(), getRead_shared_owned()))));
+			long[] totalRd = add(nonFPRd, falseFPRd);
+			
+			long[] falseFPWr = add(getWrite_exclusiveFP(), add(getWrite_ownedFP(), getWrite_sharedFP()));
+			long[] nonFPWr = add(getWrite_exclusive(), add(getWrite_owned(), getWrite_shared()));
+			long[] totalWr = add(nonFPWr, falseFPWr);
+			
+			long[] totalNoFPOps = add(totalRd, totalWr);//add(sub(getTotal_ops(), getTotal_access_ops()), add(totalRd, totalWr));
+			
+			long[] totalRaceCount = add(getWrite_write_race(), add(getWrite_read_race(), add(getRead_write_race(), getShared_write_race())));
+			
+			output.write("\\newcommand{\\" + bench + config + "HoldLocksTotal}{" + roundTwoSigs(getHold_locks()) + "}\n");
+//			long[] oneOrMore = getOne_lock_held();
+			long[] oneOrMore = add(getOne_lock_held(), add(getTwo_nestedLocks_held(), add(getThree_nestedLocks_held(), add(getFour_nestedLocks_held(), add(getFive_nestedLocks_held(), add(getSix_nestedLocks_held(), add(getSeven_nestedLocks_held(), add(getEight_nestedLocks_held(), add(getNine_nestedLocks_held(), getTen_nestedLocks_held())))))))));
+			if (!isZero(oneOrMore)) oneOrMore = sub(oneOrMore, totalRaceCount);
+			output.write("\\newcommand{\\" + bench + config + "OneLockHeld}{" + getLockHeldPercent(oneOrMore, totalNoFPOps/*getHold_locks()*/) + "}\n");
+//			long[] twoOrMore = getTwo_nestedLocks_held();
+			long[] twoOrMore = add(getTwo_nestedLocks_held(), add(getThree_nestedLocks_held(), add(getFour_nestedLocks_held(), add(getFive_nestedLocks_held(), add(getSix_nestedLocks_held(), add(getSeven_nestedLocks_held(), add(getEight_nestedLocks_held(), add(getNine_nestedLocks_held(), getTen_nestedLocks_held()))))))));
+			if (!isZero(twoOrMore)) twoOrMore = sub(twoOrMore, totalRaceCount);
+			output.write("\\newcommand{\\" + bench + config + "TwoNestedLocks}{" + getLockHeldPercent(twoOrMore, totalNoFPOps/*getHold_locks()*/) + "}\n");
+//			long[] threeOrMore = getThree_nestedLocks_held();
+			long[] threeOrMore = add(getThree_nestedLocks_held(), add(getFour_nestedLocks_held(), add(getFive_nestedLocks_held(), add(getSix_nestedLocks_held(), add(getSeven_nestedLocks_held(), add(getEight_nestedLocks_held(), add(getNine_nestedLocks_held(), getTen_nestedLocks_held())))))));
+			if (!isZero(threeOrMore)) threeOrMore = sub(threeOrMore, totalRaceCount);
+			output.write("\\newcommand{\\" + bench + config + "ThreeNestedLocks}{" + getLockHeldPercent(threeOrMore, totalNoFPOps/*getHold_locks()*/) + "}\n");
+//			long[] fourOrMore = getFour_nestedLocks_held();
+			long[] fourOrMore = add(getFour_nestedLocks_held(), add(getFive_nestedLocks_held(), add(getSix_nestedLocks_held(), add(getSeven_nestedLocks_held(), add(getEight_nestedLocks_held(), add(getNine_nestedLocks_held(), getTen_nestedLocks_held()))))));
+			if (!isZero(fourOrMore)) fourOrMore = sub(fourOrMore, totalRaceCount);
+			output.write("\\newcommand{\\" + bench + config + "FourNestedLocks}{" + getLockHeldPercent(fourOrMore, totalNoFPOps/*getHold_locks()*/) + "}\n");
+//			long[] fiveOrMore = getFive_nestedLocks_held();
+			long[] fiveOrMore = add(getFive_nestedLocks_held(), add(getSix_nestedLocks_held(), add(getSeven_nestedLocks_held(), add(getEight_nestedLocks_held(), add(getNine_nestedLocks_held(), getTen_nestedLocks_held())))));
+			if (!isZero(fiveOrMore)) fiveOrMore = sub(fiveOrMore, totalRaceCount);
+			output.write("\\newcommand{\\" + bench + config + "FiveNestedLocks}{" + getLockHeldPercent(fiveOrMore, totalNoFPOps/*getHold_locks()*/) + "}\n");
+//			long[] sixOrMore = getSix_nestedLocks_held();
+			long[] sixOrMore = add(getSix_nestedLocks_held(), add(getSeven_nestedLocks_held(), add(getEight_nestedLocks_held(), add(getNine_nestedLocks_held(), getTen_nestedLocks_held()))));
+			if (!isZero(sixOrMore)) sixOrMore = sub(sixOrMore, totalRaceCount);
+			output.write("\\newcommand{\\" + bench + config + "SixNestedLocks}{" + getLockHeldPercent(sixOrMore, totalNoFPOps/*getHold_locks()*/) + "}\n");
+//			long[] sevenOrMore = getSeven_nestedLocks_held();
+			long[] sevenOrMore = add(getSeven_nestedLocks_held(), add(getEight_nestedLocks_held(), add(getNine_nestedLocks_held(), getTen_nestedLocks_held())));
+			if (!isZero(sevenOrMore)) sevenOrMore = sub(sevenOrMore, totalRaceCount);
+			output.write("\\newcommand{\\" + bench + config + "SevenNestedLocks}{" + getLockHeldPercent(sevenOrMore, totalNoFPOps/*getHold_locks()*/) + "}\n");
+//			long[] eightOrMore = getEight_nestedLocks_held();
+			long[] eightOrMore = add(getEight_nestedLocks_held(), add(getNine_nestedLocks_held(), getTen_nestedLocks_held()));
+			if (!isZero(eightOrMore)) eightOrMore = sub(eightOrMore, totalRaceCount);
+			output.write("\\newcommand{\\" + bench + config + "EightNestedLocks}{" + getLockHeldPercent(eightOrMore, totalNoFPOps/*getHold_locks()*/) + "}\n");
+//			long[] nineOrMore = getNine_nestedLocks_held();
+			long[] nineOrMore = add(getNine_nestedLocks_held(), getTen_nestedLocks_held());
+			if (!isZero(nineOrMore)) nineOrMore = sub(nineOrMore, totalRaceCount);
+			output.write("\\newcommand{\\" + bench + config + "NineNestedLocks}{" + getLockHeldPercent(nineOrMore, totalNoFPOps/*getHold_locks()*/) + "}\n");
+			long[] tenHeld = getTen_nestedLocks_held();
+			if (!isZero(tenHeld)) tenHeld = sub(tenHeld, totalRaceCount);
+			output.write("\\newcommand{\\" + bench + config + "TenNestedLocks}{" + getLockHeldPercent(tenHeld, totalNoFPOps/*getHold_locks()*/) + "}\n");
+			output.write("\\newcommand{\\" + bench + config + "HundredNestedLocks}{" + getLockHeldPercent(getHundred_nestedLocks_held(), totalNoFPOps/*getHold_locks()*/) + "}\n");
 		} // else I could print \nra values
 	}
 	
 	public void getRuleACounts(BufferedWriter output) throws IOException {
 		if (!isZero(getRead_rule_A_total_attempts())) {
-			output.write("\\newcommand{\\" + bench + "ReadRuleASuc}{" + getPercent(getRead_rule_A_succeed(), getRead_rule_A_total_attempts()) + "}\n");
-			output.write("\\newcommand{\\" + bench + "ReadRuleATot}{" + roundTwoSigs(getRead_rule_A_total_attempts()) + "}\n");
+			output.write("\\newcommand{\\" + bench + config + "ReadRuleASuc}{" + getPercent(getRead_rule_A_succeed(), getRead_rule_A_total_attempts()) + "}\n");
+			output.write("\\newcommand{\\" + bench + config + "ReadRuleATot}{" + roundTwoSigs(getRead_rule_A_total_attempts()) + "}\n");
 		}
 		if (!isZero(getWrite_write_rule_A_total_attempts())) {
-			output.write("\\newcommand{\\" + bench + "WriteWriteRuleASuc}{" + getPercent(getWrite_write_rule_A_succeed(), getWrite_write_rule_A_total_attempts()) + "}\n");
-			output.write("\\newcommand{\\" + bench + "WriteWriteRuleATot}{" + roundTwoSigs(getWrite_write_rule_A_total_attempts()) + "}\n");
+			output.write("\\newcommand{\\" + bench + config + "WriteWriteRuleASuc}{" + getPercent(getWrite_write_rule_A_succeed(), getWrite_write_rule_A_total_attempts()) + "}\n");
+			output.write("\\newcommand{\\" + bench + config + "WriteWriteRuleATot}{" + roundTwoSigs(getWrite_write_rule_A_total_attempts()) + "}\n");
 		}
 		if (!isZero(getWrite_read_rule_A_total_attempts())) {
-			output.write("\\newcommand{\\" + bench + "WriteReadRuleASuc}{" + getPercent(getWrite_read_rule_A_succeed(), getWrite_read_rule_A_total_attempts()) + "}\n");
-			output.write("\\newcommand{\\" + bench + "WriteReadRuleATot}{" + roundTwoSigs(getWrite_read_rule_A_total_attempts()) + "}\n");
+			output.write("\\newcommand{\\" + bench + config + "WriteReadRuleASuc}{" + getPercent(getWrite_read_rule_A_succeed(), getWrite_read_rule_A_total_attempts()) + "}\n");
+			output.write("\\newcommand{\\" + bench + config + "WriteReadRuleATot}{" + roundTwoSigs(getWrite_read_rule_A_total_attempts()) + "}\n");
 		}
 	}
 	
 	public void getCAPOSetCounts(BufferedWriter output) throws IOException {
 		long[] totalClears = getClears_by_capo();
 		if (!isZero(totalClears)) {
-			output.write("\\newcommand{\\" + bench + "TotalSetClears}{" + roundTwoSigs(totalClears) + "}\n");
-			output.write("\\newcommand{\\" + bench + "ReadSetZero}{" + getPercent(getRead_set_size_0(), totalClears) + "}\n");
-			output.write("\\newcommand{\\" + bench + "ReadSetOne}{" + getPercent(getRead_set_size_1(), totalClears) + "}\n");
-			output.write("\\newcommand{\\" + bench + "ReadSetGtOne}{" + getPercent(getRead_set_size_gt_1(), totalClears) + "}\n");
-			output.write("\\newcommand{\\" + bench + "WriteSetZero}{" + getPercent(getWrite_set_size_0(), totalClears) + "}\n");
-			output.write("\\newcommand{\\" + bench + "WriteSetOne}{" + getPercent(getWrite_set_size_1(), totalClears) + "}\n");
-			output.write("\\newcommand{\\" + bench + "WriteSetGtOne}{" + getPercent(getWrite_set_size_gt_1(), totalClears) + "}\n");
+			output.write("\\newcommand{\\" + bench + config + "TotalSetClears}{" + roundTwoSigs(totalClears) + "}\n");
+			output.write("\\newcommand{\\" + bench + config + "ReadSetZero}{" + getPercent(getRead_set_size_0(), totalClears) + "}\n");
+			output.write("\\newcommand{\\" + bench + config + "ReadSetOne}{" + getPercent(getRead_set_size_1(), totalClears) + "}\n");
+			output.write("\\newcommand{\\" + bench + config + "ReadSetGtOne}{" + getPercent(getRead_set_size_gt_1(), totalClears) + "}\n");
+			output.write("\\newcommand{\\" + bench + config + "WriteSetZero}{" + getPercent(getWrite_set_size_0(), totalClears) + "}\n");
+			output.write("\\newcommand{\\" + bench + config + "WriteSetOne}{" + getPercent(getWrite_set_size_1(), totalClears) + "}\n");
+			output.write("\\newcommand{\\" + bench + config + "WriteSetGtOne}{" + getPercent(getWrite_set_size_gt_1(), totalClears) + "}\n");
 		}
 	}
 	//Note: TotalSetClears and TotalMapClears will be equal since the clear count acts as a counter for both set and map stats.
 	public void getCAPOMapCounts(BufferedWriter output) throws IOException {
 		long[] totalClears = getClears_by_capo();
 		if (!isZero(totalClears)) {
-			output.write("\\newcommand{\\" + bench + "TotalMapClears}{" + roundTwoSigs(totalClears) + "}\n");
-			output.write("\\newcommand{\\" + bench + "ReadMapZero}{" + getPercent(getRead_map_size_0(), totalClears) + "}\n");
-			output.write("\\newcommand{\\" + bench + "ReadMapOne}{" + getPercent(getRead_map_size_1(), totalClears) + "}\n");
-			output.write("\\newcommand{\\" + bench + "ReadMapTen}{" + getPercent(getRead_map_size_10(), totalClears) + "}\n");
-			output.write("\\newcommand{\\" + bench + "ReadMapHund}{" + getPercent(getRead_map_size_100(), totalClears) + "}\n");
-			output.write("\\newcommand{\\" + bench + "ReadMapThou}{" + getPercent(getRead_map_size_1000(), totalClears) + "}\n");
-			output.write("\\newcommand{\\" + bench + "ReadMapGtThou}{" + getPercent(getRead_map_size_gt_1000(), totalClears) + "}\n");
-			output.write("\\newcommand{\\" + bench + "WriteMapZero}{" + getPercent(getWrite_map_size_0(), totalClears) + "}\n");
-			output.write("\\newcommand{\\" + bench + "WriteMapOne}{" + getPercent(getWrite_map_size_1(), totalClears) + "}\n");
-			output.write("\\newcommand{\\" + bench + "WriteMapTen}{" + getPercent(getWrite_map_size_10(), totalClears) + "}\n");
-			output.write("\\newcommand{\\" + bench + "WriteMapHund}{" + getPercent(getWrite_map_size_100(), totalClears) + "}\n");
-			output.write("\\newcommand{\\" + bench + "WriteMapThou}{" + getPercent(getWrite_map_size_1000(), totalClears) + "}\n");
-			output.write("\\newcommand{\\" + bench + "WriteMapGtThou}{" + getPercent(getWrite_map_size_gt_1000(), totalClears) + "}\n");
+			output.write("\\newcommand{\\" + bench + config + "TotalMapClears}{" + roundTwoSigs(totalClears) + "}\n");
+			output.write("\\newcommand{\\" + bench + config + "ReadMapZero}{" + getPercent(getRead_map_size_0(), totalClears) + "}\n");
+			output.write("\\newcommand{\\" + bench + config + "ReadMapOne}{" + getPercent(getRead_map_size_1(), totalClears) + "}\n");
+			output.write("\\newcommand{\\" + bench + config + "ReadMapTen}{" + getPercent(getRead_map_size_10(), totalClears) + "}\n");
+			output.write("\\newcommand{\\" + bench + config + "ReadMapHund}{" + getPercent(getRead_map_size_100(), totalClears) + "}\n");
+			output.write("\\newcommand{\\" + bench + config + "ReadMapThou}{" + getPercent(getRead_map_size_1000(), totalClears) + "}\n");
+			output.write("\\newcommand{\\" + bench + config + "ReadMapGtThou}{" + getPercent(getRead_map_size_gt_1000(), totalClears) + "}\n");
+			output.write("\\newcommand{\\" + bench + config + "WriteMapZero}{" + getPercent(getWrite_map_size_0(), totalClears) + "}\n");
+			output.write("\\newcommand{\\" + bench + config + "WriteMapOne}{" + getPercent(getWrite_map_size_1(), totalClears) + "}\n");
+			output.write("\\newcommand{\\" + bench + config + "WriteMapTen}{" + getPercent(getWrite_map_size_10(), totalClears) + "}\n");
+			output.write("\\newcommand{\\" + bench + config + "WriteMapHund}{" + getPercent(getWrite_map_size_100(), totalClears) + "}\n");
+			output.write("\\newcommand{\\" + bench + config + "WriteMapThou}{" + getPercent(getWrite_map_size_1000(), totalClears) + "}\n");
+			output.write("\\newcommand{\\" + bench + config + "WriteMapGtThou}{" + getPercent(getWrite_map_size_gt_1000(), totalClears) + "}\n");
 		}
 	}
 	
@@ -660,10 +802,35 @@ public class EventCounts {
 		//Needs to be a pointwise add.
 		long[] totalEvents = add(getTotal_ops(), getTotal_fast_path_taken());
 		//Note: total events/reads/writes include race counts. total reads + total writes add up to total access ops
-		output.write("\\newcommand{\\" + bench + "EventTotal}{" + roundTwoSigs(totalEvents) + "}\n");
-		output.write("\\newcommand{\\" + bench + "NoFPEventTotal}{" + roundTwoSigs(getTotal_ops()) +"}\n");
-		output.write("\\newcommand{\\" + bench + "ReadTotal}{" + getPercent(getTotal_reads(), getTotal_ops()) + "}\n");
-		output.write("\\newcommand{\\" + bench + "WriteTotal}{" + getPercent(getTotal_writes(), getTotal_ops()) + "}\n");
+		output.write("\\newcommand{\\" + bench + config + "EventTotal}{" + roundTwoSigs(totalEvents) + "}\n");
+
+		//Note: Non-Same(Shr)Epoch cases processed in [read/write]FastPath should NOT count toward FastPath counts
+		long[] falseFPRd = add(getRead_exclusiveFP(), add(getRead_ownedFP(), add(getRead_shareFP(), add(getRead_sharedFP(), getRead_shared_ownedFP()))));
+		long[] nonFPRd = add(getRead_exclusive(), add(getRead_owned(), add(getRead_share(), add(getRead_shared(), getRead_shared_owned()))));
+		long[] totalRd = add(nonFPRd, falseFPRd);
+		
+		long[] falseFPWr = add(getWrite_exclusiveFP(), add(getWrite_ownedFP(), getWrite_sharedFP()));
+		long[] nonFPWr = add(getWrite_exclusive(), add(getWrite_owned(), getWrite_shared()));
+		long[] totalWr = add(nonFPWr, falseFPWr);
+		
+		long[] totalOther = add(getAcquire(), add(getRelease(), add(getFork(), add(getJoin(), add(getPre_wait(), add(getPost_wait(), add(getClass_init(), add(getClass_access(), getVolatile_acc()))))))));
+		
+		long[] totalNoFPOps = add(totalOther, add(totalRd, totalWr));//add(sub(getTotal_ops(), getTotal_access_ops()), add(totalRd, totalWr));//add(getTotal_ops(), add(falseFPRd, falseFPWr));
+		output.write("\\newcommand{\\" + bench + config + "NoFPEventTotal}{" + roundTwoSigs(totalNoFPOps) +"}\n");
+
+		long[] totalNoFPAcc = add(totalRd, totalWr);
+		output.write("\\newcommand{\\" + bench + config + "NoFPAccessTotal}{" + roundTwoSigs(totalNoFPAcc) + "}\n");
+
+		double totalOtherRound = Double.parseDouble(roundTwoSigs(totalOther));
+		output.write("\\newcommand{\\" + bench + config + "NoFPOtherTotal}{" + (totalOtherRound < 0.1 ? "<0.1" : roundTwoSigs(totalOther)) + "}\n");
+		
+//		long[] noFPRdTotal = add(getTotal_reads(), falseFPRd);
+		output.write("\\newcommand{\\" + bench + config + "ReadTotal}{" + getPercent(totalRd/*noFPRdTotal*/, totalNoFPOps) + "}\n");
+		
+//		long[] noFPWrTotal = add(getTotal_writes(), falseFPWr);
+		output.write("\\newcommand{\\" + bench + config + "WriteTotal}{" + getPercent(totalWr/*noFPWrTotal*/, totalNoFPOps) + "}\n");
+		
+		//Note: The [in/out]CS counts are going to be incorrect since there is no separation between sameEp FP [in/out]CS and non-sameEp FP [in/out]CS
 		long[] noFPRdInCS = sub(getRead_accesses_inside_CS(), getRead_accesses_inside_CSFP());
 		long[] noFPWrInCS = sub(getWrite_accesses_inside_CS(), getWrite_accesses_inside_CSFP());
 		long[] noFPAccessInCS = add(noFPRdInCS, noFPWrInCS);
@@ -672,66 +839,90 @@ public class EventCounts {
 		long[] noFPAccessOutCS = add(noFPRdOutCS, noFPWrOutCS);
 		long[] honestTotalWrites = sub(getTotal_writes(), getWrite_write_race());
 		long[] honestTotalAccesses = add(getTotal_reads(), honestTotalWrites);
-		output.write("\\newcommand{\\" + bench + "NoFPAccessInCS}{" + getPercent(noFPAccessInCS, honestTotalAccesses) + "}\n");
-		output.write("\\newcommand{\\" + bench + "NoFPAccessOutCS}{" + getPercent(noFPAccessOutCS, honestTotalAccesses) + "}\n");
+		output.write("\\newcommand{\\" + bench + config + "NoFPAccessInCS}{" + getPercent(noFPAccessInCS, honestTotalAccesses) + "}\n");
+		output.write("\\newcommand{\\" + bench + config + "NoFPAccessOutCS}{" + getPercent(noFPAccessOutCS, honestTotalAccesses) + "}\n");
 		long[] acqRelEvents = add(getAcquire(), getRelease());
-		output.write("\\newcommand{\\" + bench + "AcqRelTotal}{" + getPercent(acqRelEvents, getTotal_ops()) + "}\n");		
+		output.write("\\newcommand{\\" + bench + config + "AcqRelTotal}{" + getPercent(acqRelEvents, getTotal_ops()) + "}\n");		
 		long[] otherEvents = sub(sub(getTotal_ops(), getTotal_access_ops()), acqRelEvents);
-		output.write("\\newcommand{\\" + bench + "OtherTotal}{" + getPercent(otherEvents, getTotal_ops()) + "}\n");
+		output.write("\\newcommand{\\" + bench + config + "OtherTotal}{" + getPercent(otherEvents, getTotal_ops()) + "}\n");
 	}
 	
 	public void getReadCounts(BufferedWriter output) throws IOException {
+		//Note: Non-Same(Shr)Epoch cases processed in [read/write]FastPath should NOT count toward FastPath counts
+		long[] falseFPRd = add(getRead_exclusiveFP(), add(getRead_ownedFP(), add(getRead_shareFP(), add(getRead_sharedFP(), getRead_shared_ownedFP()))));
+		long[] nonFPRd = add(getRead_exclusive(), add(getRead_owned(), add(getRead_share(), add(getRead_shared(), getRead_shared_owned()))));
+		long[] totalRd = add(nonFPRd, falseFPRd);//add(getTotal_reads(), falseFPRd);
 		//Note: noFPReadTotal should be the same as readTotal, just want to distinguish getReadCounts' total from AccessCounts' read total
-		output.write("\\newcommand{\\" + bench + "NoFPReadTotal}{" + roundTwoSigs(getTotal_reads()) + "}\n");
-		long[] noFPRdInCS = sub(getRead_accesses_inside_CS(), getRead_accesses_inside_CSFP());
-		output.write("\\newcommand{\\" + bench + "ReadInCS}{" + getPercent(noFPRdInCS, getTotal_reads()) + "}\n");
-		long[] noFPRdOutCS = sub(getRead_accesses_outside_CS(), getRead_accesses_outside_CSFP());
-		output.write("\\newcommand{\\" + bench + "ReadOutCS}{" + getPercent(noFPRdOutCS, getTotal_reads()) + "}\n");
-		output.write("\\newcommand{\\" + bench + "ReadSameEp}{" + getPercent(getRead_same_epoch(), getTotal_reads()) + "}\n");
-		output.write("\\newcommand{\\" + bench + "ReadSharedSameEp}{" + getPercent(getRead_shared_same_epoch(), getTotal_reads()) + "}\n");
-		output.write("\\newcommand{\\" + bench + "ReadExclusive}{" + getPercent(getRead_exclusive(), getTotal_reads()) + "}\n");
-		output.write("\\newcommand{\\" + bench + "ReadShare}{" + getPercent(getRead_share(), getTotal_reads()) + "}\n");
-		output.write("\\newcommand{\\" + bench + "ReadShared}{" + getPercent(getRead_shared(), getTotal_reads()) + "}\n");
+		output.write("\\newcommand{\\" + bench + config + "NoFPReadTotal}{" + roundTwoSigs(totalRd) + "}\n");//roundTwoSigs(getTotal_reads()) + "}\n");
+		//Note: The [in/out]CS counts are going to be incorrect since there is no separation between sameEp FP [in/out]CS and non-sameEp FP [in/out]CS
+		long[] noFPRdInCS = getRead_accesses_inside_CS();//sub(getRead_accesses_inside_CS(), getRead_accesses_inside_CSFP());
+		output.write("\\newcommand{\\" + bench + config + "ReadInCS}{" + getCountPercent(noFPRdInCS, totalRd) + "}\n");//getTotal_reads()) + "}\n");
+		long[] noFPRdOutCS = getRead_accesses_outside_CS();//sub(getRead_accesses_outside_CS(), getRead_accesses_outside_CSFP());
+		output.write("\\newcommand{\\" + bench + config + "ReadOutCS}{" + getCountPercent(noFPRdOutCS, totalRd) + "}\n");//getTotal_reads()) + "}\n");
+		output.write("\\newcommand{\\" + bench + config + "ReadSameEp}{" + getCountPercent(getRead_same_epoch(), totalRd) + "}\n");
+		output.write("\\newcommand{\\" + bench + config + "ReadSharedSameEp}{" + getCountPercent(getRead_shared_same_epoch(), totalRd) + "}\n");
+		long[] totalRdExc = add(getRead_exclusive(), getRead_exclusiveFP());
+		output.write("\\newcommand{\\" + bench + config + "ReadExclusive}{" + getCountPercent(totalRdExc, totalRd) + "}\n");
+		long[] totalRdOwned = add(getRead_owned(), getRead_ownedFP());
+		output.write("\\newcommand{\\" + bench + config + "ReadOwned}{" + getCountPercent(totalRdOwned, totalRd) + "}\n");
+		long[] totalRdShare = add(getRead_share(), getRead_shareFP());
+		output.write("\\newcommand{\\" + bench + config + "ReadShare}{" + getCountPercent(totalRdShare, totalRd) + "}\n");
+		long[] totalRdShared = add(getRead_shared(), getRead_sharedFP());
+		output.write("\\newcommand{\\" + bench + config + "ReadShared}{" + getCountPercent(totalRdShared, totalRd) + "}\n");
+		long[] totalRdShrOwned = add(getRead_shared_owned(), getRead_shared_ownedFP());
+		output.write("\\newcommand{\\" + bench + config + "ReadSharedOwned}{" + getCountPercent(totalRdShrOwned, totalRd) + "}\n");
 	}
 	
 	public void getWriteCounts(BufferedWriter output) throws IOException {
-		long[] honestTotalWrites = sub(getTotal_writes(), getWrite_write_race());
-		output.write("\\newcommand{\\" + bench + "NoFPHonestWriteTotal}{" + roundTwoSigs(honestTotalWrites) + "}\n");
-		long[] noFPWrInCS = sub(getWrite_accesses_inside_CS(), getWrite_accesses_inside_CSFP());
-		output.write("\\newcommand{\\" + bench + "WriteInCS}{" + getPercent(noFPWrInCS, honestTotalWrites) + "}\n");
-		long[] noFPWrOutCS = sub(getWrite_accesses_outside_CS(), getWrite_accesses_outside_CSFP());
-		output.write("\\newcommand{\\" + bench + "WriteOutCS}{" + getPercent(noFPWrOutCS, honestTotalWrites) + "}\n");
+		//Note: Non-Same(Shr)Epoch cases processed in [read/write]FastPath should NOT count toward FastPath counts
+		long[] falseFPWr = add(getWrite_exclusiveFP(), add(getWrite_ownedFP(), getWrite_sharedFP()));
+		long[] nonFPWr = add(getWrite_exclusive(), add(getWrite_owned(), getWrite_shared()));
+		long[] totalWr = add(nonFPWr, falseFPWr);
+//		long[] honestTotalWrites = sub(getTotal_writes(), getWrite_write_race());
+//		long[] totalHonestWr = add(honestTotalWrites, falseFPWr);
 		//Note: noFPWriteTotal should be the same as writeTotal, just want to distinguish getWriteCounts' total from AccessCounts' write total
-		output.write("\\newcommand{\\" + bench + "NoFPWriteTotal}{" + roundTwoSigs(getTotal_writes()) + "}\n");
-		output.write("\\newcommand{\\" + bench + "WriteSameEp}{" + getPercent(getWrite_same_epoch(), getTotal_writes()) + "}\n");
-		output.write("\\newcommand{\\" + bench + "WriteExclusive}{" + getPercent(getWrite_exclusive(), getTotal_writes()) + "}\n");
-		output.write("\\newcommand{\\" + bench + "WriteShared}{" + getPercent(getWrite_shared(), getTotal_writes()) + "}\n");
+//		long[] totalWr = add(getTotal_writes(), falseFPWr);
+		output.write("\\newcommand{\\" + bench + config + "NoFPHonestWriteTotal}{" + roundTwoSigs(totalWr/*totalHonestWr*/) + "}\n");
+		//Note: The [in/out]CS counts are going to be incorrect since there is no separation between sameEp FP [in/out]CS and non-sameEp FP [in/out]CS
+		long[] noFPWrInCS = getWrite_accesses_inside_CS();//sub(getWrite_accesses_inside_CS(), getWrite_accesses_inside_CSFP());
+		output.write("\\newcommand{\\" + bench + config + "WriteInCS}{" + getCountPercent(noFPWrInCS, totalWr) + "}\n");//totalHonestWr) + "}\n");
+		long[] noFPWrOutCS = getWrite_accesses_outside_CS();//sub(getWrite_accesses_outside_CS(), getWrite_accesses_outside_CSFP());
+		output.write("\\newcommand{\\" + bench + config + "WriteOutCS}{" + getCountPercent(noFPWrOutCS, totalWr) + "}\n");//totalHonestWr) + "}\n");
+		//
+		output.write("\\newcommand{\\" + bench + config + "NoFPWriteTotal}{" + roundTwoSigs(totalWr) + "}\n");
+		output.write("\\newcommand{\\" + bench + config + "WriteSameEp}{" + getCountPercent(getWrite_same_epoch(), totalWr) + "}\n");
+		long[] totalWrExc = add(getWrite_exclusive(), getWrite_exclusiveFP());
+		output.write("\\newcommand{\\" + bench + config + "WriteExclusive}{" + getCountPercent(totalWrExc, totalWr) + "}\n");
+		long[] totalWrOwned = add(getWrite_owned(), getWrite_ownedFP());
+		output.write("\\newcommand{\\" + bench + config + "WriteOwned}{" + getCountPercent(totalWrOwned, totalWr) + "}\n");
+		long[] totalWrShared = add(getWrite_shared(), getWrite_sharedFP());
+		output.write("\\newcommand{\\" + bench + config + "WriteShared}{" + getCountPercent(totalWrShared, totalWr) + "}\n");
 	}
 	
 	public void getOtherCounts(BufferedWriter output) throws IOException {
 		//Note: noFPOtherTotal should be the same as otherTotal, just want to distinguish getOtherCounts' total from AccessCounts' other total
 		long[] otherEvents = sub(getTotal_ops(), getTotal_access_ops());
-		output.write("\\newcommand{\\" + bench + "NoFPOtherTotal}{" + getAvg(otherEvents) + "}\n");
+		output.write("\\newcommand{\\" + bench + config + "NoFPOtherEventTotal}{" + getAvg(otherEvents) + "}\n");
 		long[] acqRelEvents = add(getAcquire(), getRelease());
-		output.write("\\newcommand{\\" + bench + "AcqRelOtherTotal}{" + getPercent(acqRelEvents, otherEvents) + "}\n");
+		output.write("\\newcommand{\\" + bench + config + "AcqRelOtherTotal}{" + getPercent(acqRelEvents, otherEvents) + "}\n");
 		otherEvents = sub(otherEvents, acqRelEvents);
-		output.write("\\newcommand{\\" + bench + "NoAcqRelOtherTotal}{" + getAvg(otherEvents) + "}\n");
-		output.write("\\newcommand{\\" + bench + "Fork}{" + getPercent(getFork(), otherEvents) + "}\n");
-		output.write("\\newcommand{\\" + bench + "Join}{" + getPercent(getJoin(), otherEvents) + "}\n");
-		output.write("\\newcommand{\\" + bench + "PreWait}{" + getPercent(getPre_wait(), otherEvents) + "}\n");
-		output.write("\\newcommand{\\" + bench + "PostWait}{" + getPercent(getPost_wait(), otherEvents) + "}\n");
-		output.write("\\newcommand{\\" + bench + "VolatileTotal}{" + getPercent(getVolatile_acc(), otherEvents) + "}\n");
-		output.write("\\newcommand{\\" + bench + "ClassInit}{" + getPercent(getClass_init(), otherEvents) + "}\n");
-		output.write("\\newcommand{\\" + bench + "ClassAccess}{" + getPercent(getClass_access(), otherEvents) + "}\n");
+		output.write("\\newcommand{\\" + bench + config + "NoAcqRelOtherTotal}{" + getAvg(otherEvents) + "}\n");
+		output.write("\\newcommand{\\" + bench + config + "Fork}{" + getPercent(getFork(), otherEvents) + "}\n");
+		output.write("\\newcommand{\\" + bench + config + "Join}{" + getPercent(getJoin(), otherEvents) + "}\n");
+		output.write("\\newcommand{\\" + bench + config + "PreWait}{" + getPercent(getPre_wait(), otherEvents) + "}\n");
+		output.write("\\newcommand{\\" + bench + config + "PostWait}{" + getPercent(getPost_wait(), otherEvents) + "}\n");
+		output.write("\\newcommand{\\" + bench + config + "VolatileTotal}{" + getPercent(getVolatile_acc(), otherEvents) + "}\n");
+		output.write("\\newcommand{\\" + bench + config + "ClassInit}{" + getPercent(getClass_init(), otherEvents) + "}\n");
+		output.write("\\newcommand{\\" + bench + config + "ClassAccess}{" + getPercent(getClass_access(), otherEvents) + "}\n");
 	}
 	
 	public void getRaceTypeCounts(BufferedWriter output) throws IOException {
 		long[] raceTotal = add(add(add(getWrite_read_race(), getWrite_write_race()), getRead_write_race()), getShared_write_race());
-		output.write("\\newcommand{\\" + bench + "RaceTotal}{" + (isZero(raceTotal) ? "\\rna" : getAvg(raceTotal)) + "}\n");
-		output.write("\\newcommand{\\" + bench + "WrRdRace}{" + (isZero(raceTotal) ? "\\rna" : getPercent(getWrite_read_race(), raceTotal)) + "}\n");
-		output.write("\\newcommand{\\" + bench + "WrWrRace}{" + (isZero(raceTotal) ? "\\rna" : getPercent(getWrite_write_race(), raceTotal)) + "}\n");
-		output.write("\\newcommand{\\" + bench + "RdWrRace}{" + (isZero(raceTotal) ? "\\rna" : getPercent(getRead_write_race(), raceTotal)) + "}\n");
-		output.write("\\newcommand{\\" + bench + "RdShWrRace}{" + (isZero(raceTotal) ? "\\rna" : getPercent(getShared_write_race(), raceTotal)) + "}\n");
+		output.write("\\newcommand{\\" + bench + config + "RaceTotal}{" + (isZero(raceTotal) ? "\\rna" : getAvg(raceTotal)) + "}\n");
+		output.write("\\newcommand{\\" + bench + config + "WrRdRace}{" + (isZero(raceTotal) ? "\\rna" : getPercent(getWrite_read_race(), raceTotal)) + "}\n");
+		output.write("\\newcommand{\\" + bench + config + "WrWrRace}{" + (isZero(raceTotal) ? "\\rna" : getPercent(getWrite_write_race(), raceTotal)) + "}\n");
+		output.write("\\newcommand{\\" + bench + config + "RdWrRace}{" + (isZero(raceTotal) ? "\\rna" : getPercent(getRead_write_race(), raceTotal)) + "}\n");
+		output.write("\\newcommand{\\" + bench + config + "RdShWrRace}{" + (isZero(raceTotal) ? "\\rna" : getPercent(getShared_write_race(), raceTotal)) + "}\n");
 	}
 	
 	public static double calcCI(double[] data) {
@@ -807,6 +998,14 @@ public class EventCounts {
 		return (int) avg;
 	}
 	
+	public static double getSum(double[] array) {
+		double sum = 0;
+		for (int i = 0; i < array.length; i++) {
+			sum += array[i];
+		}
+		return sum;
+	}
+	
 	public double getPercent(long[] val, long[] total) {
 		return BenchmarkInfo.getThreeSigsDouble(((getAvg(val)/(double)getAvg(total))*100));
 	}
@@ -841,7 +1040,8 @@ public class EventCounts {
 	public static boolean isZero(long[] array) {
 		if (array == null) return true;
 		for (int i = 0; i < array.length; i++) {
-			if (array[i] != 0) {
+			//TODO: != -1 is a temp fix for failed trials
+			if (array[i] != 0 && array[i] != -1) {
 				return false;
 			}
 		}
@@ -1130,6 +1330,14 @@ public class EventCounts {
 		this.read_exclusive = read_exclusive;
 	}
 
+	public long[] getRead_owned() {
+		return read_owned;
+	}
+
+	public void setRead_owned(long[] read_owned) {
+		this.read_owned = read_owned;
+	}
+
 	public long[] getRead_share() {
 		return read_share;
 	}
@@ -1144,6 +1352,14 @@ public class EventCounts {
 
 	public void setRead_shared(long[] read_shared) {
 		this.read_shared = read_shared;
+	}
+
+	public long[] getRead_shared_owned() {
+		return read_shared_owned;
+	}
+
+	public void setRead_shared_owned(long[] read_shared_owned) {
+		this.read_shared_owned = read_shared_owned;
 	}
 
 	public long[] getWrite_read_race() {
@@ -1168,6 +1384,14 @@ public class EventCounts {
 
 	public void setWrite_exclusive(long[] write_exclusive) {
 		this.write_exclusive = write_exclusive;
+	}
+
+	public long[] getWrite_owned() {
+		return write_owned;
+	}
+
+	public void setWrite_owned(long[] write_owned) {
+		this.write_owned = write_owned;
 	}
 
 	public long[] getWrite_shared() {
@@ -1250,6 +1474,14 @@ public class EventCounts {
 		this.read_exclusiveFP = read_exclusiveFP;
 	}
 
+	public long[] getRead_ownedFP() {
+		return read_ownedFP;
+	}
+
+	public void setRead_ownedFP(long[] read_ownedFP) {
+		this.read_ownedFP = read_ownedFP;
+	}
+
 	public long[] getRead_shareFP() {
 		return read_shareFP;
 	}
@@ -1266,6 +1498,14 @@ public class EventCounts {
 		this.read_sharedFP = read_sharedFP;
 	}
 
+	public long[] getRead_shared_ownedFP() {
+		return read_shared_ownedFP;
+	}
+
+	public void setRead_shared_ownedFP(long[] read_shared_ownedFP) {
+		this.read_shared_ownedFP = read_shared_ownedFP;
+	}
+
 	public long[] getWrite_same_epochFP() {
 		return write_same_epochFP;
 	}
@@ -1280,6 +1520,14 @@ public class EventCounts {
 
 	public void setWrite_exclusiveFP(long[] write_exclusiveFP) {
 		this.write_exclusiveFP = write_exclusiveFP;
+	}
+
+	public long[] getWrite_ownedFP() {
+		return write_ownedFP;
+	}
+
+	public void setWrite_ownedFP(long[] write_ownedFP) {
+		this.write_ownedFP = write_ownedFP;
 	}
 
 	public long[] getWrite_sharedFP() {
@@ -1345,13 +1593,77 @@ public class EventCounts {
 	public void setTwo_nestedLocks_held(long[] two_nestedLocks_held) {
 		this.two_nestedLocks_held = two_nestedLocks_held;
 	}
-
-	public long[] getMany_nestedLocks_held() {
-		return many_nestedLocks_held;
+	
+	public long[] getThree_nestedLocks_held() {
+		return three_nestedLocks_held;
 	}
 
-	public void setMany_nestedLocks_held(long[] many_nestedLocks_held) {
-		this.many_nestedLocks_held = many_nestedLocks_held;
+	public void setThree_nestedLocks_held(long[] three_nestedLocks_held) {
+		this.three_nestedLocks_held = three_nestedLocks_held;
+	}
+	
+	public long[] getFour_nestedLocks_held() {
+		return four_nestedLocks_held;
+	}
+
+	public void setFour_nestedLocks_held(long[] four_nestedLocks_held) {
+		this.four_nestedLocks_held = four_nestedLocks_held;
+	}
+	
+	public long[] getFive_nestedLocks_held() {
+		return five_nestedLocks_held;
+	}
+
+	public void setFive_nestedLocks_held(long[] five_nestedLocks_held) {
+		this.five_nestedLocks_held = five_nestedLocks_held;
+	}
+	
+	public long[] getSix_nestedLocks_held() {
+		return six_nestedLocks_held;
+	}
+
+	public void setSix_nestedLocks_held(long[] six_nestedLocks_held) {
+		this.six_nestedLocks_held = six_nestedLocks_held;
+	}
+	
+	public long[] getSeven_nestedLocks_held() {
+		return seven_nestedLocks_held;
+	}
+
+	public void setSeven_nestedLocks_held(long[] seven_nestedLocks_held) {
+		this.seven_nestedLocks_held = seven_nestedLocks_held;
+	}
+	
+	public long[] getEight_nestedLocks_held() {
+		return eight_nestedLocks_held;
+	}
+
+	public void setEight_nestedLocks_held(long[] eight_nestedLocks_held) {
+		this.eight_nestedLocks_held = eight_nestedLocks_held;
+	}
+	
+	public long[] getNine_nestedLocks_held() {
+		return nine_nestedLocks_held;
+	}
+
+	public void setNine_nestedLocks_held(long[] nine_nestedLocks_held) {
+		this.nine_nestedLocks_held = nine_nestedLocks_held;
+	}
+
+	public long[] getTen_nestedLocks_held() {
+		return ten_nestedLocks_held;
+	}
+
+	public void setTen_nestedLocks_held(long[] ten_nestedLocks_held) {
+		this.ten_nestedLocks_held = ten_nestedLocks_held;
+	}
+	
+	public long[] getHundred_nestedLocks_held() {
+		return hundred_nestedLocks_held;
+	}
+
+	public void setHundred_nestedLocks_held(long[] hundred_nestedLocks_held) {
+		this.hundred_nestedLocks_held = hundred_nestedLocks_held;
 	}
 
 	public long[] getRead_rule_A_succeed() {
