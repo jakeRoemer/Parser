@@ -146,6 +146,20 @@ public class EventCounts {
 	private long[] rule_a_success_inner_most_lock_held;
 	private long[] rule_a_success_outer_most_lock_held;
 	
+	private long[] extra_write_update;
+	private long[] extra_write_one_lock;
+	private long[] extra_write_two_lock;
+	private long[] extra_write_three_lock;
+	private long[] extra_write_set;
+	private long[] extra_read_update;
+	private long[] extra_read_one;
+	private long[] extra_read_two;
+	private long[] extra_read_three;
+	private long[] extra_total_update;
+	private long[] extra_total_one;
+	private long[] extra_total_two;
+	private long[] extra_total_three;
+	
 	private String config;
 	private String bench;
 	

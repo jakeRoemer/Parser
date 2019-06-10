@@ -428,7 +428,13 @@ public class BenchmarkInfo {
 				//Add confidence intervals
 				long ci = round(EventCounts.calcCI(this.types.get(type)));
 				String ciString = String.valueOf(ci);
-				this.race_types.add("\\newcommand{\\"+getTool()+benchmark+type+"CI}{"+getParenthesis(ciString)+"}\n");
+				if (ciString.length() == 1) {
+					double ciDouble = getTwoSigsDouble(EventCounts.calcCI(this.types.get(type)));
+					ciString = String.valueOf(ciDouble);
+					this.race_types.add("\\newcommand{\\"+getTool()+benchmark+type+"CI}{"+ciString+"}\n");
+				} else {
+					this.race_types.add("\\newcommand{\\"+getTool()+benchmark+type+"CI}{"+getParenthesis(ciString)+"}\n");
+				}
 				//Applying confidence intervals to data set
 				String minRaces = String.valueOf(avgRaces - ci);
 				String maxRaces = String.valueOf(avgRaces + ci);

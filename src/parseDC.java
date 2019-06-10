@@ -10,11 +10,11 @@ import java.util.LinkedList;
 
 public class parseDC {
 	static final String[] benchmarks = {"avrora", "batik", "htwo", "jython", "luindex", "lusearch", "pmd", "sunflow", "tomcat", "xalan"};
-	static final int trials = 5; //Integer.parseInt(args[1]);
+	static final int trials = 2; //Integer.parseInt(args[1]);
 	static final String tool = "PIP"; //DC or PIP
 	static final boolean fieldRace = false; //true = field, false = single second site
 	static final boolean extraStats = true; //false for DC tool and false if counts are not collected.
-	static final String output_dir = /*args[0];*/ "PIP_fastTool_sunflowCheck";
+	static final String output_dir = /*args[0];*/ "PIP_fastTool_extraRemovedCount";
 	
 	//TODO: Change everything WDC to DC
 	public static void main (String [] args) {
@@ -25,8 +25,8 @@ public class parseDC {
 		String [] configs = {"base", "empty", "ft", "pip_hb", "pip_fto_hb", "pip_wcp", "pip_fto_wcp", "pip_fto_re_wcp", "pip_dc", "pip_fto_dc", "pip_fto_re_dc", "pip_capo", "pip_fto_capo", "pip_fto_re_capo", "pip_agg"};
 		String [] configNames = {"Base", "Empty", "FT", "HB", "FTOHB", "WCP", "FTOWCP", "REWCP", "DC", "FTODC", "REDC", "CAPO", "FTOCAPO", "RECAPO", "AGGCAPO"};
 		//(Slow tool) PIP tool
-//		String [] configs = {"base", "empty", "ft", "hb", "hbwcp", "wdc_noG_exc", "wdc_noG", "wdc_exc", "wdc", "capo_noG_exc", "capo_noG", "capo_exc", "capo"};//, "wdc_noG", "wdc_exc", "capo"};//, "wdc_exc", "capo_exc", "pip_exc", "pip"};
-//		String [] configNames = {"Base", "Empty", "FT", "HB", "WCP", "WDCnoGExc", "WDCnoG", "WDCExc", "WDC", "CAPOnoGExc", "CAPOnoG", "CAPOExc", "CAPO"};//, "WDCLite", "WDCExc", "CAPOFull"};//, "DCExc", "CAPOExc", "PIPExc", "PIP"};
+//		String [] configs = {"base", "empty", "ft", "hb", "hbwcp", "dc_noG_exc", "dc_noG", "dc_exc", "dc", "capo_noG_exc", "capo_noG", "capo_exc", "capo"};//, "wdc_noG", "wdc_exc", "capo"};//, "wdc_exc", "capo_exc", "pip_exc", "pip"};
+//		String [] configNames = {"Base", "Empty", "FT", "HB", "WCP", "DCnoGExc", "DCnoG", "DCExc", "DC", "CAPOnoGExc", "CAPOnoG", "CAPOExc", "CAPO"};//, "WDCLite", "WDCExc", "CAPOFull"};//, "DCExc", "CAPOExc", "PIPExc", "PIP"};
 		//(Alternate hb configurations for slow tool) PIP tool 
 //		String [] configs = {"base", "ft", "hb", "hb_g", "hb_raceedge", "hb_noG_raceedge"};
 //		String [] configNames = {"Base", "FT", "HB", "HBwG", "HBwRaceEdge", "HBnoGwRaceEdge"};
@@ -37,7 +37,7 @@ public class parseDC {
 			String line;
 			String bench_time = "";
 			System.out.println("Parsing result files...");
-			LinkedList<String> raceIdentifierDC = new LinkedList<String>(Arrays.asList("HB", "wG", "wRaceEdge", "noGwRaceEdge", "WCP", /*"WDCnoGExc", "WDCnoG", "WDCExc",*/ "WDC", /*"CAPOnoGExc", "CAPOnoG", "CAPOExc",*/ "CAPO", /*"PIP"*/ "CAPOOPT", "CAPOOPTALT", "CAPORE", "CAPOREALT", "CAPOREOPT"));
+			LinkedList<String> raceIdentifierDC = new LinkedList<String>(Arrays.asList("HB", "wG", "wRaceEdge", "noGwRaceEdge", "WCP", /*"DCnoGExc", "DCnoG", "DCExc",*/ "DC", /*"CAPOnoGExc", "CAPOnoG", "CAPOExc",*/ "CAPO", /*"PIP"*/ "CAPOOPT", "CAPOOPTALT", "CAPORE", "CAPOREALT", "CAPOREOPT"));
 			LinkedList<String> raceIdentifierPIP = new LinkedList<String>(Arrays.asList("PIP", "FastTrack"));
 			LinkedList<String> raceIdentifier = (tool.equals("DC") ? raceIdentifierDC : raceIdentifierPIP);
 			LinkedList<String> raceTypeTotal = new LinkedList<String>(Arrays.asList("HB", "FTOHB", "WCP", "FTOWCP", "REWCP", "DC", "FTODC", "REDC", "CAPO", "FTOCAPO", "RECAPO", "AGGCAPO"));
@@ -66,11 +66,15 @@ public class parseDC {
 							if (line.contains("[main: ----- ----- -----     Benchmark Meep Meep: Iter")) {
 								benchmark_started = true;
 							}
-							if (benchmark_started && line.contains("  <threadCount> ")) {
-								bench.setMaxLiveThread_count(configs[config], line.split("threadCount> ")[1].split(" <")[0], trial, trials);
+//							if (benchmark_started && line.contains("  <threadCount> ")) {
+							if (benchmark_started && line.contains("ShadowThread: threadTotal")) {
+//								bench.setMaxLiveThread_count(configs[config], line.split("threadCount> ")[1].split(" <")[0], trial, trials);
+								bench.setTotalThread_count(configs[config], line.split("name>                  <value> ")[1].split(" <")[0], trial, trials);
 							}
-							if (benchmark_started && line.contains("  <threadMaxActive> ")) {
-								bench.setTotalThread_count(configs[config], line.split("threadMaxActive> ")[1].split(" <")[0], trial, trials);
+//							if (benchmark_started && line.contains("  <threadMaxActive> ")) {
+							if (benchmark_started && line.contains("ShadowThread: threadMax")) {
+//								bench.setTotalThread_count(configs[config], line.split("threadMaxActive> ")[1].split(" <")[0], trial, trials);
+								bench.setMaxLiveThread_count(configs[config], line.split("name>                    <value> ")[1].split(" <")[0], trial, trials);
 							}
 							if (benchmark_started && line.contains("[main: ----- ----- -----     Benchmark Thpthpthpth: ")) {
 								bench.setConfig_total_time(configNames[config], line.split(": ")[2].split("\\.")[0], bench_time, trial, trials); //milliseconds
@@ -84,7 +88,7 @@ public class parseDC {
 							
 							//Count races
 							if (tool.equals("DC") && line.contains("[main: Unordered Pairs Race Counts]")) {
-								unordered_pairs = true;
+								unordered_pairs = true; //turned off for field names counting races
 							}
 							if (benchmark_started && !contains(line, raceIdentifier, tool, configNames, config, fieldRace).isEmpty()) {
 								if (configNames[config].equals("FT")) {
@@ -101,6 +105,11 @@ public class parseDC {
 											bench.setRace_types(configs[config], contains(line, raceIdentifier, tool, configNames, config, fieldRace)+"UP", line.split(" ")[0], tool, trial, trials);
 										} else {
 											bench.setRace_types(configs[config], contains(line, raceIdentifier, tool, configNames, config, fieldRace), line.split(" ")[0], tool, trial, trials);
+//											if (line.contains("distinctErrorTotal> ")) {
+//												bench.setRace_types(configs[config], contains(line, raceIdentifier, tool, configNames, config, fieldRace), line.split("distinctErrorTotal> ")[1].split(" <")[0], tool, trial, trials);
+//											} else if (line.contains("errorTotal> ")) {
+//												bench.setRace_types(configs[config], contains(line, raceIdentifier, tool, configNames, config, fieldRace), line.split("errorTotal> ")[1].split(" <")[0], tool, trial, trials);
+//											}
 										}
 									} else if (tool.equals("PIP")) {
 										if (fieldRace) { //fields
@@ -109,10 +118,15 @@ public class parseDC {
 											bench.setRace_types(configs[config], raceType+"Dynamic", Long.toString(raceTotalDynamic), tool, trial, trials);
 											bench.setRace_types(configs[config], raceType, Long.toString(raceTotalStatic), tool, trial, trials);
 										} else /*!fieldRace*/ { //single second site
+//											if (line.contains("distinctErrorTotal> ")) {
+//												raceTotalStatic = Long.parseLong(line.split("distinctErrorTotal> ")[1].split(" <")[0]);												
+//											}
 											if (line.contains(" statically unique race(s)")) { //static single second site
 												raceTotalStatic = Long.parseLong(line.split(" statically unique race\\(s\\)")[0]);
 												String raceType = getRaceType(raceTypeTotal, configNames, config);
 												bench.setRace_types(configs[config], raceType, Long.toString(raceTotalStatic), tool, trial, trials);
+//											} else if (line.contains("errorTotal> ")) {
+//												raceTotalDynamic = Long.parseLong(line.split("errorTotal> ")[1].split(" <")[0]);
 											} else if (line.contains(" dynamic race(s)")) { //dynamic single second site
 												raceTotalDynamic = Long.parseLong(line.split(" dynamic race\\(s\\)")[0]);
 												String raceType = getRaceType(raceTypeTotal, configNames, config);
@@ -123,10 +137,10 @@ public class parseDC {
 								}
 							}
 								
-							if (benchmark_started && (line.contains("Checking WDC-race") || line.contains("Checking CAPO-race") || line.contains("Checking PIP-race"))) {
+							if (benchmark_started && (line.contains("Checking DC-race") || line.contains("Checking CAPO-race") || line.contains("Checking PIP-race"))) {
 								String race = "";
-								if (line.contains("Checking WDC-race")) {
-									race = line.split("Checking WDC-race \\(")[1].split("\\) for event pair")[0];
+								if (line.contains("Checking DC-race")) {
+									race = line.split("Checking DC-race \\(")[1].split("\\) for event pair")[0];
 								} else if (line.contains("Checking CAPO-race")) {
 									race = line.split("Checking CAPO-race \\(")[1].split("\\) for event pair")[0];
 								} else if (line.contains("Checking PIP-race")) {
@@ -152,12 +166,12 @@ public class parseDC {
 								String dynamic_check_time = line.split(": ")[2].split("]")[0];
 								bench.setDynamic_check_time(configs[config], dynamic_check_time, trial == trials);
 							}
-							if (benchmark_started && line.contains("Iteration = ") && static_check_time.isEmpty()) {
-								bench.getLatest_race().addTotal_iterations(Long.parseLong(line.split("= ")[1]));
-							}
-							if (benchmark_started && (line.contains("Found acq->rel") || line.contains("Found rel->acq")) && static_check_time.isEmpty()) {
-								bench.getLatest_race().addTotal_edges_added(1);
-							}
+//							if (benchmark_started && line.contains("Iteration = ") && static_check_time.isEmpty()) {
+//								bench.getLatest_race().addTotal_iterations(Long.parseLong(line.split("= ")[1]));
+//							}
+//							if (benchmark_started && (line.contains("Found acq->rel") || line.contains("Found rel->acq")) && static_check_time.isEmpty()) {
+//								bench.getLatest_race().addTotal_edges_added(1);
+//							}
 							if (benchmark_started && line.contains("Assertion ")) {
 								System.out.println("config: " + configs[config] + " | benchmark: " + bench.benchmark + " | trial: " + trial + " | line: " + line);
 							}
@@ -195,7 +209,7 @@ public class parseDC {
 			return "FastTrack";
 		} else if ((tool.equals("DC") && configNames[config].equals("PIP")) || tool.equals("PIP")) {
 			for (int i = 0; i < trueSet.size(); i++) {
-				if (tool.equals("DC")) {					
+				if (tool.equals("DC")) {
 					if (test.contains(" statically unique " + trueSet.get(i) + "-race(s)")) {
 						if (configNames[config].equals("PIP")) {
 							return "PIP" + trueSet.get(i);
@@ -213,6 +227,7 @@ public class parseDC {
 				} else if (tool.equals("PIP")) {
 					if (!fieldRace) {
 						if (test.contains(" statically unique race(s)") || test.contains(" dynamic race(s)")) { //single second site
+//								|| (test.contains("  <errorTotal> ") || test.contains("  <distinctErrorTotal> "))) { //testing FT2 grouping
 							return "PIP";
 						}
 					} else if (fieldRace) {
@@ -235,9 +250,11 @@ public class parseDC {
 					}
 					break;
 				} else if (configNames[config].equals(trueSet.get(i)) || configNames[config].equals("HB"+trueSet.get(i)) || configNames[config].equals(trueSet.get(i)+"noG") || configNames[config].equals(trueSet.get(i)+"Exc") || configNames[config].equals(trueSet.get(i)+"noGExc") || configNames[config].equals(trueSet.get(i).substring(1)+"Exc")) {
+//					if (test.contains("  <distinctErrorTotal> ")) {
 					if (test.contains(" statically unique " + trueSet.get(i) + "-race(s)")) {
 						return configNames[config];
 					}
+//					if (test.contains("  <errorTotal> ")) {
 					if (test.contains(" dynamic " + trueSet.get(i) + "-race(s)")) {
 						return configNames[config] + "Dynamic";
 					}
@@ -277,7 +294,7 @@ public class parseDC {
 		int benchIndex = 0;
 		
 		for (BenchmarkInfo bench : benchmarks) {
-			String observed_config = (tool.equals("DC") ? "wdc" : "pip_fto_re_capo");
+			String observed_config = (tool.equals("DC") ? "dc_exc" : "pip_fto_re_capo");
 			output.write(bench.getCount_Total(tool, observed_config, "Events"));
 			output.write(bench.getCount_Total(tool, observed_config, "NoFPEvents"));
 			if (extraStats) {
@@ -308,7 +325,7 @@ public class parseDC {
 			output.write(bench.getStatic_check_time());
 			output.write(bench.getDynamic_check_time());
 			//TODO: move this to the top so it can be set appropriately
-			String[] memsDC = {"Base", "HB", "FT", "WCP", "WDCnoGExc", "WDCnoG", "WDCExc", "WDC", "CAPOnoGExc", "CAPOnoG", "CAPOExc", "CAPO"};
+			String[] memsDC = {"Base", "HB", "FT", "WCP", "DCnoGExc", "DCnoG", "DCExc", "DC", "CAPOnoGExc", "CAPOnoG", "CAPOExc", "CAPO"};
 			String[] memsPIP = {"Base", "FT", "HB", "FTOHB", "WCP", "FTOWCP", "REWCP", "DC", "FTODC", "REDC", "CAPO", "FTOCAPO", "RECAPO", "AGGCAPO"};
 			String[] mems = tool.equals("DC") ? memsDC : memsPIP;
 			for (String config_mem : bench.getConfig_mem(tool, mems, geoMeanMem, benchIndex)) {
@@ -316,7 +333,7 @@ public class parseDC {
 			}
 			//TODO: move this to the top so it can be set appropriately
 			String[] typesDC = {"HB", "HBDynamic", "FT", "FTDynamic", "WCP", "WCPDynamic", 
-					"WDCnoGExc", "WDCnoGExcDynamic", "WDCnoG", "WDCnoGDynamic", "WDCExc", "WDCExcDynamic", "WDC", "WDCDynamic", 
+					"DCnoGExc", "DCnoGExcDynamic", "DCnoG", "DCnoGDynamic", "DCExc", "DCExcDynamic", "DC", "DCDynamic", 
 					"CAPOnoGExc", "CAPOnoGExcDynamic", "CAPOnoG", "CAPOnoGDynamic", "CAPOExc", "CAPOExcDynamic", "CAPO", "CAPODynamic", "PIP", "PIPDynamic",
 					"HBUP", "HBDynamicUP", "WCPUP", "WCPDynamicUP", "WDCnoGUP", "WDCnoGDynamicUP", "WDCUP", "WDCDynamicUP", "CAPOnoGUP", "CAPOnoGDynamicUP", "CAPOUP", "CAPODynamicUP", "PIPUP", "PIPDynamicUP",
 					"PIPHB", "PIPHBDynamic", "PIPWCP", "PIPWCPDynamic", "PIPWDC", "PIPWDCDynamic", "PIPCAPO", "PIPCAPODynamic", "PIPPIP", "PIPPIPDynamic"};
