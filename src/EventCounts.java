@@ -471,6 +471,32 @@ public class EventCounts {
 			setRule_a_success_inner_most_lock_held(getVal(getRule_a_success_inner_most_lock_held(), eventCount, curr_trial, total_trials));
 		} else if (eventType.equals("Rule A Success Outer Most Lock Held")) {
 			setRule_a_success_outer_most_lock_held(getVal(getRule_a_success_outer_most_lock_held(), eventCount, curr_trial, total_trials));
+		} else if (eventType.equals("Extra Write Update FP")) {
+			setExtra_write_update(getVal(getExtra_write_update(), eventCount, curr_trial, total_trials));
+		} else if (eventType.equals("Extra Write One Lock Held FP")) {
+			setExtra_write_one_lock(getVal(getExtra_write_one_lock(), eventCount, curr_trial, total_trials));
+		} else if (eventType.equals("Extra Write Two Lock Held FP")) {
+			setExtra_write_two_lock(getVal(getExtra_write_two_lock(), eventCount, curr_trial, total_trials));
+		} else if (eventType.equals("Extra Write Three Lock Held FP")) {
+			setExtra_write_three_lock(getVal(getExtra_write_three_lock(), eventCount, curr_trial, total_trials));
+		} else if (eventType.equals("Extra Write Set FP")) {
+			setExtra_write_set(getVal(getExtra_write_set(), eventCount, curr_trial, total_trials));
+		} else if (eventType.equals("Extra Read Update FP")) {
+			setExtra_read_update(getVal(getExtra_read_update(), eventCount, curr_trial, total_trials));
+		} else if (eventType.equals("Extra Read One Lock Held FP")) {
+			setExtra_read_one(getVal(getExtra_read_one(), eventCount, curr_trial, total_trials));
+		} else if (eventType.equals("Extra Read Two Lock Held FP")) {
+			setExtra_read_two(getVal(getExtra_read_two(), eventCount, curr_trial, total_trials));
+		} else if (eventType.equals("Extra Read Three Lock Held FP")) {
+			setExtra_read_three(getVal(getExtra_read_three(), eventCount, curr_trial, total_trials));
+		} else if (eventType.equals("Extra Update")) {
+			setExtra_total_update(getVal(getExtra_total_update(), eventCount, curr_trial, total_trials));
+		} else if (eventType.equals("Extra One")) {
+			setExtra_total_one(getVal(getExtra_total_one(), eventCount, curr_trial, total_trials));
+		} else if (eventType.equals("Extra Two")) {
+			setExtra_total_two(getVal(getExtra_total_two(), eventCount, curr_trial, total_trials));
+		} else if (eventType.equals("Extra Three")) {
+			setExtra_total_three(getVal(getExtra_total_three(), eventCount, curr_trial, total_trials));
 		}
 	}
 	
@@ -616,7 +642,21 @@ public class EventCounts {
 				input.println("rule A success outer lock held: " + getRule_a_success_outer_lock_held());
 				input.println("total many locks held: " + getTotal_many_locks_held());
 				input.println("rule A success inner most lock held: " + getRule_a_success_inner_most_lock_held());
-				input.println("rule A success outer most lock held: " + getRule_a_success_outer_most_lock_held());				
+				input.println("rule A success outer most lock held: " + getRule_a_success_outer_most_lock_held());
+				
+				input.println("extra write update fp:" + getExtra_write_update());
+				input.println("extra write one lock held fp:" + getExtra_write_one_lock());
+				input.println("extra write two lock held fp:" + getExtra_write_two_lock());
+				input.println("extra write three lock held fp:" + getExtra_write_three_lock());
+				input.println("extra write set fp:" + getExtra_write_set());
+				input.println("extra read update fp:" + getExtra_read_update());
+				input.println("extra read one lock held fp:" + getExtra_read_one());
+				input.println("extra read two lock held fp:" + getExtra_read_two());
+				input.println("extra read three lock held fp:" + getExtra_read_three());
+				input.println("extra update:" + getExtra_total_update());
+				input.println("extra one:" + getExtra_total_one());
+				input.println("extra two:" + getExtra_total_two());
+				input.println("extra three:" + getExtra_total_three());
 				input.close();
 			}
 		} catch (FileNotFoundException e) {e.printStackTrace();}
@@ -634,6 +674,7 @@ public class EventCounts {
 		getLocksHeldCounts(output);
 		getRuleAChanges(output);
 		getRuleALockSuccess(output);
+		getExtraMetadataCounts(output);
 	}
 
 	public String getCountPercent(long [] countType, long [] countTotal) {
@@ -937,6 +978,22 @@ public class EventCounts {
 		output.write("\\newcommand{\\" + bench + config + "WrWrRace}{" + (isZero(raceTotal) ? "\\rna" : getPercent(getWrite_write_race(), raceTotal)) + "}\n");
 		output.write("\\newcommand{\\" + bench + config + "RdWrRace}{" + (isZero(raceTotal) ? "\\rna" : getPercent(getRead_write_race(), raceTotal)) + "}\n");
 		output.write("\\newcommand{\\" + bench + config + "RdShWrRace}{" + (isZero(raceTotal) ? "\\rna" : getPercent(getShared_write_race(), raceTotal)) + "}\n");
+	}
+	
+	public void getExtraMetadataCounts(BufferedWriter output) throws IOException {
+		output.write("\\newcommand{\\" + bench + config + "ExWrUpdate}{" + (isZero(getExtra_write_update()) ? "\\ezero" : getAvg(getExtra_write_update())) + "}\n");
+		output.write("\\newcommand{\\" + bench + config + "ExWrOne}{" + (isZero(getExtra_write_one_lock()) ? "\\ezero" : getAvg(getExtra_write_one_lock())) + "}\n");
+		output.write("\\newcommand{\\" + bench + config + "ExWrTwo}{" + (isZero(getExtra_write_two_lock()) ? "\\ezero" : getAvg(getExtra_write_two_lock())) + "}\n");
+		output.write("\\newcommand{\\" + bench + config + "ExWrThree}{" + (isZero(getExtra_write_three_lock()) ? "\\ezero" : getAvg(getExtra_write_three_lock())) + "}\n");
+		output.write("\\newcommand{\\" + bench + config + "ExWrSet}{" + (isZero(getExtra_write_set()) ? "\\ezero" : getAvg(getExtra_write_set())) + "}\n");
+		output.write("\\newcommand{\\" + bench + config + "ExRdUpdate}{" + (isZero(getExtra_read_update()) ? "\\ezero" : getAvg(getExtra_read_update())) + "}\n");
+		output.write("\\newcommand{\\" + bench + config + "ExRdOne}{" + (isZero(getExtra_read_one()) ? "\\ezero" : getAvg(getExtra_read_one())) + "}\n");
+		output.write("\\newcommand{\\" + bench + config + "ExRdTwo}{" + (isZero(getExtra_read_two()) ? "\\ezero" : getAvg(getExtra_read_two())) + "}\n");
+		output.write("\\newcommand{\\" + bench + config + "ExRdThree}{" + (isZero(getExtra_read_three()) ? "\\ezero" : getAvg(getExtra_read_three())) + "}\n");
+		output.write("\\newcommand{\\" + bench + config + "ExTotalUpdate}{" + (isZero(getExtra_total_update()) ? "\\ezero" : getAvg(getExtra_total_update())) + "}\n");
+		output.write("\\newcommand{\\" + bench + config + "ExTotalOne}{" + (isZero(getExtra_total_one()) ? "\\ezero" : getAvg(getExtra_total_one())) + "}\n");
+		output.write("\\newcommand{\\" + bench + config + "ExTotalTwo}{" + (isZero(getExtra_total_two()) ? "\\ezero" : getAvg(getExtra_total_two())) + "}\n");
+		output.write("\\newcommand{\\" + bench + config + "ExTotalThree}{" + (isZero(getExtra_total_three()) ? "\\ezero" : getAvg(getExtra_total_three())) + "}\n");
 	}
 	
 	public static double calcCI(double[] data) {
@@ -1982,6 +2039,110 @@ public class EventCounts {
 
 	public void setRule_a_success_outer_most_lock_held(long[] rule_a_success_outer_most_lock_held) {
 		this.rule_a_success_outer_most_lock_held = rule_a_success_outer_most_lock_held;
+	}
+	
+	public long[] getExtra_write_update() {
+		return extra_write_update;
+	}
+
+	public void setExtra_write_update(long[] extra_write_update) {
+		this.extra_write_update = extra_write_update;
+	}
+
+	public long[] getExtra_write_one_lock() {
+		return extra_write_one_lock;
+	}
+
+	public void setExtra_write_one_lock(long[] extra_write_one_lock) {
+		this.extra_write_one_lock = extra_write_one_lock;
+	}
+
+	public long[] getExtra_write_two_lock() {
+		return extra_write_two_lock;
+	}
+
+	public void setExtra_write_two_lock(long[] extra_write_two_lock) {
+		this.extra_write_two_lock = extra_write_two_lock;
+	}
+
+	public long[] getExtra_write_three_lock() {
+		return extra_write_three_lock;
+	}
+
+	public void setExtra_write_three_lock(long[] extra_write_three_lock) {
+		this.extra_write_three_lock = extra_write_three_lock;
+	}
+
+	public long[] getExtra_write_set() {
+		return extra_write_set;
+	}
+
+	public void setExtra_write_set(long[] extra_write_set) {
+		this.extra_write_set = extra_write_set;
+	}
+
+	public long[] getExtra_read_update() {
+		return extra_read_update;
+	}
+
+	public void setExtra_read_update(long[] extra_read_update) {
+		this.extra_read_update = extra_read_update;
+	}
+
+	public long[] getExtra_read_one() {
+		return extra_read_one;
+	}
+
+	public void setExtra_read_one(long[] extra_read_one) {
+		this.extra_read_one = extra_read_one;
+	}
+
+	public long[] getExtra_read_two() {
+		return extra_read_two;
+	}
+
+	public void setExtra_read_two(long[] extra_read_two) {
+		this.extra_read_two = extra_read_two;
+	}
+
+	public long[] getExtra_read_three() {
+		return extra_read_three;
+	}
+
+	public void setExtra_read_three(long[] extra_read_three) {
+		this.extra_read_three = extra_read_three;
+	}
+
+	public long[] getExtra_total_update() {
+		return extra_total_update;
+	}
+
+	public void setExtra_total_update(long[] extra_total_update) {
+		this.extra_total_update = extra_total_update;
+	}
+
+	public long[] getExtra_total_one() {
+		return extra_total_one;
+	}
+
+	public void setExtra_total_one(long[] extra_total_one) {
+		this.extra_total_one = extra_total_one;
+	}
+
+	public long[] getExtra_total_two() {
+		return extra_total_two;
+	}
+
+	public void setExtra_total_two(long[] extra_total_two) {
+		this.extra_total_two = extra_total_two;
+	}
+
+	public long[] getExtra_total_three() {
+		return extra_total_three;
+	}
+
+	public void setExtra_total_three(long[] extra_total_three) {
+		this.extra_total_three = extra_total_three;
 	}
 	
 }
