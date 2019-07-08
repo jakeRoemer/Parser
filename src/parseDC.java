@@ -10,11 +10,11 @@ import java.util.LinkedList;
 
 public class parseDC {
 	static final String[] benchmarks = {"avrora", "batik", "htwo", "jython", "luindex", "lusearch", "pmd", "sunflow", "tomcat", "xalan"};
-	static final int trials = 2; //Integer.parseInt(args[1]);
+	static final int trials = 10; //Integer.parseInt(args[1]);
 	static final String tool = "PIP"; //DC or PIP
 	static final boolean fieldRace = false; //true = field, false = single second site
 	static final boolean extraStats = true; //false for DC tool and false if counts are not collected.
-	static final String output_dir = /*args[0];*/ "PIP_fastTool_extraMetadataCount";
+	static final String output_dir = /*args[0];*/ "PIP_fastTool_extraOpt2Stat_frequencies";
 	
 	//TODO: Change everything WDC to DC
 	public static void main (String [] args) {
